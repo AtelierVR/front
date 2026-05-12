@@ -1,0 +1,239 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ── Dark mode: toggled via .dark class on <html> ── */
+@custom-variant dark (&:is(.dark *));
+
+/* ── Map CSS custom properties → Tailwind v4 utility classes ── */
+@theme inline {
+  /* NavigationMenu animations */
+  --animate-nav-menu-in:     nav-menu-in 200ms ease;
+  --animate-nav-menu-out:    nav-menu-out 200ms ease;
+  --animate-nav-enter-right: nav-enter-right 200ms ease;
+  --animate-nav-enter-left:  nav-enter-left 200ms ease;
+  --animate-nav-exit-right:  nav-exit-right 200ms ease;
+  --animate-nav-exit-left:   nav-exit-left 200ms ease;
+
+  /* Fonts */
+  --font-heading: var(--font-funnel-display);
+  --font-body:    var(--font-inter);
+
+  /* Semantic colors */
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+
+  --color-destructive:          var(--destructive);
+
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+
+  /* Tertiary alias (#E8E8FF — pale lavender) */
+  --color-tertiary:             var(--muted);
+
+  /* Charts */
+  --color-chart-1:              var(--chart-1);
+  --color-chart-2:              var(--chart-2);
+  --color-chart-3:              var(--chart-3);
+  --color-chart-4:              var(--chart-4);
+  --color-chart-5:              var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar:                    var(--sidebar-background);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+
+  /* Border radius scale */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ───────────────────────────────────────────────
+   Design tokens — light mode
+   Primary   #666699  hsl(240 17% 50%)   muted indigo
+   ─────────────────────────────────────────────── */
+:root {
+  --radius: 0.5rem;
+
+  --background:           hsl(0 0% 100%);
+  --foreground:           hsl(0 0% 4%);
+
+  --card:                 hsl(0 0% 100%);
+  --card-foreground:      hsl(0 0% 4%);
+
+  --popover:              hsl(0 0% 98%);
+  --popover-foreground:   hsl(0 0% 4%);
+
+  --primary:              hsl(240 17% 50%);   /* #666699 */
+  --primary-foreground:   hsl(0 0% 100%);
+
+  --secondary:            hsl(0 0% 93%);
+  --secondary-foreground: hsl(0 0% 10%);
+
+  --muted:                hsl(0 0% 96%);
+  --muted-foreground:     hsl(0 0% 45%);
+
+  --accent:               hsl(240 10% 92%);
+  --accent-foreground:    hsl(0 0% 10%);
+
+  --destructive:          hsl(0 84% 60%);
+
+  --border:               hsl(0 0% 82%);
+  --input:                hsl(0 0% 82%);
+  --ring:                 hsl(240 17% 50%);
+
+  --chart-1:              hsl(240 50% 55%);
+  --chart-2:              hsl(270 45% 55%);
+  --chart-3:              hsl(200 60% 55%);
+  --chart-4:              hsl(315 40% 55%);
+  --chart-5:              hsl(240 30% 70%);
+
+  --sidebar-background:           hsl(0 0% 98%);
+  --sidebar-foreground:           hsl(0 0% 4%);
+  --sidebar-primary:              hsl(240 17% 50%);
+  --sidebar-primary-foreground:   hsl(0 0% 100%);
+  --sidebar-accent:               hsl(0 0% 93%);
+  --sidebar-accent-foreground:    hsl(0 0% 10%);
+  --sidebar-border:               hsl(0 0% 82%);
+  --sidebar-ring:                 hsl(240 17% 50%);
+}
+
+/* ── Design tokens — dark mode ── */
+.dark {
+  --background:           hsl(0 0% 7%);
+  --foreground:           hsl(0 0% 98%);
+
+  --card:                 hsl(0 0% 10%);
+  --card-foreground:      hsl(0 0% 98%);
+
+  --popover:              hsl(0 0% 12%);
+  --popover-foreground:   hsl(0 0% 98%);
+
+  --primary:              hsl(240 100% 90%);   /* #CCCCFF */
+  --primary-foreground:   hsl(240 60% 10%);
+
+  --secondary:            hsl(0 0% 18%);
+  --secondary-foreground: hsl(0 0% 90%);
+
+  --muted:                hsl(0, 0%, 10%);
+  --muted-foreground:     hsl(0 0% 65%);
+
+  --accent:               hsl(0 0% 41% / 30%);
+  --accent-foreground:    hsl(0 0% 98%);
+
+  --destructive:          hsl(0 72% 51%);
+
+  --border:               hsl(0 0% 20%);
+  --input:                hsl(0 0% 20%);
+  --ring:                 hsl(240 100% 90%);
+
+  --chart-1:              hsl(240 100% 80%);
+  --chart-2:              hsl(240  50% 65%);
+  --chart-3:              hsl(260  40% 55%);
+  --chart-4:              hsl(220  60% 60%);
+  --chart-5:              hsl(280  35% 50%);
+
+  --sidebar-background:           var(--muted);
+  --sidebar-foreground:           hsl(0 0% 92%);
+  --sidebar-primary:              hsl(240 100% 90%);
+  --sidebar-primary-foreground:   hsl(240 60% 10%);
+  --sidebar-accent:               hsl(0 0% 16%);
+  --sidebar-accent-foreground:    hsl(0 0% 92%);
+  --sidebar-border:               hsl(0 0% 18%);
+  --sidebar-ring:                 hsl(240 100% 90%);
+}
+
+/* ── NavigationMenu keyframes ── */
+@keyframes nav-menu-in {
+  from { opacity: 0; height: 0px; }
+  to   { opacity: 1; height: var(--radix-navigation-menu-viewport-height); }
+}
+@keyframes nav-menu-out {
+  from { opacity: 1; height: var(--radix-navigation-menu-viewport-height); }
+  to   { opacity: 0; height: 0px; }
+}
+@keyframes nav-enter-right {
+  from { opacity: 0; transform: translateX(200px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes nav-enter-left {
+  from { opacity: 0; transform: translateX(-200px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes nav-exit-right {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(200px); }
+}
+@keyframes nav-exit-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-200px); }
+}
+
+/* ── Base layer ── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body, system-ui, sans-serif);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading, var(--font-body), system-ui, sans-serif);
+  }
+  
+  /* ── Shiki css-variables theme tokens ── */
+  :root {
+    --shiki-color-text:              #24292e;
+    --shiki-color-background:        transparent;
+    --shiki-token-constant:          #005cc5;
+    --shiki-token-string:            #032f62;
+    --shiki-token-comment:           #6a737d;
+    --shiki-token-keyword:           #d73a49;
+    --shiki-token-parameter:         #24292e;
+    --shiki-token-function:          #6f42c1;
+    --shiki-token-string-expression: #032f62;
+    --shiki-token-punctuation:       #24292e;
+    --shiki-token-link:              #032f62;
+  }
+  .dark {
+    --shiki-color-text:              #e1e4e8;
+    --shiki-color-background:        transparent;
+    --shiki-token-constant:          #79b8ff;
+    --shiki-token-string:            #9ecbff;
+    --shiki-token-comment:           #6a737d;
+    --shiki-token-keyword:           #f97583;
+    --shiki-token-parameter:         #e1e4e8;
+    --shiki-token-function:          #b392f0;
+    --shiki-token-string-expression: #9ecbff;
+    --shiki-token-punctuation:       #e1e4e8;
+    --shiki-token-link:              #9ecbff;
+  }
+}
