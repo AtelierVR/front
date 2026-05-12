@@ -1,0 +1,105 @@
+'use client';
+
+import React, { useCallback, useEffect, useState } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { getInstance } from '@/lib/api/instances';
+import { getRelayInstance } from '@/lib/api/relays';
+import type { ApiInstance } from '@/types/api';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RelayInstanceContext } from './instance-context';
+
+const TABS = [
+    { label: 'Details', value: '' },
+    { label: 'Players', value: 'players' },
+];
+
+export default function RelayInstanceLayout({ children }: { children: React.ReactNode }) {
+    const params = useParams<{ id: string; iid: string }>();
+    const router = useRouter();
+    const pathname = usePathname();
+    const { t } = useTranslation();
+
+    const [instance, setInstance] = useState<ApiInstance | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | undefined>();
+
+    const doFetch = useCallback(async () => {
+        setLoading(true);
+        setError(undefined);
+        try {
+            const data = await getRelayInstance(Number(params.id), params.iid);
+            setInstance(data);
+        } catch {
+            // Fallback: relay might be offline, try direct DB lookup
+            try {
+                const data = await getInstance(params.iid);
+                setInstance(data);
+            } catch (e) {
+                setError(e instanceof Error ? e.message : 'Failed to load instance');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [params.id, params.iid]);
+
+    const fetchInstance = doFetch;
+
+    useEffect(() => { void fetchInstance(); }, [fetchInstance]);
+
+    const basePath = `/relays/${params.id}/instances/${params.iid}`;
+    const activeTab = pathname === basePath ? '' : pathname.slice(basePath.length + 1).split('/')[0];
+
+    const title = instance?.title || instance?.name || `Instance #${params.iid}`;
+
+    return (
+        <RelayInstanceContext.Provider value={{ iid: params.iid, instance, loading, error, refresh: fetchInstance }}>
+            <div className="flex flex-1 flex-col gap-4">
+                {/* Instance title bar */}
+                <div className="flex items-center gap-3 min-w-0">
+                    <Button variant="ghost" size="icon-sm" onClick={() => router.push(`/relays/${params.id}/instances`)} aria-label="Back">
+                        <Icon icon="material-symbols:arrow-back-rounded" className="size-4" />
+                    </Button>
+                    <div className="flex flex-col min-w-0">
+                        {loading
+                            ? <Skeleton className="h-4 w-40" />
+                            : <span className="text-sm font-medium truncate">{title}</span>}
+                        {instance && (
+                            <span className="text-xs text-muted-foreground font-mono truncate">{instance.server}</span>
+                        )}
+                    </div>
+                    <div className="ml-auto">
+                        <Button variant="ghost" size="icon-sm" onClick={fetchInstance} disabled={loading} aria-label="Refresh">
+                            <Icon icon="material-symbols:refresh-rounded" className={loading ? 'animate-spin' : ''} />
+                        </Button>
+                    </div>
+                </div>
+
+                {error && (
+                    <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
+                        <p className="text-sm text-destructive">{error}</p>
+                    </div>
+                )}
+
+                {/* Sub-tabs */}
+                <Tabs value={activeTab} onValueChange={v => router.push(v === '' ? basePath : `${basePath}/${v}`)}>
+                    <TabsList>
+                        {TABS.map(tab => (
+                            <TabsTrigger key={tab.value} value={tab.value}>
+                                {tab.value === 'players' ? t('admin.instance_players') : 'Details'}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
+
+                {/* Tab content */}
+                <div className="flex flex-1 flex-col min-h-0">
+                    {children}
+                </div>
+            </div>
+        </RelayInstanceContext.Provider>
+    );
+}
