@@ -36,8 +36,7 @@ export function StatsBlock() {
 
   useEffect(() => {
     if (!wellKnown) return;
-    const apiBase = process.env.NEXT_PUBLIC_API_URL;
-    fetch(`${apiBase}/api/nodeinfo/2.1`)
+    fetch(`${wellKnown.gateway.api}/api/nodeinfo/2.1`)
       .then((r) => r.json())
       .then((data) => {
         if (data?.usage) setStats(data.usage);

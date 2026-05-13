@@ -7,7 +7,7 @@ set -e
 
 echo "[entrypoint] Patching NEXT_PUBLIC_* variables..."
 
-find /app/.next -type f -name "*.js" | while read -r file; do
+find /app/.next -type f -name "*.js" | while IFS= read -r file; do
     placeholders=$(grep -oE '====NEXT_PUBLIC_[A-Z0-9_]+====' "$file" 2>/dev/null | sort -u) || true
     if [ -z "$placeholders" ]; then
         continue
