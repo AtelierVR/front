@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { RelayProvider } from './relay-context';
 import { RelayShell } from './relay-shell';
 import { getRelay, stopRelay as stopRelayApi, restartRelay as restartRelayApi } from '@/lib/api/relays';
 import { entityStore } from '@/lib/cache/store';
-import { useWs } from '@/lib/ws/context';
+import { useWs, useWsEvent } from '@/lib/ws/context';
 import type { ApiRelay, ApiRelaySpecs } from '@/types/api';
 import { useApi } from '@/lib/api/context';
 import { NotFound } from '../../not-found';
@@ -25,6 +25,7 @@ export default function RelayDetailLayout({ children }: { children: React.ReactN
 function RelayDetailInner({ children }: { children: React.ReactNode }) {
     const params = useParams() as { id: string };
     const relayId = parseInt(params.id, 10);
+    const router = useRouter();
 
     const [relay, setRelay] = useState<ApiRelay | null>(null);
     const [specs, setSpecs] = useState<ApiRelaySpecs | null>(null);
@@ -55,10 +56,16 @@ function RelayDetailInner({ children }: { children: React.ReactNode }) {
 
     useEffect(() => { void fetchRelay(); }, [fetchRelay]);
 
+    useWsEvent('relay_removed', (payload: unknown) => {
+        const data = payload as { relay_id: number };
+        if (data.relay_id === relayId) router.push('/relays');
+    });
+
     // subscribe to relay-related WS events while mounted / connected
     useEffect(() => {
         const events = [
             'relay_status_change',
+            'relay_removed',
             'relay_specs_update',
             'relay_client_connected',
             'relay_client_authentified',
@@ -82,13 +89,11 @@ function RelayDetailInner({ children }: { children: React.ReactNode }) {
     }, [relay?.id]);
 
     const stop = async () => {
-        if (!confirm('Stop this relay?')) return;
         setActionLoading(true);
         try { await stopRelayApi(relayId); await fetchRelay(); } catch { /* ignore */ } finally { setActionLoading(false); }
     };
 
     const restart = async () => {
-        if (!confirm('Restart this relay?')) return;
         setActionLoading(true);
         try { await restartRelayApi(relayId); await fetchRelay(); } catch { /* ignore */ } finally { setActionLoading(false); }
     };
@@ -105,7 +110,6 @@ function RelayDetailInner({ children }: { children: React.ReactNode }) {
         refresh: fetchRelay,
         stop,
         restart,
-        // setters used by RelayProvider to update state on WS events
         setRelay,
         setSpecs,
         setClientCount,

@@ -181,15 +181,15 @@ export default function RelayInstancesPage() {
                                                 onClick={() => instance.internal_id !== null && router.push(`/relays/${relayId}/instances/${instance.internal_id}`)}
                                             >
                                                 <td className="px-4 py-3 text-sm font-mono text-muted-foreground">{instance.id}</td>
-                                                <td className="px-4 py-3 text-sm font-mono">{instance.name || '—'}</td>
-                                                <td className="px-4 py-3 text-sm">{instance.title || '—'}</td>
+                                                <td className="px-4 py-3 max-w-[8rem]"><span className="block text-sm font-mono truncate">{instance.name || '—'}</span></td>
+                                                <td className="px-4 py-3 max-w-[12rem]"><span className="block text-sm truncate">{instance.title || '—'}</span></td>
                                                 <td className="px-4 py-3">
                                                     <WorldCell identifier={instance.world} worldMap={worldMap} />
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <UserCell identifier={instance.owner} userMap={userMap} />
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-muted-foreground">{instance.capacity}</td>
+                                                <td className="px-4 py-3 text-sm text-muted-foreground">{instance.capacity === 0 ? t('world.unlimited') : instance.capacity}</td>
                                                 <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap" title={instance.created_at ? format(new Date(instance.created_at), 'PPPP p') : undefined}>
                                                     {instance.created_at ? formatDistanceToNow(new Date(instance.created_at), { addSuffix: true }) : '—'}
                                                 </td>
@@ -241,16 +241,16 @@ export default function RelayInstancesPage() {
 function UserCell({ identifier, userMap }: { identifier: string | null; userMap: Map<string, ApiUser> }) {
     if (!identifier) return <span className="text-xs text-muted-foreground">\u2014</span>;
     const user = userMap.get(identifier);
-    if (!user) return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
+    if (!user) return <span className="font-mono text-xs text-muted-foreground truncate block max-w-[8rem]">{identifier}</span>;
     const display = user.display || user.username;
     const initials = display?.slice(0, 2).toUpperCase() ?? '??';
     return (
-        <div className="flex items-center gap-2">
-            <Avatar className="size-6">
+        <div className="flex items-center gap-2 min-w-0">
+            <Avatar className="size-6 shrink-0">
                 {user.thumbnail && <AvatarImage src={user.thumbnail} alt={display} />}
                 <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
             </Avatar>
-            <span className="text-sm">{display}</span>
+            <span className="text-sm truncate">{display}</span>
         </div>
     );
 }
@@ -258,17 +258,17 @@ function UserCell({ identifier, userMap }: { identifier: string | null; userMap:
 function WorldCell({ identifier, worldMap }: { identifier: string | null; worldMap: Map<string, ApiWorld> }) {
     if (!identifier) return <span className="text-xs text-muted-foreground">\u2014</span>;
     const world = worldMap.get(identifier);
-    if (!world) return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
+    if (!world) return <span className="font-mono text-xs text-muted-foreground truncate block max-w-[10rem]">{identifier}</span>;
     const initials = (world.title || world.name || '?').slice(0, 2).toUpperCase();
     return (
-        <div className="flex items-center gap-2">
-            <Avatar className="size-6 rounded-md">
+        <div className="flex items-center gap-2 min-w-0">
+            <Avatar className="size-6 rounded-md shrink-0">
                 {world.thumbnail && <AvatarImage src={world.thumbnail} alt={world.title} className="object-cover" />}
                 <AvatarFallback className="text-[10px] rounded-md">
                     <Icon icon="material-symbols:public-rounded" className="size-3.5" />
                 </AvatarFallback>
             </Avatar>
-            <span className="text-sm">{world.title || world.name}</span>
+            <span className="text-sm truncate">{world.title || world.name}</span>
         </div>
     );
 }

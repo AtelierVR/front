@@ -207,7 +207,7 @@ function SearchPageInner() {
     // ── URL param state ──────────────────────────────────────────────────────
 
     const queryParam = searchParams.get('q') ?? '';
-    const tabParam = (searchParams.get('tab') as TabKey) ?? availableTabs[0]?.key ?? 'users';
+    const tabParam = (searchParams.get('type') as TabKey) ?? availableTabs[0]?.key ?? 'users';
     const pageParam = Math.max(1, Number(searchParams.get('p') ?? 1));
 
     const [query, setQuery] = useState(queryParam);
@@ -226,7 +226,7 @@ function SearchPageInner() {
         (q: string, tab: TabKey, p: number) => {
             const params = new URLSearchParams();
             if (q) params.set('q', q);
-            params.set('tab', tab);
+            params.set('type', tab);
             if (p > 1) params.set('p', String(p));
             router.replace(`${pathname}?${params.toString()}`, { scroll: false });
         },

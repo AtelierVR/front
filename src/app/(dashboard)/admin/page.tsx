@@ -53,18 +53,16 @@ function formatUptime(seconds: number): string {
 
 export default function AdminDashboardPage() {
     const { wellKnown, isAdmin, isLoading } = useApi();
-    if (isLoading) return null;
     const { t } = useTranslation();
-    if (!isAdmin) return <NotFound
-        children={t('admin.title')}
-    />;
-
-
     const [relays, setRelays] = useState<ApiRelay[] | null>(null);
 
     useEffect(() => {
+        if (!isAdmin) return;
         listRelays().then(setRelays).catch(() => setRelays([]));
-    }, []);
+    }, [isAdmin]);
+
+    if (isLoading) return null;
+    if (!isAdmin) return <NotFound children={t('admin.title')} />;
 
     const connectedRelays = relays?.filter(r => r.connected) ?? null;
     const totalInstances = connectedRelays?.reduce((s, r) => s + (r.status?.instances.count ?? 0), 0) ?? null;

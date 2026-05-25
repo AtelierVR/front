@@ -44,14 +44,14 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
-import { listRelays, getRelayInstances } from '@/lib/api/relays';
+import { listRelays, getRelay, getRelayInstances } from '@/lib/api/relays';
 import { useWsEvent } from '@/lib/ws/context';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import type { ApiRelay, ApiRelayAssignedInstance, ApiRelaySpecs } from '@/types/api';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { useApi } from '@/lib/api';
 import { NotFound } from '@/app/(dashboard)/not-found';
+import { getProvider } from '@/lib/providers';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ function relayLabel(relay: ApiRelay): string {
 function cpuPct(relay: ApiRelay): number | null {
     const cpu = relay.status?.specs?.processor;
     if (!cpu) return null;
-    return Math.min(100, cpu.used);
+    return Math.min(100, (cpu.used / Math.max(1, cpu.cores)) * 100);
 }
 
 function CpuBar({ pct }: { pct: number | null }) {
@@ -246,17 +246,91 @@ function RelayDrawer({
     );
 }
 
+// ── Memoized row ──────────────────────────────────────────────────────────────
+// Each row manages its own CPU lerp so updates to one relay never re-render others.
+
+const MemoRelayRow = React.memo(function RelayRow({ relay }: { relay: ApiRelay }) {
+    const { t } = useTranslation();
+    const router = useRouter();
+
+    const targetPct = cpuPct(relay);
+    const [displayPct, setDisplayPct] = React.useState<number | null>(targetPct);
+    const displayRef = React.useRef(displayPct);
+    displayRef.current = displayPct;
+
+    React.useEffect(() => {
+        if (targetPct === null) { setDisplayPct(null); return; }
+        if (displayRef.current === null) { setDisplayPct(targetPct); return; }
+        const ALPHA = 0.18;
+        const id = setInterval(() => {
+            const cur = displayRef.current ?? targetPct;
+            const lerped = cur + (targetPct - cur) * ALPHA;
+            if (Math.abs(lerped - cur) < 0.05) {
+                setDisplayPct(targetPct);
+                clearInterval(id);
+            } else {
+                setDisplayPct(lerped);
+            }
+        }, 50);
+        return () => clearInterval(id);
+    }, [targetPct]);
+
+    const isRunning = relay.connected && relay.runner?.status === 'running';
+    const provider = getProvider(relay.provider);
+
+    return (
+        <TableRow className="h-12 cursor-pointer" onClick={() => router.push(`/relays/${relay.id}`)}>
+            <TableCell>
+                <div className={cn('size-2.5 rounded-full mx-auto', statusColor(relay), isRunning && 'animate-pulse')} />
+            </TableCell>
+            <TableCell>
+                <span className="text-sm font-medium truncate max-w-[240px] block">{relayLabel(relay)}</span>
+            </TableCell>
+            <TableCell>
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Icon icon={provider.icon} className="size-3.5 shrink-0" />
+                    {t(provider.label)}
+                </span>
+            </TableCell>
+            <TableCell>
+                <span className="text-sm tabular-nums">
+                    {relay.status ? `${relay.status.instances.count}/${relay.status.instances.limit}` : 'N/A'}
+                </span>
+            </TableCell>
+            <TableCell>
+                <span className="text-sm tabular-nums">{relay.status ? relay.status.clients : 'N/A'}</span>
+            </TableCell>
+            <TableCell style={{ width: 140, minWidth: 140, maxWidth: 140 }}>
+                {displayPct === null ? (
+                    <span className="text-xs text-muted-foreground">N/A</span>
+                ) : (
+                    <div className="flex items-center gap-2 w-[120px]">
+                        <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
+                            <div
+                                className={`h-full rounded-full ${displayPct > 80 ? 'bg-red-500' : displayPct > 50 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                                style={{ width: `${displayPct}%` }}
+                            />
+                        </div>
+                        <span className="text-xs tabular-nums text-muted-foreground w-9 shrink-0 text-right">{displayPct.toFixed(0)}%</span>
+                    </div>
+                )}
+            </TableCell>
+        </TableRow>
+    );
+});
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function RelaysPage() {
     const { isAdmin, isLoading } = useApi();
-    if (isLoading) return null;
     const { t } = useTranslation();
-    if (!isAdmin) return <NotFound
-        children={t('admin.relays')}
-    />;
+    if (isLoading) return null;
+    if (!isAdmin) return <NotFound children={t('admin.relays')} />;
+    return <RelaysPageInner />;
+}
 
-    const router = useRouter();
+function RelaysPageInner() {
+    const { t } = useTranslation();
     const [relays, setRelays] = React.useState<ApiRelay[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | undefined>();
@@ -265,36 +339,6 @@ export default function RelaysPage() {
     // Drawer state — kept for future use
     const [selected, setSelected] = React.useState<ApiRelay | null>(null);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
-
-    // Per-relay specs history: relayId → last 40 cpu%
-    const [specsHistory, setSpecsHistory] = React.useState<Record<number, { v: number | null }[]>>({});
-
-    const updateSpecsHistory = React.useCallback((relayId: number, pct: number | null) => {
-        setSpecsHistory(prev => {
-            const arr = prev[relayId] ?? Array.from({ length: 40 }, () => ({ v: null }));
-            return { ...prev, [relayId]: [...arr.slice(-39), { v: pct }] };
-        });
-    }, []);
-
-    // Advance graphs based on time: every 15 seconds append last-known value
-    const relaysRef = React.useRef(relays);
-    React.useEffect(() => { relaysRef.current = relays; }, [relays]);
-
-    const specsHistoryRef = React.useRef(specsHistory);
-    React.useEffect(() => { specsHistoryRef.current = specsHistory; }, [specsHistory]);
-
-    React.useEffect(() => {
-        const id = setInterval(() => {
-            const current = relaysRef.current ?? [];
-            for (const r of current) {
-                const pct = cpuPct(r);
-                const hist = specsHistoryRef.current?.[r.id];
-                const fallback = hist && hist.length > 0 ? hist[hist.length - 1].v : null;
-                updateSpecsHistory(r.id, pct ?? fallback);
-            }
-        }, 15000);
-        return () => clearInterval(id);
-    }, [updateSpecsHistory]);
 
     // Table state
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -306,16 +350,6 @@ export default function RelaysPage() {
         try {
             const data = await listRelays();
             setRelays(data);
-            setSpecsHistory(prev => {
-                const next = { ...prev };
-                for (const r of data) {
-                    if (!next[r.id]) {
-                        const p = cpuPct(r);
-                        next[r.id] = Array.from({ length: 40 }, () => ({ v: p ?? null }));
-                    }
-                }
-                return next;
-            });
         } catch (e) {
             setError(e instanceof Error ? e.message : 'Failed to load relays');
         } finally {
@@ -333,19 +367,28 @@ export default function RelaysPage() {
         const data = payload as { relay_id: number; status?: string; relay?: ApiRelay | null };
         if (data.relay) {
             setRelays(prev => prev.map(r => r.id === data.relay_id ? data.relay! : r));
-            const pct = cpuPct(data.relay);
-            if (pct !== null) updateSpecsHistory(data.relay_id, pct);
         } else if (data.status === 'disconnected') {
             setRelays(prev => prev.map(r =>
                 r.id === data.relay_id ? { ...r, connected: false } : r
             ));
+        } else if (data.status === 'connected') {
+            setRelays(prev => prev.map(r =>
+                r.id === data.relay_id ? { ...r, connected: true } : r
+            ));
+        } else {
+            // up, down, ready — re-fetch pour avoir le runner.status à jour
+            getRelay(data.relay_id)
+                .then(relay => setRelays(prev => prev.map(r => r.id === relay.id ? relay : r)))
+                .catch(() => {});
         }
     });
 
+    useWsEvent('relay_added', () => { fetchRelays(); });
+
+    useWsEvent('relay_removed', () => { fetchRelays(); });
+
     useWsEvent('relay_specs_update', (payload: unknown) => {
         const data = payload as { relay_id: number; details: ApiRelaySpecs };
-        const pct = data.details?.processor ? Math.min(100, data.details.processor.used) : null;
-        if (pct !== null) updateSpecsHistory(data.relay_id, pct);
         setRelays(prev => prev.map(r => {
             if (r.id !== data.relay_id || !r.status) return r;
             return { ...r, status: { ...r.status, specs: data.details } };
@@ -370,90 +413,16 @@ export default function RelaysPage() {
 
     // ── Columns ──────────────────────────────────────────────────────────────
 
+    // Column definitions are used only for headers and sorting — cell rendering
+    // happens in MemoRelayRow to avoid full-list re-renders on partial updates.
     const columns: ColumnDef<ApiRelay>[] = React.useMemo(() => [
-        {
-            id: 'status',
-            header: '',
-            cell: ({ row }) => {
-                const isRunning = row.original.connected && row.original.runner?.status === 'running';
-                return (
-                    <div
-                        className={cn(
-                            'size-2.5 rounded-full mx-auto',
-                            statusColor(row.original),
-                            isRunning && 'animate-pulse',
-                        )}
-                    />
-                );
-            },
-            size: 32,
-        },
-        {
-            accessorKey: 'label',
-            header: 'Name',
-            cell: ({ row }) => (
-                <span className="text-sm font-medium truncate max-w-[240px] block">
-                    {relayLabel(row.original)}
-                </span>
-            ),
-            enableHiding: false,
-        },
-        {
-            accessorKey: 'provider',
-            header: 'Provider',
-            cell: ({ row }) => (
-                <span className="font-mono text-xs text-muted-foreground">{row.original.provider}</span>
-            ),
-        },
-        {
-            id: 'instances',
-            header: 'Instances',
-            cell: ({ row }) => (
-                <span className="text-sm tabular-nums">
-                    {row.original.status ? `${row.original.status.instances.count}/${row.original.status.instances.limit}` : 'N/A'}
-                </span>
-            ),
-        },
-        {
-            id: 'clients',
-            header: 'Clients',
-            cell: ({ row }) => (
-                <span className="text-sm tabular-nums">
-                    {row.original.status ? row.original.status.clients : 'N/A'}
-                </span>
-            ),
-        },
-        {
-            id: 'relay_status',
-            header: 'CPU',
-            cell: ({ row }) => {
-                    const history = specsHistory[row.original.id] ?? [];
-                    const lastKnown = history.length > 0 ? history[history.length - 1].v : null;
-                    const pct = cpuPct(row.original) ?? lastKnown;
-                    return (
-                        <div className="relative flex items-center gap-2 min-w-[110px]">
-                            {history.length > 0 && (
-                                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={history} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="cpu-grad" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6} />
-                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <Area type="monotone" dataKey="v" stroke="#3b82f6" strokeWidth={1.5}
-                                                fill="url(#cpu-grad)" isAnimationActive={false} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            )}
-                            <CpuBar pct={pct} />
-                        </div>
-                    );
-                },
-        },
-    ], [t, specsHistory]);
+        { id: 'status',       header: '',           size: 32,  enableSorting: false },
+        { accessorKey: 'label',    header: 'Name',      enableHiding: false },
+        { accessorKey: 'provider', header: 'Provider' },
+        { id: 'instances',    header: 'Instances',  enableSorting: false },
+        { id: 'clients',      header: 'Clients',    enableSorting: false },
+        { id: 'relay_status', header: 'CPU',        size: 140, minSize: 140, maxSize: 140, enableSorting: false },
+    ], [t]);
 
     const table = useReactTable({
         data: relays,
@@ -490,7 +459,7 @@ export default function RelaysPage() {
                             {table.getHeaderGroups().map(hg => (
                                 <TableRow key={hg.id}>
                                     {hg.headers.map(h => (
-                                        <TableHead key={h.id} colSpan={h.colSpan}>
+                                        <TableHead key={h.id} colSpan={h.colSpan} style={h.column.columnDef.size ? { width: h.column.getSize(), minWidth: h.column.columnDef.minSize, maxWidth: h.column.columnDef.maxSize } : undefined}>
                                             {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                                         </TableHead>
                                     ))}
@@ -511,18 +480,7 @@ export default function RelaysPage() {
                                 ))
                             ) : table.getRowModel().rows.length ? (
                                 table.getRowModel().rows.map(row => (
-                                    <TableRow
-                                        key={row.id}
-                                        className="h-12 cursor-pointer"
-                                        data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => router.push(`/relays/${row.original.id}`)}
-                                    >
-                                        {row.getVisibleCells().map(cell => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
+                                    <MemoRelayRow key={row.original.id} relay={row.original} />
                                 ))
                             ) : (
                                 <TableRow>

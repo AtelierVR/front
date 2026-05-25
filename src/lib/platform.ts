@@ -22,8 +22,13 @@ export const ENGINES: Record<string, Info> = {
 };
 
 export function formatSize(bytes: number): string {
-  if (bytes >= 1_000_000_000) return `${(bytes / 1_000_000_000).toFixed(2)} Go`;
-  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} Mo`;
-  if (bytes >= 1_000) return `${Math.round(bytes / 1_000)} ko`;
-  return `${bytes} o`;
+  const units = ['o', 'ko', 'Mo', 'Go', 'To', 'Po'];
+  let index = 0;
+
+  while (bytes >= 1000 && index < units.length - 1) {
+    bytes /= 1000;
+    index++;
+  }
+  
+  return `${bytes.toFixed(1)} ${units[index]}`;
 }

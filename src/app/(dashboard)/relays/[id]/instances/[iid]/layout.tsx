@@ -71,29 +71,21 @@ export default function RelayInstanceLayout({ children }: { children: React.Reac
                             <span className="text-xs text-muted-foreground font-mono truncate">{instance.server}</span>
                         )}
                     </div>
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-2">
+                        <Tabs value={activeTab} onValueChange={v => router.push(v === '' ? basePath : `${basePath}/${v}`)}>
+                            <TabsList>
+                                {TABS.map(tab => (
+                                    <TabsTrigger key={tab.value} value={tab.value}>
+                                        {tab.value === 'players' ? t('admin.instance_players') : 'Details'}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </Tabs>
                         <Button variant="ghost" size="icon-sm" onClick={fetchInstance} disabled={loading} aria-label="Refresh">
                             <Icon icon="material-symbols:refresh-rounded" className={loading ? 'animate-spin' : ''} />
                         </Button>
                     </div>
                 </div>
-
-                {error && (
-                    <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-                        <p className="text-sm text-destructive">{error}</p>
-                    </div>
-                )}
-
-                {/* Sub-tabs */}
-                <Tabs value={activeTab} onValueChange={v => router.push(v === '' ? basePath : `${basePath}/${v}`)}>
-                    <TabsList>
-                        {TABS.map(tab => (
-                            <TabsTrigger key={tab.value} value={tab.value}>
-                                {tab.value === 'players' ? t('admin.instance_players') : 'Details'}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-                </Tabs>
 
                 {/* Tab content */}
                 <div className="flex flex-1 flex-col min-h-0">

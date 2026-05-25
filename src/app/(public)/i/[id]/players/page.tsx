@@ -78,7 +78,7 @@ export default function InstancePlayersPage() {
                 const fetchedUser = player.user ? userMap[player.user] : undefined;
                 const initial = player.display.charAt(0).toUpperCase();
                 const fullId = fetchedUser
-                    ? `${fetchedUser.id}@${fetchedUser.server}`
+                    ? `${fetchedUser.username}@${fetchedUser.server}`
                     : player.user ?? undefined;
 
                 const inner = (

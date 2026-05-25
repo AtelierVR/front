@@ -187,13 +187,15 @@ function ActivityDrawer({
 const PAGE_SIZE = 50;
 
 export default function ActivityPage() {
-    let { isAdmin, isLoading } = useApi();
-    if (isLoading) return null;
+    const { isAdmin, isLoading } = useApi();
     const { t } = useTranslation();
-    if (!isAdmin) return <NotFound
-        children={t('admin.activity_log')}
-    />;
+    if (isLoading) return null;
+    if (!isAdmin) return <NotFound children={t('admin.activity_log')} />;
+    return <ActivityPageInner />;
+}
 
+function ActivityPageInner() {
+    const { t } = useTranslation();
     const [events, setEvents] = React.useState<ApiActivityEvent[]>([]);
     const [total, setTotal] = React.useState(-1);
     const [loading, setLoading] = React.useState(true);

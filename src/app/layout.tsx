@@ -8,6 +8,7 @@ import { StatusBanner } from '@/components/layout/StatusBanner'
 import { WsProvider } from '@/lib/ws/context'
 import { SITE_TITLE, SITE_TITLE_TEMPLATE } from '@/lib/site'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { FumadocsProvider } from '@/lib/fumadocs-provider'
 
 const funnelDisplay = Funnel_Display({
   subsets: ['latin'],
@@ -37,6 +38,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`${funnelDisplay.variable} ${inter.variable} font-body antialiased`}>
+        <FumadocsProvider>
         <I18nProvider>
           <ApiProvider>
             <WsProvider>
@@ -54,6 +56,7 @@ export default function RootLayout({
             </WsProvider>
           </ApiProvider>
         </I18nProvider>
+        </FumadocsProvider>
       </body>
     </html>
   )

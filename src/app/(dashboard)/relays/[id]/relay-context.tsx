@@ -49,6 +49,11 @@ export function RelayProvider({ value, children }: RelayProviderProps) {
             if (data.relay.status) value.setClientCount(data.relay.status.clients);
         } else if (data.status === 'disconnected') {
             value.setRelay(prev => prev ? { ...prev, connected: false } : prev);
+        } else if (data.status === 'connected') {
+            value.setRelay(prev => prev ? { ...prev, connected: true } : prev);
+        } else {
+            // up, down, ready — refresh pour avoir le runner.status à jour
+            value.refresh();
         }
     });
 

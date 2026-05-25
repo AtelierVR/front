@@ -39,7 +39,7 @@ export function HeroBlock() {
               <Button size="lg" render={<Link href="/register" />}>
                 {t('home.hero_cta_join', { instance: title })}
               </Button>
-              <Button size="lg" variant="outline" render={<Link href="/login" />}>
+              <Button size="lg" variant="secondary" render={<Link href="/login" />}>
                 {t('home.hero_cta_login')}
               </Button>
             </>

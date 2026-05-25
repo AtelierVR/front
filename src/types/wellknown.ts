@@ -14,6 +14,9 @@ export interface NoxEndpoints {
   webfinger: string;
   nodeinfo: string;
   configs: string;
+  terms: string;
+  privacy: string;
+  rules: string;
 }
 
 export interface NoxVersions {

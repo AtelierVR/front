@@ -4,6 +4,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --include=dev
 
+FROM node:22-alpine AS development
+WORKDIR /app
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN mkdir -p .next && chmod 777 .next
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules

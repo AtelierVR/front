@@ -9,12 +9,36 @@
     "settings": "Settings",
     "admin": "Admin",
     "mod": "Moderation",
-    "language": "Language"
+    "language": "Language",
+    "search_desc": "Search across the platform",
+    "search_users": "Users",
+    "search_users_desc": "Find people on the platform",
+    "search_worlds": "Worlds",
+    "search_worlds_desc": "Discover virtual worlds",
+    "search_avatars": "Avatars",
+    "search_avatars_desc": "Browse available avatars",
+    "search_instances": "Instances",
+    "search_instances_desc": "Find active world instances",
+    "search_servers": "Servers",
+    "search_servers_desc": "Browse federated servers",
+    "search": {
+      "label": "Search",
+      "user": { "label": "Users", "description": "Find people on the platform" },
+      "world": { "label": "Worlds", "description": "Discover virtual worlds" },
+      "avatar": { "label": "Avatars", "description": "Browse available avatars" },
+      "instance": { "label": "Instances", "description": "Find active world instances" },
+      "server": { "label": "Servers", "description": "Browse federated servers" }
+    },
+    "legal_desc": "Our policies and guidelines",
+    "legal_terms_desc": "Read our terms and conditions",
+    "legal_privacy_desc": "How we handle your data",
+    "legal_rules_desc": "Guidelines for a safe community"
   },
   "theme": {
     "toggle": "Toggle theme",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "system": "System"
   },
   "auth": {
     "login": "Log in",
@@ -313,6 +337,7 @@
     "custom": "Custom"
   },
   "admin": {
+    "title": "Admin Dashboard",
     "no_relays": "No relays configured",
     "no_relay_instances": "No instances assigned to this relay",
     "no_activity": "No activity events found.",
@@ -329,6 +354,7 @@
     "uptime": "Uptime",
     "address": "Address",
     "assigned_instances": "Assigned Instances",
+    "ports": "Ports",
     "general": "General",
     "runner_meta": "Runner Metadata",
     "relay_offline": "Offline",
@@ -361,11 +387,37 @@
     "col_display": "Display",
     "col_player_id": "ID",
     "col_client_id": "Client",
+    "col_user": "User",
     "col_joined_at": "Joined At",
     "col_connected_at": "Connected At",
     "col_flags": "Flags"
   },
   "dashboard": {
     "title":"Dashboard"
+  },
+  "features": {
+    "label": "Features",
+    "user": { "label": "Users", "description": "Find people on the platform" },
+    "world": { "label": "Worlds", "description": "Discover virtual worlds" },
+    "avatar": { "label": "Avatars", "description": "Browse available avatars" },
+    "instance": { "label": "Instances", "description": "Find active world instances" },
+    "server": { "label": "Servers", "description": "Browse federated servers" }
+  },
+  "providers": {
+    "docker": "Docker",
+    "external": "External"
+  },
+  "protocols": {
+    "quic": "QUIC",
+    "tcp": "TCP",
+    "udp": "UDP",
+    "ws": "WS",
+    "wss": "WSS"
+  },
+  "legal": {
+    "label": "Legal",
+    "privacy": { "label": "Privacy Policy", "description": "How we handle your data" },
+    "terms": { "label": "Terms of Service", "description": "Read our terms and conditions" },
+    "rules": { "label": "Rules", "description": "Guidelines for a safe community" }
   }
 }

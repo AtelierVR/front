@@ -139,13 +139,14 @@ function ConfigRow({
 
 export default function EnvironmentPage() {
     const { isAdmin, isLoading } = useApi();
-    if (isLoading) return null;
     const { t } = useTranslation();
-    if (!isAdmin) return <NotFound
-        children={t('admin.environment')}
-    />;
+    if (isLoading) return null;
+    if (!isAdmin) return <NotFound children={t('admin.environment')} />;
+    return <EnvironmentPageInner />;
+}
 
-
+function EnvironmentPageInner() {
+    const { t } = useTranslation();
     const [configs, setConfigs] = useState<ApiConfigEntry[]>([]);
     const [edits, setEdits] = useState<Record<string, string>>({});
     const [resets, setResets] = useState<Set<string>>(new Set());

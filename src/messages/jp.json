@@ -10,12 +10,36 @@
     "admin": "管理",
     "mod": "モデレーション",
     "language": "言語",
-    "profile": "プロフィール"
+    "profile": "プロフィール",
+    "search_desc": "プラットフォームを検索",
+    "search_users": "ユーザー",
+    "search_users_desc": "プラットフォームで人を探す",
+    "search_worlds": "ワールド",
+    "search_worlds_desc": "バーチャルワールドを発見",
+    "search_avatars": "アバター",
+    "search_avatars_desc": "利用可能なアバターを閲覧",
+    "search_instances": "インスタンス",
+    "search_instances_desc": "アクティブなインスタンスを探す",
+    "search_servers": "サーバー",
+    "search_servers_desc": "フェデレーションサーバーを閲覧",
+    "search": {
+      "label": "検索",
+      "user": { "label": "ユーザー", "description": "プラットフォームで人を探す" },
+      "world": { "label": "ワールド", "description": "バーチャルワールドを発見" },
+      "avatar": { "label": "アバター", "description": "利用可能なアバターを閲覧" },
+      "instance": { "label": "インスタンス", "description": "アクティブなインスタンスを探す" },
+      "server": { "label": "サーバー", "description": "フェデレーションサーバーを閲覧" }
+    },
+    "legal_desc": "ポリシーとガイドライン",
+    "legal_terms_desc": "利用規約を読む",
+    "legal_privacy_desc": "データの取り扱いについて",
+    "legal_rules_desc": "安全なコミュニティのガイドライン"
   },
   "theme": {
     "toggle": "テーマを切り替える",
     "light": "ライト",
-    "dark": "ダーク"
+    "dark": "ダーク",
+    "system": "システム"
   },
   "auth": {
     "login": "ログイン",
@@ -316,6 +340,7 @@
     "custom": "カスタム"
   },
   "admin": {
+    "title": "管理ダッシュボード",
     "no_relays": "リレーが設定されていません",
     "no_relay_instances": "このリレーに割り当てられたインスタンスはありません",
     "no_activity": "アクティビティイベントが見つかりません。",
@@ -332,6 +357,7 @@
     "uptime": "稼働時間",
     "address": "アドレス",
     "assigned_instances": "割り当て済みインスタンス",
+    "ports": "ポート",
     "general": "一般",
     "runner_meta": "ランナーのメタデータ",
     "relay_offline": "オフライン",
@@ -364,11 +390,37 @@
     "col_display": "表示名",
     "col_player_id": "ID",
     "col_client_id": "クライアント",
+    "col_user": "ユーザー",
     "col_joined_at": "参加日時",
     "col_connected_at": "接続日時",
     "col_flags": "ロール"
   },
   "dashboard": {
     "title": "ダッシュボード"
+  },
+  "features": {
+    "label": "機能",
+    "user": { "label": "ユーザー", "description": "プラットフォームで人を探す" },
+    "world": { "label": "ワールド", "description": "バーチャルワールドを発見" },
+    "avatar": { "label": "アバター", "description": "利用可能なアバターを閲覧" },
+    "instance": { "label": "インスタンス", "description": "アクティブなインスタンスを探す" },
+    "server": { "label": "サーバー", "description": "フェデレーションサーバーを閲覧" }
+  },
+  "providers": {
+    "docker": "Docker",
+    "external": "外部"
+  },
+  "protocols": {
+    "quic": "QUIC",
+    "tcp": "TCP",
+    "udp": "UDP",
+    "ws": "WS",
+    "wss": "WSS"
+  },
+  "legal": {
+    "label": "法的情報",
+    "privacy": { "label": "プライバシーポリシー", "description": "データの取り扱いについて" },
+    "terms": { "label": "利用規約", "description": "利用規約を読む" },
+    "rules": { "label": "ルール", "description": "安全なコミュニティのガイドライン" }
   }
 }

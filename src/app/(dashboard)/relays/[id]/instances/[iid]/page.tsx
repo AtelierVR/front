@@ -30,7 +30,11 @@ export default function RelayInstanceDetailPage() {
                 </InfoCard>
                 <InfoCard icon="material-symbols:group-rounded" label={t('admin.col_capacity')}>
                     {loading ? <Skeleton className="h-4 w-16" /> : (
-                        <span>{instance?.count ?? 0} / {instance?.capacity ?? '—'}</span>
+                        <span>
+                            {instance?.capacity === 0
+                                ? <>{t('instance.players_count', { count: instance?.count ?? 0 })} · {t('world.unlimited')}</>
+                                : t('instance.players', { count: instance?.count ?? 0, capacity: instance?.capacity ?? '—' })}
+                        </span>
                     )}
                 </InfoCard>
             </div>

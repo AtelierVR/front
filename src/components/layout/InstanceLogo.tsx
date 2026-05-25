@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { useTranslation } from 'react-i18next';
 import { useInstanceIcon } from '@/lib/useInstanceIcon';
+import Image from 'next/image';
 
 export function InstanceLogo({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     const { wellKnown } = useApi();
@@ -14,19 +15,14 @@ export function InstanceLogo({ className, ...props }: React.HTMLAttributes<HTMLD
 
     return <div
         {...props}
-        className={cn('h-8 w-8', className)}
-        style={{
-            WebkitMaskImage: `url(${url})`,
-            WebkitMaskSize: 'contain',
-            WebkitMaskRepeat: 'no-repeat',
-            WebkitMaskPosition: 'center',
-            maskImage: `url(${url})`,
-            maskSize: 'contain',
-            maskRepeat: 'no-repeat',
-            maskPosition: 'center',
-            backgroundColor: 'currentColor',
-            ...props.style,
-        }}
-        aria-label={label}
-    />;
+        className={cn('relative h-8 w-8 shrink-0', className)}
+    >
+        <Image
+            src={url}
+            fill
+            sizes="32px"
+            alt={label}
+            className="rounded-sm object-contain"
+        />
+    </div>;
 }

@@ -64,7 +64,7 @@ export function InstanceDisplay(props: { className?: string }) {
           <span className="flex items-center gap-1 px-2 text-sm">
             <Icon icon="material-symbols:group-rounded" className="size-3.5" />
             {instance.capacity === 0
-              ? <>{t('instance.players_count', { count: instance.count })} · <span className="text-xs">{t('world.unlimited')}</span></>
+              ? <>{t('instance.players_count', { count: instance.count })} · {t('world.unlimited')}</>
               : t('instance.players', { count: instance.count, capacity: instance.capacity })
             }
             {isFull && (

@@ -11,15 +11,7 @@ import { NotFound } from '@/app/(dashboard)/not-found';
 
 export default function LogsPage() {
     const { isAdmin, isLoading } = useApi();
-    if (isLoading) return null;
     const { t } = useTranslation();
-    if (!isAdmin) return <NotFound
-        children={t('admin.logs')}
-    />;
-
-
-
-
     const [logs, setLogs] = useState<ApiLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | undefined>();
@@ -39,15 +31,19 @@ export default function LogsPage() {
     }, []);
 
     useEffect(() => {
+        if (!isAdmin) return;
         if (loadedRef.current) return;
         loadedRef.current = true;
         fetchLogs();
-    }, [fetchLogs]);
+    }, [isAdmin, fetchLogs]);
 
     useWsEvent('server_logs', (payload: unknown) => {
         const data = payload as ApiLogEntry;
         setLogs(prev => [...prev, data]);
     });
+
+    if (isLoading) return null;
+    if (!isAdmin) return <NotFound children={t('admin.logs')} />;
 
     return (
         <>

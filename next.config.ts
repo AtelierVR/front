@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
+  allowedDevOrigins: process.env.ALLOWED_DEV_ORIGINS?.split(',') ?? [],
   async redirects() {
     return [
       { source: '/privacy.md', destination: '/privacy', permanent: true },

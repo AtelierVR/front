@@ -10,12 +10,36 @@
     "admin": "Administration",
     "mod": "Modération",
     "language": "Langue",
+    "search_desc": "Chercher sur la plateforme",
+    "search_users": "Utilisateurs",
+    "search_users_desc": "Trouver des personnes",
+    "search_worlds": "Mondes",
+    "search_worlds_desc": "Découvrir des mondes virtuels",
+    "search_avatars": "Avatars",
+    "search_avatars_desc": "Parcourir les avatars disponibles",
+    "search_instances": "Instances",
+    "search_instances_desc": "Trouver des instances actives",
+    "search_servers": "Serveurs",
+    "search_servers_desc": "Explorer les serveurs fédérés",
+    "search": {
+      "label": "Rechercher",
+      "user": { "label": "Utilisateurs", "description": "Trouver des personnes sur la plateforme" },
+      "world": { "label": "Mondes", "description": "Découvrir des mondes virtuels" },
+      "avatar": { "label": "Avatars", "description": "Parcourir les avatars disponibles" },
+      "instance": { "label": "Instances", "description": "Trouver des instances actives" },
+      "server": { "label": "Serveurs", "description": "Explorer les serveurs fédérés" }
+    },
+    "legal_desc": "Nos politiques et directives",
+    "legal_terms_desc": "Nos conditions générales",
+    "legal_privacy_desc": "Comment nous gérons vos données",
+    "legal_rules_desc": "Pour une communauté sûre",
     "profile": "Profil"
   },
   "theme": {
     "toggle": "Changer le thème",
     "light": "Clair",
-    "dark": "Sombre"
+    "dark": "Sombre",
+    "system": "Système"
   },
   "auth": {
     "login": "Se connecter",
@@ -316,6 +340,7 @@
     "custom": "Personnalisé"
   },
   "admin": {
+    "title": "Tableau de bord admin",
     "no_relays": "Aucun relais configuré",
     "no_relay_instances": "Aucune instance assignée à ce relais",
     "no_activity": "Aucun événement d'activité trouvé.",
@@ -332,6 +357,7 @@
     "uptime": "Disponibilité",
     "address": "Adresse",
     "assigned_instances": "Instances assignées",
+    "ports": "Ports",
     "general": "Général",
     "runner_meta": "Métadonnées du runner",
     "relay_offline": "Hors ligne",
@@ -364,11 +390,37 @@
     "col_display": "Affichage",
     "col_player_id": "ID",
     "col_client_id": "Client",
+    "col_user": "Utilisateur",
     "col_joined_at": "Rejoint le",
     "col_connected_at": "Connecté le",
     "col_flags": "Rôles"
   },
   "dashboard": {
     "title": "Tableau de bord"
+  },
+  "features": {
+    "label": "Fonctionnalités",
+    "user": { "label": "Utilisateurs", "description": "Trouver des personnes sur la plateforme" },
+    "world": { "label": "Mondes", "description": "Découvrir des mondes virtuels" },
+    "avatar": { "label": "Avatars", "description": "Parcourir les avatars disponibles" },
+    "instance": { "label": "Instances", "description": "Trouver des instances actives" },
+    "server": { "label": "Serveurs", "description": "Explorer les serveurs fédérés" }
+  },
+  "providers": {
+    "docker": "Docker",
+    "external": "Externe"
+  },
+  "protocols": {
+    "quic": "QUIC",
+    "tcp": "TCP",
+    "udp": "UDP",
+    "ws": "WS",
+    "wss": "WSS"
+  },
+  "legal": {
+    "label": "Légal",
+    "privacy": { "label": "Politique de confidentialité", "description": "Comment nous gérons vos données" },
+    "terms": { "label": "Conditions d'utilisation", "description": "Nos conditions générales" },
+    "rules": { "label": "Règles", "description": "Pour une communauté sûre" }
   }
 }

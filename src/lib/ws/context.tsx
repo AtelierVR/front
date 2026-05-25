@@ -102,6 +102,18 @@ export function WsProvider({ children }: { children: React.ReactNode }) {
         return () => handlersRef.current.get(event)?.delete(handler);
     }, []);
 
+    // ── Re-subscribe all active events after (re)connect ─────────────────────
+    // This handles both the initial connection (if subscribeEvent was called
+    // before the socket was open) and reconnects after a server restart.
+
+    useEffect(() => {
+        if (!connected) return;
+        const active = [...subCountRef.current.entries()]
+            .filter(([, count]) => count > 0)
+            .map(([event]) => event);
+        if (active.length > 0) subscribe(active);
+    }, [connected, subscribe]);
+
     // ── Ref-counted subscribe/unsubscribe for useWsEvent ─────────────────────
 
     const subscribeEvent = useCallback((event: string) => {

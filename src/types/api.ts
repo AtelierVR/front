@@ -285,12 +285,15 @@ export interface ApiRelaySpecs {
     };
     upload: {
         used: number;
-        bandwidth: number
+        bandwidth: number;
+        packets?: number;
     };
     download: {
         used: number;
-        bandwidth: number
+        bandwidth: number;
+        packets?: number;
     };
+    mtu?: number;
 }
 
 export interface ApiRelayStatus {
@@ -307,11 +310,18 @@ export interface ApiRelayStatus {
     specs: ApiRelaySpecs | null;
 }
 
+export interface ApiRelayRunnerPort {
+    protocol: string;
+    host: string;
+    port: number;
+}
+
 export interface ApiRelayRunnerInfo {
     provider_id: string | null;
     status: string;
     started_at: number | null;
     meta: Record<string, string>;
+    ports: ApiRelayRunnerPort[];
 }
 
 export interface ApiRelay {
@@ -334,8 +344,8 @@ export interface ApiRelayLog {
 }
 
 export interface ApiRelayInstance {
-    id: string;
-    internal_id: number;
+    id: string;       // relay-local slot
+    node_id: number;  // DB/federation id
     player_count: number;
     flags: number;
     world: string;
@@ -348,6 +358,7 @@ export interface ApiRelayPlayer {
     display: string;
     flags: number;
     joined_at: number;
+    user: string | null;
 }
 
 export interface ApiRelayClient {

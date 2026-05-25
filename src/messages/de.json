@@ -10,12 +10,36 @@
     "admin": "Administration",
     "mod": "Moderation",
     "language": "Sprache",
-    "profile": "Profil"
+    "profile": "Profil",
+    "search_desc": "Auf der Plattform suchen",
+    "search_users": "Benutzer",
+    "search_users_desc": "Personen auf der Plattform finden",
+    "search_worlds": "Welten",
+    "search_worlds_desc": "Virtuelle Welten entdecken",
+    "search_avatars": "Avatare",
+    "search_avatars_desc": "Verfügbare Avatare durchsuchen",
+    "search_instances": "Instanzen",
+    "search_instances_desc": "Aktive Weltinstanzen finden",
+    "search_servers": "Server",
+    "search_servers_desc": "Föderierte Server durchsuchen",
+    "search": {
+      "label": "Suchen",
+      "user": { "label": "Benutzer", "description": "Personen auf der Plattform finden" },
+      "world": { "label": "Welten", "description": "Virtuelle Welten entdecken" },
+      "avatar": { "label": "Avatare", "description": "Verfügbare Avatare durchsuchen" },
+      "instance": { "label": "Instanzen", "description": "Aktive Weltinstanzen finden" },
+      "server": { "label": "Server", "description": "Föderierte Server durchsuchen" }
+    },
+    "legal_desc": "Unsere Richtlinien und Regeln",
+    "legal_terms_desc": "Unsere Nutzungsbedingungen",
+    "legal_privacy_desc": "Wie wir Ihre Daten verarbeiten",
+    "legal_rules_desc": "Regeln für eine sichere Gemeinschaft"
   },
   "theme": {
     "toggle": "Design wechseln",
     "light": "Hell",
-    "dark": "Dunkel"
+    "dark": "Dunkel",
+    "system": "System"
   },
   "auth": {
     "login": "Anmelden",
@@ -316,6 +340,7 @@
     "custom": "Eigenentwicklung"
   },
   "admin": {
+    "title": "Admin-Dashboard",
     "no_relays": "Keine Relays konfiguriert",
     "no_relay_instances": "Diesem Relay sind keine Instanzen zugewiesen",
     "no_activity": "Keine Aktivitätsereignisse gefunden.",
@@ -332,6 +357,7 @@
     "uptime": "Laufzeit",
     "address": "Adresse",
     "assigned_instances": "Zugewiesene Instanzen",
+    "ports": "Ports",
     "general": "Allgemein",
     "runner_meta": "Runner-Metadaten",
     "relay_offline": "Offline",
@@ -364,11 +390,37 @@
     "col_display": "Anzeige",
     "col_player_id": "ID",
     "col_client_id": "Client",
+    "col_user": "Benutzer",
     "col_joined_at": "Beigetreten",
     "col_connected_at": "Verbunden am",
     "col_flags": "Rollen"
   },
   "dashboard": {
     "title": "Dashboard"
+  },
+  "features": {
+    "label": "Funktionen",
+    "user": { "label": "Benutzer", "description": "Personen auf der Plattform finden" },
+    "world": { "label": "Welten", "description": "Virtuelle Welten entdecken" },
+    "avatar": { "label": "Avatare", "description": "Verfügbare Avatare durchsuchen" },
+    "instance": { "label": "Instanzen", "description": "Aktive Weltinstanzen finden" },
+    "server": { "label": "Server", "description": "Föderierte Server durchsuchen" }
+  },
+  "providers": {
+    "docker": "Docker",
+    "external": "Extern"
+  },
+  "protocols": {
+    "quic": "QUIC",
+    "tcp": "TCP",
+    "udp": "UDP",
+    "ws": "WS",
+    "wss": "WSS"
+  },
+  "legal": {
+    "label": "Rechtliches",
+    "privacy": { "label": "Datenschutzrichtlinie", "description": "Wie wir Ihre Daten verarbeiten" },
+    "terms": { "label": "Nutzungsbedingungen", "description": "Unsere Nutzungsbedingungen lesen" },
+    "rules": { "label": "Regeln", "description": "Regeln für eine sichere Gemeinschaft" }
   }
 }

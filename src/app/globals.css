@@ -1,5 +1,38 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../../node_modules/fumadocs-ui/css/shadcn.css";
+@import "../../node_modules/fumadocs-ui/css/preset.css";
+@import "../../node_modules/fumadocs-ui/css/solar.css";
+
+/* ── Override solar.css color tokens with project palette ── */
+@theme {
+  --color-fd-primary: var(--primary);
+}
+
+:root {
+  --color-fd-background: hsl(0, 0%, 97%);   /* outer layout bg — slightly off-white */
+  --color-fd-article:    hsl(0, 0%, 100%);  /* content card bg — pure white */
+  --color-fd-primary:    var(--primary);
+}
+
+.dark {
+  --color-fd-article:    var(--background);  /* #121212 — content card */
+  --color-fd-background: #191919;            /* outer layout background */
+  --color-fd-primary:    var(--primary);
+}
+
+/* ── Solar card effect for #nd-main (replaces #nd-page which doesn't exist here) ── */
+@variant md {
+  #nd-docs-layout {
+    @apply bg-fd-background;
+
+    #nd-main {
+      @apply bg-fd-article rounded-xl border shadow-xl;
+      margin: theme(spacing.4);
+      margin-bottom: theme(spacing.2);
+    }
+  }
+}
 
 /* ── Dark mode: toggled via .dark class on <html> ── */
 @custom-variant dark (&:is(.dark *));
@@ -128,7 +161,7 @@
   --background:           hsl(0 0% 7%);
   --foreground:           hsl(0 0% 98%);
 
-  --card:                 hsl(0 0% 10%);
+  --card:                 #191919;
   --card-foreground:      hsl(0 0% 98%);
 
   --popover:              hsl(0 0% 12%);
@@ -140,7 +173,7 @@
   --secondary:            hsl(0 0% 18%);
   --secondary-foreground: hsl(0 0% 90%);
 
-  --muted:                hsl(0, 0%, 10%);
+  --muted:                #191919;
   --muted-foreground:     hsl(0 0% 65%);
 
   --accent:               hsl(0 0% 41% / 30%);
@@ -208,8 +241,18 @@
   h1, h2, h3, h4 {
     font-family: var(--font-heading, var(--font-body), system-ui, sans-serif);
   }
-  
-  /* ── Shiki css-variables theme tokens ── */
+}
+
+/* ── Prose: Funnel Display for headings — must be in utilities to
+   override the fumadocs typography @plugin which runs at the same
+   or higher cascade layer than @layer base. ── */
+@layer utilities {
+  .prose :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-heading, var(--font-body), system-ui, sans-serif);
+  }
+}
+
+@layer base {
   :root {
     --shiki-color-text:              #24292e;
     --shiki-color-background:        transparent;
