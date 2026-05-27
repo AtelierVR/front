@@ -103,7 +103,7 @@ function UserMenuContent({ profileUrl }: { profileUrl: string }) {
         >
             {/* A – user info (banner as full-cover background) */}
             <Link
-                href={profileUrl}
+                href={`/u/${user.username}`}
                 style={{
                     gridArea: 'a',
                     backgroundImage: user?.banner ? `url(${user.banner})` : undefined,
