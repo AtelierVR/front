@@ -1,6 +1,7 @@
 {
   "language": "Français",
   "locale": "fr",
+  "cca": "fra",
   "nav": {
     "home": "Accueil",
     "search": "Rechercher",

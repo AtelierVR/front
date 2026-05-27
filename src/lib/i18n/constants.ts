@@ -3,7 +3,7 @@ import en from '@/messages/en.json';
 import fr from '@/messages/fr.json';
 import de from '@/messages/de.json';
 import es from '@/messages/es.json';
-import jp from '@/messages/jp.json';
+import ja from '@/messages/ja.json';
 
 export interface I18nResources {
     [key: string]: string | I18nResources;
@@ -12,9 +12,10 @@ export interface I18nResources {
 export interface I18nResourcesRoot extends I18nResources {
     locale: string;
     language: string;
+    cca: string;
 }
 
-const RAW_RESOURCES: I18nResourcesRoot[] = [en, fr, de, es, jp];
+const RAW_RESOURCES: I18nResourcesRoot[] = [en, fr, de, es, ja];
 
 export const SUPPORTED_LANGS: string[] = RAW_RESOURCES.map((r) => r.locale);
 export const DEFAULT_LANG: string = RAW_RESOURCES[0].locale;

@@ -1,6 +1,7 @@
 {
   "language": "Español",
   "locale": "es",
+  "cca": "esp",
   "nav": {
     "home": "Inicio",
     "search": "Buscar",

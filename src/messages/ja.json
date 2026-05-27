@@ -1,6 +1,7 @@
 {
   "language": "日本語",
-  "locale": "jp",
+  "locale": "ja",
+  "cca": "jpn",
   "nav": {
     "home": "ホーム",
     "search": "検索",

@@ -4,12 +4,12 @@ import { baseOptions } from '@/lib/layout.shared';
 import { type ReactNode } from 'react';
 import { useApi } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
-import { RESOURCES } from '@/lib/i18n/constants';
 import i18n from '@/lib/i18n/config';
 import { Icon } from '@iconify/react';
 import { Footer } from '@/components/layout/Footer';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const featureIcons: Record<string, string> = {
     user: 'material-symbols:person-rounded',
@@ -23,6 +23,7 @@ export function PublicNavLayout({ children }: { children: ReactNode }) {
     const API = useApi();
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
+    const languages = useLanguage();
 
     const themes = [
         { value: 'light', label: t('theme.light'), icon: 'material-symbols:light-mode-rounded' },
@@ -54,9 +55,16 @@ export function PublicNavLayout({ children }: { children: ReactNode }) {
                     on: 'nav' as const,
                     secondary: true,
                     text: <Icon icon="material-symbols:language" className="h-4 w-4" />,
-                    items: Object.entries(RESOURCES).map(([code, locale]) => ({
+                    items: languages.map(({ code, name, flag: flagUrl }) => ({
                         type: 'button' as const,
-                        text: locale.translation.language as string,
+                        icon: flagUrl ? (
+                            <img
+                                src={flagUrl}
+                                alt={code}
+                                className="h-4 w-4 rounded-sm object-cover"
+                            />
+                        ) : undefined,
+                        text: name,
                         active: i18n.language === code,
                         onClick: () => i18n.changeLanguage(code),
                     })),
