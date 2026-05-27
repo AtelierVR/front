@@ -53,6 +53,7 @@ export function Footer() {
 
   const communityLinks = [
     { href: 'https://activitypub.rocks', label: t('footer.fediverse'), external: true },
+    { href: 'https://github.com/AtelierVR', label: t('footer.github'), external: true },
     { href: '/about', label: t('footer.about') },
   ];
 
