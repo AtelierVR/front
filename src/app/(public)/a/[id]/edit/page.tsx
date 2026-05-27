@@ -156,12 +156,12 @@ export default function AvatarEditPage() {
             {/* Thumbnail */}
             <section id="thumbnail" className="space-y-2">
                 <h2 className="text-base font-semibold">{t('avatar.field_thumbnail', 'Thumbnail')}</h2>
-                <p className="text-sm text-muted-foreground">{t('avatar.field_thumbnail_desc', '512×512px — 1:1')}</p>
+                <p className="text-sm text-muted-foreground">{t('avatar.field_thumbnail_desc', '512x384px — 4:3')}</p>
                 <ImageInput
                     value={thumbnail ?? avatar.thumbnail}
                     onChange={dataUrl => { setThumbnail(dataUrl); setFlags(f => f | F_THUMBNAIL); }}
                     alt={avatar.title}
-                    aspectRatio="1/1"
+                    aspectRatio="4/3"
                     className="w-full max-w-xs"
                 />
             </section>
