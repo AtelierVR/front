@@ -10,6 +10,7 @@ import { Footer } from '@/components/layout/Footer';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/hooks/useLanguage';
+import { cn } from '@/lib/utils';
 
 const featureIcons: Record<string, string> = {
     user: 'material-symbols:person-rounded',
@@ -32,7 +33,7 @@ export function PublicNavLayout({ children }: { children: ReactNode }) {
     ] as const;
 
     return <div className="min-h-dvh flex flex-col">
-        <div className="flex-1">
+        <div className="flex-1 flex">
             <MainLayout
             {...baseOptions()}
             links={[

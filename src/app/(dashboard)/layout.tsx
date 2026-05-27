@@ -1,11 +1,12 @@
 'use client';
 
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { baseOptions } from '@/lib/layout.shared';
-import { type ReactNode } from 'react';
+import { baseOptions, type UserNav, type UserNavItem } from '@/lib/layout.shared';
 import { useApi } from '@/lib/api';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { cn } from '@/lib/utils';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -13,7 +14,6 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -22,14 +22,19 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 
-function DashboardSidebarFooter() {
-    const { currentUser, logout } = useApi();
+interface SidebarFooterProps {
+    user: UserNav | null;
+}
+
+function DashboardSidebarFooter({ user }: SidebarFooterProps) {
     const { t } = useTranslation();
 
-    const name = currentUser?.display ?? currentUser?.username ?? 'Admin';
-    const username = currentUser?.username ?? '';
+    const userItem = user?.items.find((i): i is Extract<UserNavItem, { type: 'user' }> => i.type === 'user');
+    const name = userItem?.display ?? '';
+    const username = userItem?.username ?? '';
     const initials = name.slice(0, 2).toUpperCase();
-    const thumbnail = currentUser?.thumbnail ?? undefined;
+    const thumbnail = userItem?.thumbnail ?? undefined;
+    const banner = userItem?.banner ?? undefined;
 
     return (
         <div className="flex flex-col gap-2 px-2 py-2">
@@ -37,7 +42,7 @@ function DashboardSidebarFooter() {
                 <LanguageSwitcher className="flex-1 flex" trigger={{ className: 'flex-1 flex' }} />
                 <ThemeToggle className="flex-1 flex" trigger={{ className: 'flex-1 flex' }} />
             </div>
-            {!currentUser ? (
+            {!user ? (
                 <div className="flex flex-col gap-2 mt-1">
                     <Button variant="default" render={<Link href="/register" />} size="lg" className="w-full">
                         {t('auth.register')}
@@ -67,36 +72,41 @@ function DashboardSidebarFooter() {
                         <Icon icon="material-symbols:more-vert" className="ml-auto size-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="min-w-56" side="top" align="end" sideOffset={4}>
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel className="p-0 font-normal">
-                                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <Avatar className="size-8">
-                                        <AvatarImage src={thumbnail} alt={name} />
-                                        <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-medium">{name}</span>
-                                        <span className="truncate text-xs text-muted-foreground">@{username}</span>
-                                    </div>
+                        <Link
+                            href={`/u/${username}`}
+                            style={{ backgroundImage: banner ? `url(${banner})` : undefined }}
+                            className="relative flex items-center -mx-1 -mt-1 -mb-1 bg-fd-muted bg-cover bg-center overflow-hidden hover:brightness-110 transition-[filter]"
+                        >
+                            {banner && <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70" />}
+                            <div className="relative p-3 flex items-center gap-2 w-full">
+                                <Avatar className="size-8 rounded-lg">
+                                    <AvatarImage src={thumbnail} alt={name} />
+                                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                                </Avatar>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className={cn('truncate font-medium', banner && 'text-white')}>{name}</span>
+                                    <span className={cn('truncate text-xs', banner ? 'text-white/70' : 'text-muted-foreground')}>@{username}</span>
                                 </div>
-                            </DropdownMenuLabel>
-                        </DropdownMenuGroup>
+                            </div>
+                        </Link>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem render={<Link href="/settings/profile" />}>
-                                <Icon icon="material-symbols:account-circle" />
-                                {t('profile')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem render={<Link href="/" />}>
-                                <Icon icon="material-symbols:open-in-new-rounded" />
-                                {t('public_site')}
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => logout()}>
-                            <Icon icon="material-symbols:logout-rounded" />
-                            {t('logout')}
-                        </DropdownMenuItem>
+                        {user.items.map((item, i) => {
+                            if (item.type === 'separator') return <DropdownMenuSeparator key={i} />;
+                            if (item.type === 'user') return null;
+                            if (item.type === 'link') return (
+                                <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                                    <Icon icon={item.icon} />
+                                    {item.label}
+                                </DropdownMenuItem>
+                            );
+                            if (item.type === 'button') return (
+                                <DropdownMenuItem key={i} onClick={() => void item.action()}>
+                                    <Icon icon={item.icon} />
+                                    {item.label}
+                                </DropdownMenuItem>
+                            );
+                            return null;
+                        })}
                     </DropdownMenuContent>
                 </DropdownMenu>
             )}
@@ -105,8 +115,9 @@ function DashboardSidebarFooter() {
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-    const { isAdmin } = useApi();
     const { t } = useTranslation();
+    const { user, ...layoutProps } = baseOptions();
+    const { isAdmin } = useApi();
 
     const adminItems: PageTree.Node[] = isAdmin ? [
         { type: 'separator', name: 'Admin' },
@@ -158,10 +169,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     return (
         <DocsLayout
-            {...baseOptions()}
+            {...layoutProps}
             tree={tree}
             sidebar={{
-                footer: <DashboardSidebarFooter />,
+                footer: <DashboardSidebarFooter user={user} />,
             }}
         >
             <div id="nd-main" className="[grid-area:main] flex flex-col min-h-0 overflow-y-auto">
