@@ -12,16 +12,16 @@ import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { useInstanceIcon } from '@/lib/useInstanceIcon';
 
 const SOCIAL_ICONS: Record<string, string> = {
-  mastodon: 'mdi:mastodon',
-  discord: 'mdi:discord',
-  twitter: 'mdi:twitter',
-  youtube: 'mdi:youtube',
-  github: 'mdi:github',
-  email: 'mdi:email',
+  mastodon: 'simple-icons:mastodon',
+  discord: 'simple-icons:discord',
+  twitter: 'simple-icons:x',
+  youtube: 'simple-icons:youtube',
+  github: 'simple-icons:github',
+  email: 'material-symbols:mail-rounded',
 };
 
 function socialIcon(platform: string): string {
-  return SOCIAL_ICONS[platform.toLowerCase()] ?? 'mdi:link';
+  return SOCIAL_ICONS[platform.toLowerCase()] ?? 'material-symbols:link-rounded';
 }
 
 export function Footer() {
