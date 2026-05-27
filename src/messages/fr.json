@@ -22,14 +22,6 @@
     "search_instances_desc": "Trouver des instances actives",
     "search_servers": "Serveurs",
     "search_servers_desc": "Explorer les serveurs fédérés",
-    "search": {
-      "label": "Rechercher",
-      "user": { "label": "Utilisateurs", "description": "Trouver des personnes sur la plateforme" },
-      "world": { "label": "Mondes", "description": "Découvrir des mondes virtuels" },
-      "avatar": { "label": "Avatars", "description": "Parcourir les avatars disponibles" },
-      "instance": { "label": "Instances", "description": "Trouver des instances actives" },
-      "server": { "label": "Serveurs", "description": "Explorer les serveurs fédérés" }
-    },
     "legal_desc": "Nos politiques et directives",
     "legal_terms_desc": "Nos conditions générales",
     "legal_privacy_desc": "Comment nous gérons vos données",
@@ -129,7 +121,8 @@
     "locations": "En train de jouer",
     "tags": "Étiquettes",
     "no_tags": "Aucune étiquette.",
-    "no_links": "Aucun lien."
+    "no_links": "Aucun lien.",
+    "edit": "Modifier"
   },
   "footer": {
     "name": "Nox",

@@ -23,14 +23,6 @@
     "search_instances_desc": "アクティブなインスタンスを探す",
     "search_servers": "サーバー",
     "search_servers_desc": "フェデレーションサーバーを閲覧",
-    "search": {
-      "label": "検索",
-      "user": { "label": "ユーザー", "description": "プラットフォームで人を探す" },
-      "world": { "label": "ワールド", "description": "バーチャルワールドを発見" },
-      "avatar": { "label": "アバター", "description": "利用可能なアバターを閲覧" },
-      "instance": { "label": "インスタンス", "description": "アクティブなインスタンスを探す" },
-      "server": { "label": "サーバー", "description": "フェデレーションサーバーを閲覧" }
-    },
     "legal_desc": "ポリシーとガイドライン",
     "legal_terms_desc": "利用規約を読む",
     "legal_privacy_desc": "データの取り扱いについて",
@@ -151,7 +143,8 @@
     "locations": "プレイ中",
     "tags": "タグ",
     "no_tags": "タグがありません。",
-    "no_links": "リンクがありません。"
+    "no_links": "リンクがありません。",
+    "edit": "編集"
   },
   "world": {
     "capacity": "定員",

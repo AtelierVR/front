@@ -23,14 +23,6 @@
     "search_instances_desc": "Encuentra instancias activas",
     "search_servers": "Servidores",
     "search_servers_desc": "Explora servidores federados",
-    "search": {
-      "label": "Buscar",
-      "user": { "label": "Usuarios", "description": "Encuentra personas en la plataforma" },
-      "world": { "label": "Mundos", "description": "Descubre mundos virtuales" },
-      "avatar": { "label": "Avatares", "description": "Explora avatares disponibles" },
-      "instance": { "label": "Instancias", "description": "Encuentra instancias activas" },
-      "server": { "label": "Servidores", "description": "Explora servidores federados" }
-    },
     "legal_desc": "Nuestras políticas y directrices",
     "legal_terms_desc": "Nuestros términos y condiciones",
     "legal_privacy_desc": "Cómo manejamos tus datos",
@@ -151,7 +143,8 @@
     "locations": "Jugando ahora",
     "tags": "Etiquetas",
     "no_tags": "Sin etiquetas.",
-    "no_links": "Sin enlaces."
+    "no_links": "Sin enlaces.",
+    "edit": "Editar"
   },
   "world": {
     "capacity": "Capacidad",

@@ -23,14 +23,6 @@
     "search_instances_desc": "Aktive Weltinstanzen finden",
     "search_servers": "Server",
     "search_servers_desc": "Föderierte Server durchsuchen",
-    "search": {
-      "label": "Suchen",
-      "user": { "label": "Benutzer", "description": "Personen auf der Plattform finden" },
-      "world": { "label": "Welten", "description": "Virtuelle Welten entdecken" },
-      "avatar": { "label": "Avatare", "description": "Verfügbare Avatare durchsuchen" },
-      "instance": { "label": "Instanzen", "description": "Aktive Weltinstanzen finden" },
-      "server": { "label": "Server", "description": "Föderierte Server durchsuchen" }
-    },
     "legal_desc": "Unsere Richtlinien und Regeln",
     "legal_terms_desc": "Unsere Nutzungsbedingungen",
     "legal_privacy_desc": "Wie wir Ihre Daten verarbeiten",
@@ -129,7 +121,8 @@
     "locations": "Spielt gerade",
     "tags": "Etiketten",
     "no_tags": "Keine Etiketten.",
-    "no_links": "Keine Links."
+    "no_links": "Keine Links.",
+    "edit": "Bearbeiten"
   },
   "world": {
     "capacity": "Kapazität",

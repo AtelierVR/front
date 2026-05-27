@@ -22,14 +22,6 @@
     "search_instances_desc": "Find active world instances",
     "search_servers": "Servers",
     "search_servers_desc": "Browse federated servers",
-    "search": {
-      "label": "Search",
-      "user": { "label": "Users", "description": "Find people on the platform" },
-      "world": { "label": "Worlds", "description": "Discover virtual worlds" },
-      "avatar": { "label": "Avatars", "description": "Browse available avatars" },
-      "instance": { "label": "Instances", "description": "Find active world instances" },
-      "server": { "label": "Servers", "description": "Browse federated servers" }
-    },
     "legal_desc": "Our policies and guidelines",
     "legal_terms_desc": "Read our terms and conditions",
     "legal_privacy_desc": "How we handle your data",
@@ -150,7 +142,8 @@
     "locations": "Currently playing",
     "tags": "Tags",
     "no_tags": "No tags.",
-    "no_links": "No links."
+    "no_links": "No links.",
+    "edit": "Edit"
   },
   "world": {
     "capacity": "Capacity",

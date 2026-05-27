@@ -13,8 +13,15 @@ export function I18nProvider({ children }: I18nProviderProps) {
   const [ready, setReady] = useState(i18n.isInitialized);
 
   useEffect(() => {
-    if (!i18n.isInitialized) 
+    if (!i18n.isInitialized)
       i18n.on('initialized', () => setReady(true));
+  }, []);
+
+  useEffect(() => {
+    const update = (lng: string) => { document.documentElement.lang = lng; };
+    i18n.on('languageChanged', update);
+    if (i18n.isInitialized) update(i18n.language);
+    return () => { i18n.off('languageChanged', update); };
   }, []);
 
   if (!ready) return null;
