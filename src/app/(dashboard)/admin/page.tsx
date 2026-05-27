@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
     }, [isAdmin]);
 
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.title')} />;
+    if (!isAdmin) return <NotFound />;
 
     const connectedRelays = relays?.filter(r => r.connected) ?? null;
     const totalInstances = connectedRelays?.reduce((s, r) => s + (r.status?.instances.count ?? 0), 0) ?? null;

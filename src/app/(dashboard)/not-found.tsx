@@ -1,18 +1,6 @@
-import { NotFound as BasicNotFound } from '@/app/not-found';
-import { SiteHeader, SiteHeaderProps } from '@/components/site-header';
+'use client';
 
-export default function NotFoundPage() {
-    return NotFound({});
-}
+import { NotFound } from '@/app/not-found';
 
-export function NotFound(props: SiteHeaderProps) {
-    return <>
-        <SiteHeader
-            {...props}
-        />
-        <BasicNotFound
-            className='flex-1'
-            clear={true}
-        />
-    </>
-}
+export { NotFound };
+export default NotFound;

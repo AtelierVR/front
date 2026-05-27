@@ -141,7 +141,7 @@ export default function EnvironmentPage() {
     const { isAdmin, isLoading } = useApi();
     const { t } = useTranslation();
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.environment')} />;
+    if (!isAdmin) return <NotFound />;
     return <EnvironmentPageInner />;
 }
 

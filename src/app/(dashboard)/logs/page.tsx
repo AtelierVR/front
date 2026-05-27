@@ -43,7 +43,7 @@ export default function LogsPage() {
     });
 
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.logs')} />;
+    if (!isAdmin) return <NotFound />;
 
     return (
         <>

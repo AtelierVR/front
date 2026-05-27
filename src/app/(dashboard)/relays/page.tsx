@@ -325,7 +325,7 @@ export default function RelaysPage() {
     const { isAdmin, isLoading } = useApi();
     const { t } = useTranslation();
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.relays')} />;
+    if (!isAdmin) return <NotFound />;
     return <RelaysPageInner />;
 }
 

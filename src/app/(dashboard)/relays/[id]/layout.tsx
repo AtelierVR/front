@@ -17,7 +17,7 @@ export default function RelayDetailLayout({ children }: { children: React.ReactN
     const { t } = useTranslation();
 
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.relays')} />;
+    if (!isAdmin) return <NotFound />;
 
     return <RelayDetailInner>{children}</RelayDetailInner>;
 }

@@ -6,13 +6,16 @@ import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import type { ComponentType, ReactNode } from 'react';
+import PublicLayout from '@/app/(public)/layout';
 
-interface ErrorProps {
+export interface AppErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
+  layout?: ComponentType<{ children: ReactNode }>;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export function AppError({ error, reset, layout: Layout }: AppErrorProps) {
   const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -32,8 +35,8 @@ export default function Error({ error, reset }: ErrorProps) {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4">
+  const content = (
+    <main className="flex flex-1 items-center justify-center p-4">
       <div className="flex flex-col items-center gap-6 text-center max-w-xl w-full">
         <div className="rounded-full bg-destructive/10 p-6">
           <Icon icon="material-symbols:error-rounded" className="size-12 text-destructive" />
@@ -99,6 +102,13 @@ export default function Error({ error, reset }: ErrorProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </main>
   );
+
+  if (Layout) return <Layout>{content}</Layout>;
+  return content;
+}
+
+export default function Error({ error, reset }: Omit<AppErrorProps, 'layout'>) {
+  return <AppError error={error} reset={reset} layout={PublicLayout} />;
 }

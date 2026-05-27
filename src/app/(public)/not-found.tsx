@@ -1,7 +1,7 @@
 'use client';
 
-import { NotFoundContent } from '@/components/shared/NotFoundContent';
+import { NotFound } from '@/app/not-found';
 
-export default function NotFound() {
-  return <NotFoundContent />;
+export default function PublicNotFound() {
+  return <NotFound />;
 }

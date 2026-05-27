@@ -190,7 +190,7 @@ export default function ActivityPage() {
     const { isAdmin, isLoading } = useApi();
     const { t } = useTranslation();
     if (isLoading) return null;
-    if (!isAdmin) return <NotFound children={t('admin.activity_log')} />;
+    if (!isAdmin) return <NotFound />;
     return <ActivityPageInner />;
 }
 
