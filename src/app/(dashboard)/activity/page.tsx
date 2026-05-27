@@ -44,13 +44,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Icon } from '@iconify/react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { listActivity, deleteActivity } from '@/lib/api/activity';
+import { batchGetUsers } from '@/lib/api/users';
 import { useWsEvent } from '@/lib/ws/context';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { ApiActivityEvent } from '@/types/api';
+import type { ApiActivityEvent, ApiUser } from '@/types/api';
 import { NotFound } from '@/app/(dashboard)/not-found';
 import { useApi } from '@/lib/api/context';
 
@@ -90,11 +93,13 @@ function ActivityDrawer({
     open,
     onOpenChange,
     onDelete,
+    userMap,
 }: {
     event: ApiActivityEvent | null;
     open: boolean;
     onOpenChange: (v: boolean) => void;
     onDelete: (id: number) => void;
+    userMap: Map<string, ApiUser>;
 }) {
     const isMobile = useIsMobile();
     const [deleting, setDeleting] = React.useState(false);
@@ -146,7 +151,6 @@ function ActivityDrawer({
                     <div className="rounded-md bg-muted/50 p-3 space-y-1.5">
                         {[
                             { label: 'ID', value: String(event.id) },
-                            { label: 'Author', value: event.author ?? '—' },
                             { label: 'Date', value: new Date(event.created_at).toLocaleString() },
                         ].map(({ label, value }) => (
                             <div key={label} className="flex justify-between gap-4">
@@ -154,6 +158,12 @@ function ActivityDrawer({
                                 <span className="font-mono text-xs text-right break-all">{value}</span>
                             </div>
                         ))}
+                        {event.author !== null && (
+                            <div className="flex justify-between items-center gap-4">
+                                <span className="text-muted-foreground">Author</span>
+                                <AuthorCell identifier={event.author} userMap={userMap} />
+                            </div>
+                        )}
                     </div>
 
                     {event.details !== null && event.details !== undefined && (
@@ -198,6 +208,8 @@ function ActivityPageInner() {
     const { t } = useTranslation();
     const [events, setEvents] = React.useState<ApiActivityEvent[]>([]);
     const [total, setTotal] = React.useState(-1);
+    const [userMap, setUserMap] = React.useState<Map<string, ApiUser>>(new Map());
+    const fetchedUsersRef = React.useRef<Set<string>>(new Set());
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
     const [q, setQ] = React.useState('');
@@ -253,6 +265,33 @@ function ActivityPageInner() {
         const qs = params.toString();
         window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
     }, [q, pagination.pageIndex]);
+
+    React.useEffect(() => {
+        const toFetch = events
+            .map(e => e.author)
+            .filter((a): a is string => !!a && !fetchedUsersRef.current.has(a));
+        if (toFetch.length === 0) return;
+        for (const id of toFetch) fetchedUsersRef.current.add(id);
+        batchGetUsers(toFetch)
+            .then(res => {
+                setUserMap(prev => {
+                    const next = new Map(prev);
+                    for (const user of res.items) {
+                        for (const id of toFetch) {
+                            const atIdx = id.lastIndexOf('@');
+                            if (atIdx < 0) continue;
+                            const rawId = id.slice(0, atIdx);
+                            const server = id.slice(atIdx + 1);
+                            if (user.server === server && String(user.id) === rawId) {
+                                next.set(id, user);
+                            }
+                        }
+                    }
+                    return next;
+                });
+            })
+            .catch(() => {});
+    }, [events]);
 
     useWsEvent('activity', (data: unknown) => {
         const event = data as ApiActivityEvent;
@@ -331,7 +370,7 @@ function ActivityPageInner() {
             accessorKey: 'author',
             header: 'Author',
             cell: ({ row }) => (
-                <span className="font-mono text-xs text-muted-foreground">{row.original.author ?? '—'}</span>
+                <AuthorCell identifier={row.original.author} userMap={userMap} />
             ),
         },
         {
@@ -364,7 +403,7 @@ function ActivityPageInner() {
                 );
             },
         },
-    ], []);
+    ], [userMap]);
 
     const table = useReactTable({
         data: events,
@@ -514,7 +553,26 @@ function ActivityPageInner() {
             open={drawerOpen}
             onOpenChange={setDrawerOpen}
             onDelete={handleDelete}
+            userMap={userMap}
         />
     </>;
+}
+
+// ── Author cell ───────────────────────────────────────────────────────────────
+
+function AuthorCell({ identifier, userMap }: { identifier: string | null; userMap: Map<string, ApiUser> }) {
+    if (!identifier) return <span className="text-xs text-muted-foreground">—</span>;
+    const user = userMap.get(identifier);
+    if (!user) return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
+    const initials = (user.display ?? user.username).slice(0, 2).toUpperCase();
+    return (
+        <Link href={`/u/${user.username}`} className="flex items-center gap-2 w-fit hover:underline underline-offset-2">
+            <Avatar className="size-6 shrink-0">
+                <AvatarImage src={user.thumbnail ?? undefined} alt={user.display} />
+                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium">{user.display}</span>
+        </Link>
+    );
 }
 
