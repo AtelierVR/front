@@ -72,13 +72,16 @@ function buildTabs(localAddress: string): TabDef[] {
                     total: data.total,
                     limit: data.limit,
                     offset: data.offset,
-                    items: data.items.map((u) => ({
-                        id: u.id.toString(),
-                        redirect: `/u/${noxIdToSegment(`${u.id}@${u.server}`, localAddress)}`,
-                        name: u.display,
-                        thumbnail: u.thumbnail,
-                        description: getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid'),
-                    })),
+                    items: data.items.map((u) => {
+                        let id = getAlias(u.alias, 'uid') ?? getAlias(u.alias, 'iid') ?? `${u.id}@${u.server}`;
+                        return {
+                            id: u.id.toString(),
+                            redirect: `/u/${noxIdToSegment(id, localAddress)}`,
+                            name: u.display,
+                            thumbnail: u.thumbnail,
+                            description: getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid'),
+                        }
+                    }),
                 };
             },
         },
