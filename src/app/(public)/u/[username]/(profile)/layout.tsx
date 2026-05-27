@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
+
 export default function UserProfileLayout({ children }: { children: React.ReactNode }) {
   const { username } = useParams<{ username: string }>();
   const pathname = usePathname();
@@ -90,11 +91,15 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
 
             <Tabs
               value={activeTab}
-              onValueChange={(v) => router.push(v === 'description' ? baseHref : `${baseHref}/${v}`)}
+              onValueChange={(v) => {
+                if (v === 'edit') { router.push('/settings/profile'); return; }
+                router.push(v === 'description' ? baseHref : `${baseHref}/${v}`);
+              }}
             >
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="description">{t('users.description')}</TabsTrigger>
                 <TabsTrigger value="favorites">{t('users.favorites')}</TabsTrigger>
+                {isSame && <TabsTrigger value="edit">{tl('user.edit')}</TabsTrigger>}
               </TabsList>
             </Tabs>
 

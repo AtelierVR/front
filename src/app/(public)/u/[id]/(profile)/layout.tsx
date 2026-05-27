@@ -22,7 +22,7 @@ import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 export default function UserProfileLayout({ children }: { children: React.ReactNode }) {
-  const { username } = useParams<{ username: string }>();
+  const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser } = useApi();
@@ -34,7 +34,7 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
   const followsYou = rel?.in === 'follow' && !isMutual;
   const pendingYou = rel?.in === 'request';
 
-  const baseHref = `/u/${username}`;
+  const baseHref = `/u/${id}`;
   const activeTab = pathname.startsWith(`${baseHref}/`) ? pathname.slice(baseHref.length + 1) : 'description';
 
   if (!user) return null;
@@ -90,11 +90,15 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
 
             <Tabs
               value={activeTab}
-              onValueChange={(v) => router.push(v === 'description' ? baseHref : `${baseHref}/${v}`)}
+              onValueChange={(v) => {
+                if (v === 'edit') { router.push('/settings/profile'); return; }
+                router.push(v === 'description' ? baseHref : `${baseHref}/${v}`);
+              }}
             >
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="description">{t('users.description')}</TabsTrigger>
                 <TabsTrigger value="favorites">{t('users.favorites')}</TabsTrigger>
+                {isSame && <TabsTrigger value="edit">{tl('user.edit')}</TabsTrigger>}
               </TabsList>
             </Tabs>
 
