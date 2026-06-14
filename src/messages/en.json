@@ -188,7 +188,8 @@
     "edit": "Edit"
   },
   "instance": {
-    "join": "Join instance",
+    "join": "Join",
+    "closed": "Closed",
     "players": "{{count}} / {{capacity}} players",
     "players_count": "{{count}} players",
     "empty": "No players",

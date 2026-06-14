@@ -189,7 +189,8 @@
     "edit": "Modifier"
   },
   "instance": {
-    "join": "Rejoindre l'instance",
+    "join": "Rejoindre",
+    "closed": "Fermé",
     "players": "{{count}} / {{capacity}} joueurs",
     "players_count": "{{count}} joueurs",
     "empty": "Aucun joueur",

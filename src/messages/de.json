@@ -167,7 +167,8 @@
     "edit": "Bearbeiten"
   },
   "instance": {
-    "join": "Instanz beitreten",
+    "join": "Beitreten",
+    "closed": "Geschlossen",
     "players": "{{count}} / {{capacity}} Spieler",
     "players_count": "{{count}} Spieler",
     "empty": "Keine Spieler",

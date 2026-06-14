@@ -189,7 +189,8 @@
     "edit": "編集"
   },
   "instance": {
-    "join": "インスタンスに参加",
+    "join": "参加",
+    "closed": "閉鎖中",
     "players": "{{count}} / {{capacity}} プレイヤー",
     "players_count": "{{count}} プレイヤー",
     "empty": "プレイヤーなし",
