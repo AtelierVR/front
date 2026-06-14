@@ -55,6 +55,11 @@ export async function uploadInstanceThumbnail(id: number | string, blob: Blob): 
     if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
 }
 
+export async function deleteInstance(id: number | string): Promise<void> {
+    const res = await apiFetchRaw(`/instances/${id}`, { method: 'DELETE' });
+    if (!res.ok && res.status !== 204) throw new Error(`Delete failed: ${res.status}`);
+}
+
 export function getWorldInstances(worldId: number | string, limit = 20): Promise<ApiInstanceList> {
     const params = new URLSearchParams({ world: String(worldId), limit: String(limit) });
     return apiFetch<ApiInstanceList>(`/instances?${params.toString()}`);
