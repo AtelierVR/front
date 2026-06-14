@@ -5,9 +5,7 @@ import { useState, useEffect } from 'react';
 import { useInstance } from './InstanceContext';
 import { addUrlQuery } from '@/lib/url';
 import { localeFlagUrl } from '@/lib/languages';
-import { cn } from '@/lib/utils';
-
-const PILL = 'absolute top-3 z-10 flex items-center gap-2 rounded-full backdrop-blur-md bg-black/40 px-3 py-1.5';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function InstanceBanner() {
   const { instance } = useInstance();
@@ -43,15 +41,19 @@ export function InstanceBanner() {
 
       {/* Region flag — top-left */}
       {flagUrl && (
-        <div className={cn(PILL, 'left-3')}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={flagUrl}
-            alt={region ?? 'region'}
-            className="h-3.5 w-5 object-cover rounded-sm"
-          />
-          <span className="text-sm font-medium text-white">{region?.toUpperCase()}</span>
-        </div>
+        <Tooltip>
+          <TooltipTrigger className="absolute top-3 left-3 z-10 rounded-md overflow-hidden shadow-md cursor-default">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={flagUrl}
+              alt={region ?? 'region'}
+              className="h-6 object-cover"
+            />
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{region}</p>
+          </TooltipContent>
+        </Tooltip>
       )}
     </div>
   );

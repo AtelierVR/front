@@ -1,8 +1,17 @@
 /**
- * Returns a flag image URL for a locale using flagcdn.com (free, no auth).
- * The `cca` field in each locale JSON must be a CCA2 code (e.g. "fr", "gb").
+ * Extracts the region code usable for flag lookup from a potentially
+ * composite region identifier (e.g. "eu-west-1" → "eu").
+ */
+export function formatRegionFlag(region: string): string {
+  return region.split('-')[0].toLowerCase();
+}
+
+/**
+ * Returns a flag SVG URL for a region using flagcdn.com (free, no auth).
+ * Composite regions like "eu-west-1" are automatically shortened to "eu".
  */
 export async function localeFlagUrl(cca: string): Promise<string | null> {
   if (!cca) return null;
-  return `https://flagcdn.com/w40/${cca.toLowerCase()}.png`;
+  const code = formatRegionFlag(cca);
+  return `https://flagcdn.com/${code}.svg`;
 }
