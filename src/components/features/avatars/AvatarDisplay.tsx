@@ -9,6 +9,7 @@ import { Identifier } from '@/components/shared/Identifier';
 import { getAlias, useApi } from '@/lib/api';
 import { getUser } from '@/lib/api/users';
 import { PLATFORMS, formatSize } from '@/lib/platform';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatNoxId } from '@/types/nox-identifier';
 import { useAvatar } from './AvatarContext';
 import type { ApiUser } from '@/types/api';
@@ -76,9 +77,14 @@ export function AvatarDisplay(props: { className?: string }) {
                 const info = PLATFORMS[p];
                 if (!info) return <span key={p} className="text-xs font-mono">{p}</span>;
                 return (
-                  <span key={p} title={t(info.label)}>
-                    <Icon icon={info.icon} className="size-4" style={{ color: info.color }} />
-                  </span>
+                  <Tooltip key={p}>
+                    <TooltipTrigger className="inline-flex">
+                      <Icon icon={info.icon} className="size-4" style={{ color: info.color }} />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t(info.label)}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 );
               })}
             </span>

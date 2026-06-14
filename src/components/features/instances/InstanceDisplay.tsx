@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { PLATFORMS } from '@/lib/platform';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { noxIdToPath } from '@/types/nox-identifier';
 import { useInstance } from './InstanceContext';
 import { useTranslation } from 'react-i18next';
@@ -52,9 +53,14 @@ export function InstanceDisplay(props: { className?: string }) {
                 const info = PLATFORMS[p];
                 if (!info) return <span key={p} className="text-xs font-mono">{p}</span>;
                 return (
-                  <span key={p} title={t(info.label)}>
-                    <Icon icon={info.icon} className="size-4" style={{ color: info.color }} />
-                  </span>
+                  <Tooltip key={p}>
+                    <TooltipTrigger className="inline-flex">
+                      <Icon icon={info.icon} className="size-4" style={{ color: info.color }} />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t(info.label)}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 );
               })}
             </span>
