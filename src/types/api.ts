@@ -330,6 +330,7 @@ export interface ApiRelay {
     label: string | null;
     provider: string;
     provider_id: string | null;
+    region: string | null;
     tags: string[];
     connected: boolean;
     runner: ApiRelayRunnerInfo | null;

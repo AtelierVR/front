@@ -2,9 +2,11 @@
 
 import { useRelayContext } from './relay-context';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Icon } from '@iconify/react';
 import { getProtocol } from '@/lib/protocols';
+import { localeFlagUrl } from '@/lib/languages';
 import { formatDistanceToNow } from 'date-fns';
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -19,6 +21,15 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function RelayDetailPage() {
     const { relay, loading } = useRelayContext();
     const { t } = useTranslation();
+    const [flagUrl, setFlagUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (relay?.region) {
+            localeFlagUrl(relay.region).then(setFlagUrl);
+        } else {
+            setFlagUrl(null);
+        }
+    }, [relay?.region]);
 
     if (loading) {
         return (
@@ -45,6 +56,20 @@ export default function RelayDetailPage() {
                     <InfoRow label="Runner status" value={relay.runner?.status ?? 'none'} />
                     <InfoRow label="Started at" value={relay.runner?.started_at ? formatDistanceToNow(new Date(relay.runner.started_at)) : null} />
                     <InfoRow label="Connected" value={relay.connected ? t('common.yes') : t('common.no')} />
+                    <InfoRow label="Region" value={
+                        <span className="inline-flex items-center gap-1.5">
+                            {flagUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={flagUrl} alt={relay.region ?? 'region'} className="h-3.5 w-5 object-cover rounded-sm" />
+                            ) : (
+                                <svg className="h-3.5 w-5 rounded-sm" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="30" height="20" fill="#9ca3af" rx="1" />
+                                    <text x="15" y="14" textAnchor="middle" fontSize="10" fill="#fff">?</text>
+                                </svg>
+                            )}
+                            {relay.region?.toUpperCase() ?? 'N/A'}
+                        </span>
+                    } />
                     <InfoRow label="Created at" value={formatDistanceToNow(new Date(relay.created_at))} />
                     {relay.status && (
                         <>
