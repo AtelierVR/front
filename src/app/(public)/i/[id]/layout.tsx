@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApi } from '@/lib/api/context';
-import { getInstance } from '@/lib/api/instances';
+import { getInstance, deleteInstance } from '@/lib/api/instances';
 import { getWorld, getWorldAssets } from '@/lib/api/worlds';
 import { getUser } from '@/lib/api/users';
 import { parseNoxId, noxIdToSegment } from '@/types/nox-identifier';
@@ -24,6 +24,14 @@ import { PageTitle } from '@/components/shared/PageTitle';
 import { ModalDrawer } from '@/components/shared/ModalDrawer';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { InstanceEditForm } from './edit/edit-form';
 import { useTranslation } from 'react-i18next';
 
@@ -92,6 +100,21 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
         parseNoxId(instance.owner).id === String(currentUser.id));
 
     const [editOpen, setEditOpen] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        if (!instance) return;
+        setDeleting(true);
+        try {
+            await deleteInstance(instance.id);
+            router.push('/');
+        } catch {
+            setDeleting(false);
+            setShowDeleteConfirm(false);
+            setEditOpen(true);
+        }
+    };
 
     const baseHref = `/i/${id}`;
     const activeTab = pathname.startsWith(`${baseHref}/`)
@@ -145,9 +168,31 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                 </div>
             </div>
 
-            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('instance.tab_edit')}>
-                <InstanceEditForm />
+            <ModalDrawer open={editOpen && !showDeleteConfirm} onOpenChange={setEditOpen} header={t('instance.tab_edit')}>
+                <InstanceEditForm onDeleteRequest={() => setShowDeleteConfirm(true)} />
             </ModalDrawer>
+
+            <Dialog open={showDeleteConfirm} onOpenChange={(o) => { if (!o) { setShowDeleteConfirm(false); setEditOpen(true); } }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('instance.delete_confirm_title', 'Delete instance')}</DialogTitle>
+                        <DialogDescription>
+                            {t('instance.delete_confirm_desc', 'Are you sure you want to delete this instance? This action cannot be undone.')}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => { setShowDeleteConfirm(false); setEditOpen(true); }} disabled={deleting}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+                            {deleting
+                                ? <><Icon icon="material-symbols:progress-activity" className="size-4 mr-2 animate-spin" />{t('instance.deleting', 'Deleting…')}</>
+                                : <><Icon icon="material-symbols:delete-rounded" className="size-4 mr-2" />{t('instance.confirm_delete', 'Delete')}</>
+                            }
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </InstanceContext.Provider>
     );
 }

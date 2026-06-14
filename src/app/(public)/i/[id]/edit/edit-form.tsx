@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useInstance } from '@/components/features/instances/InstanceContext';
-import { updateInstance, uploadInstanceThumbnail, deleteInstance } from '@/lib/api/instances';
+import { updateInstance, uploadInstanceThumbnail } from '@/lib/api/instances';
 import { TextInput } from '@/components/ui/text-input';
 import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { TagListInput } from '@/components/ui/tag-list-input';
@@ -13,27 +12,18 @@ import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { ApiError } from '@/types/envelope';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 
 // ── Flags ─────────────────────────────────────────────────────────────────────
-const F_LOADING     = 1 << 0;
-const F_THUMBNAIL   = 1 << 1;
-const F_TITLE       = 1 << 2;
+const F_LOADING = 1 << 0;
+const F_THUMBNAIL = 1 << 1;
+const F_TITLE = 1 << 2;
 const F_DESCRIPTION = 1 << 3;
-const F_CAPACITY    = 1 << 4;
-const F_TAGS        = 1 << 5;
+const F_CAPACITY = 1 << 4;
+const F_TAGS = 1 << 5;
 
-export function InstanceEditForm() {
+export function InstanceEditForm({ onDeleteRequest }: { onDeleteRequest?: () => void }) {
     const { t } = useTranslation();
     const { instance, isOwner, refresh } = useInstance();
-    const router = useRouter();
 
     const [flags, setFlags] = useState(0);
     const [title, setTitle] = useState<string | undefined>();
@@ -44,8 +34,6 @@ export function InstanceEditForm() {
 
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [deleting, setDeleting] = useState(false);
 
     // Reset when instance changes
     useEffect(() => {
@@ -57,14 +45,11 @@ export function InstanceEditForm() {
         setFlags(0);
     }, [instance?.id]);
 
-    if (!isOwner) {
-        return (
-            <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                <Icon icon="material-symbols:error-rounded" className="size-4 shrink-0" />
-                {t('instance.edit_no_permission')}
-            </div>
-        );
-    }
+    if (!isOwner)
+        return <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <Icon icon="material-symbols:error-rounded" className="size-4 shrink-0" />
+            {t('instance.edit_no_permission')}
+        </div>;
 
     if (!instance) return null;
 
@@ -74,18 +59,6 @@ export function InstanceEditForm() {
 
     const currentTags = tags ?? instance.tags ?? [];
 
-    const handleDelete = async () => {
-        setDeleting(true);
-        try {
-            await deleteInstance(instance.id);
-            router.push('/');
-        } catch (e) {
-            setError(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'An error occurred');
-            setDeleting(false);
-            setShowDeleteConfirm(false);
-        }
-    };
-
     const handleSave = async () => {
         if (!instance || !canSave) return;
         setFlags(f => f | F_LOADING);
@@ -93,10 +66,10 @@ export function InstanceEditForm() {
         setSuccess(false);
         try {
             await updateInstance(instance.id, {
-                title:       (flags & F_TITLE)       ? (title?.trim() || undefined)       : undefined,
-                description: (flags & F_DESCRIPTION) ? (description?.trim() || undefined)  : undefined,
-                capacity:    (flags & F_CAPACITY) && capacity !== '' ? Number(capacity)   : undefined,
-                tags:        (flags & F_TAGS)         ? tags                               : undefined,
+                title: (flags & F_TITLE) ? (title?.trim() || undefined) : undefined,
+                description: (flags & F_DESCRIPTION) ? (description?.trim() || undefined) : undefined,
+                capacity: (flags & F_CAPACITY) && capacity !== '' ? Number(capacity) : undefined,
+                tags: (flags & F_TAGS) ? tags : undefined,
             });
 
             if ((flags & F_THUMBNAIL) && thumbnail?.startsWith('data:')) {
@@ -201,7 +174,7 @@ export function InstanceEditForm() {
             {/* Save */}
             <div className="-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row">
                 {isOwner && (
-                    <Button variant="destructive" className="flex-0" onClick={() => setShowDeleteConfirm(true)} disabled={isSaving}>
+                    <Button variant="destructive" className="flex-0" onClick={onDeleteRequest} disabled={isSaving}>
                         <Icon icon="material-symbols:delete-rounded" className="size-4 mr-2" />
                         {t('instance.delete', 'Delete')}
                     </Button>
@@ -213,28 +186,6 @@ export function InstanceEditForm() {
                     }
                 </Button>
             </div>
-
-            <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{t('instance.delete_confirm_title', 'Delete instance')}</DialogTitle>
-                        <DialogDescription>
-                            {t('instance.delete_confirm_desc', 'Are you sure you want to delete this instance? This action cannot be undone.')}
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
-                            {t('common.cancel')}
-                        </Button>
-                        <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-                            {deleting
-                                ? <><Icon icon="material-symbols:progress-activity" className="size-4 mr-2 animate-spin" />{t('instance.deleting', 'Deleting…')}</>
-                                : <><Icon icon="material-symbols:delete-rounded" className="size-4 mr-2" />{t('instance.confirm_delete', 'Delete')}</>
-                            }
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
