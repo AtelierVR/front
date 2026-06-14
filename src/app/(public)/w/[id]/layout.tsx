@@ -20,6 +20,10 @@ import { SetHomeButton } from '@/components/features/worlds/SetHomeButton';
 import { FavoriteButton } from '@/components/features/worlds/FavoriteButton';
 import { WorldLayoutSkeleton } from '@/components/features/worlds/WorldLayoutSkeleton';
 import { PageTitle, setTitle } from '@/components/shared/PageTitle';
+import { ModalDrawer } from '@/components/shared/ModalDrawer';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@iconify/react';
+import { WorldEditForm } from './edit/edit-form';
 import { useTranslation } from 'react-i18next';
 
 export default function WorldLayout({ children }: { children: React.ReactNode }) {
@@ -74,6 +78,8 @@ export default function WorldLayout({ children }: { children: React.ReactNode })
         world.contributors.some((c) => parseNoxId(c).id === String(currentUser.id)));
     const canEdit = isOwner || isContributor;
 
+    const [editOpen, setEditOpen] = useState(false);
+
     const baseHref = `/w/${id}`;
     const activeTab = pathname.startsWith(`${baseHref}/`)
         ? pathname.slice(baseHref.length + 1)
@@ -113,7 +119,11 @@ export default function WorldLayout({ children }: { children: React.ReactNode })
                                 <TabsTrigger value="description">{t('world.description')}</TabsTrigger>
                                 <TabsTrigger value="instances">{t('world.instances')}</TabsTrigger>
                                 <TabsTrigger value="versions">{t('world.versions')}</TabsTrigger>
-                                {canEdit && <TabsTrigger value="edit">{t('world.edit')}</TabsTrigger>}
+                                {canEdit && (
+                                    <Button variant="ghost" size="icon-sm" className="shrink-0 ml-auto" onClick={() => setEditOpen(true)} aria-label={t('world.edit')}>
+                                        <Icon icon="material-symbols:edit-rounded" className="size-4" />
+                                    </Button>
+                                )}
                             </TabsList>
                         </Tabs>
 
@@ -128,6 +138,10 @@ export default function WorldLayout({ children }: { children: React.ReactNode })
                     </div>
                 </div>
             </div>
+
+            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} title={t('world.edit')}>
+                <WorldEditForm />
+            </ModalDrawer>
         </WorldContext.Provider>
     );
 }

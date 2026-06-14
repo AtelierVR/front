@@ -21,6 +21,10 @@ import { InstanceOwnerCard } from '@/components/features/instances/InstanceOwner
 import { InstanceLayoutSkeleton } from '@/components/features/instances/InstanceLayoutSkeleton';
 import { JoinButton } from '@/components/features/instances/JoinButton';
 import { PageTitle } from '@/components/shared/PageTitle';
+import { ModalDrawer } from '@/components/shared/ModalDrawer';
+import { Button } from '@/components/ui/button';
+import { Icon } from '@iconify/react';
+import { InstanceEditForm } from './edit/edit-form';
 import { useTranslation } from 'react-i18next';
 
 export default function InstanceLayout({ children }: { children: React.ReactNode }) {
@@ -87,6 +91,8 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
     const isOwner = !!(currentUser && instance &&
         parseNoxId(instance.owner).id === String(currentUser.id));
 
+    const [editOpen, setEditOpen] = useState(false);
+
     const baseHref = `/i/${id}`;
     const activeTab = pathname.startsWith(`${baseHref}/`)
         ? pathname.slice(baseHref.length + 1)
@@ -119,7 +125,11 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                             <TabsList className="w-full justify-start">
                                 <TabsTrigger value="description">{t('instance.tab_description')}</TabsTrigger>
                                 <TabsTrigger value="players">{t('instance.tab_players')}</TabsTrigger>
-                                {isOwner && <TabsTrigger value="edit">{t('instance.tab_edit')}</TabsTrigger>}
+                                {isOwner && (
+                                    <Button variant="ghost" size="icon-sm" className="shrink-0 ml-auto" onClick={() => setEditOpen(true)} aria-label={t('instance.tab_edit')}>
+                                        <Icon icon="material-symbols:edit-rounded" className="size-4" />
+                                    </Button>
+                                )}
                             </TabsList>
                         </Tabs>
 
@@ -134,6 +144,10 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                     </div>
                 </div>
             </div>
+
+            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} title={t('instance.tab_edit')}>
+                <InstanceEditForm />
+            </ModalDrawer>
         </InstanceContext.Provider>
     );
 }
