@@ -61,7 +61,7 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                         if (cancelled) return;
                         setWorld(w);
                         try {
-                            const assets = await getWorldAssets(inst.world, w.release);
+                            const assets = await getWorldAssets(inst.world, w.release.resolved);
                             if (!cancelled) setWorldAssets(assets.items);
                         } catch {
                             if (!cancelled) setWorldAssets([]);

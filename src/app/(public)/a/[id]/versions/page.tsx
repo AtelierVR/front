@@ -175,7 +175,7 @@ export default function AvatarVersionsPage() {
                     key={v}
                     version={v}
                     assets={byVersion[v]}
-                    isRelease={v === avatar.release}
+                    isRelease={v === avatar.release.resolved}
                 />
             ))}
         </div>

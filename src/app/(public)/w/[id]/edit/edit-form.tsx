@@ -226,7 +226,7 @@ export function WorldEditForm() {
                         <InputGroup>
                             <InputGroupInput
                                 type="number"
-                                value={release ?? (world.release != null ? String(world.release) : '-1')}
+                                value={release ?? (world.release.raw !== -1 ? String(world.release.raw) : '-1')}
                                 onChange={e => { setRelease(e.target.value); setFlags(f => f | F_RELEASE); }}
                                 placeholder="-1"
                             />

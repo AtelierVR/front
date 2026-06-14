@@ -200,7 +200,7 @@ export function AvatarEditForm() {
                         <InputGroup>
                             <InputGroupInput
                                 type="number"
-                                value={release ?? (avatar.release != null ? String(avatar.release) : '-1')}
+                                value={release ?? (avatar.release.raw !== -1 ? String(avatar.release.raw) : '-1')}
                                 onChange={e => { setRelease(e.target.value); setFlags(f => f | F_RELEASE); }}
                                 placeholder="-1"
                             />

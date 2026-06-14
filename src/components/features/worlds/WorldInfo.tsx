@@ -34,7 +34,7 @@ export function WorldInfo() {
         {world && (
           <div className="flex items-center justify-between gap-2">
             <dt className="text-muted-foreground">{t('world.release')}</dt>
-            <dd className="font-mono text-xs">{world.release >= 0 ? `v${world.release}` : '—'}</dd>
+            <dd className="font-mono text-xs">{world.release.resolved >= 0 ? `v${world.release.resolved}` : '—'}</dd>
           </div>
         )}
       </dl>

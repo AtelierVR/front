@@ -25,7 +25,7 @@ export function AvatarInfo() {
         {avatar && (
           <div className="flex items-center justify-between gap-2">
             <dt className="text-muted-foreground">{t('avatar.release')}</dt>
-            <dd className="font-mono text-xs">{avatar.release >= 0 ? `v${avatar.release}` : '—'}</dd>
+            <dd className="font-mono text-xs">{avatar.release.resolved >= 0 ? `v${avatar.release.resolved}` : '—'}</dd>
           </div>
         )}
 

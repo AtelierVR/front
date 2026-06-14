@@ -27,7 +27,7 @@ export function AvatarDisplay(props: { className?: string }) {
   }, [avatar?.owner]);
 
   const releaseAssets = avatar && allAssets
-    ? allAssets.filter((a) => a.version === avatar.release)
+    ? allAssets.filter((a) => a.version === avatar.release.resolved)
     : null;
 
   const platforms = releaseAssets

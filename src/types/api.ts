@@ -94,7 +94,7 @@ export interface ApiWorld {
     thumbnail: string | null;
     tags: string[];
     capacity: number;
-    release: number;
+    release: { resolved: number; raw: number };
     server: string;
     owner: NoxIdentifier;
     contributors: NoxIdentifier[];
@@ -137,7 +137,7 @@ export interface ApiAvatar {
     description: string | null;
     thumbnail: string | null;
     tags: string[];
-    release: number;
+    release: { resolved: number; raw: number };
     server: string;
     owner: NoxIdentifier;
     contributors: NoxIdentifier[];

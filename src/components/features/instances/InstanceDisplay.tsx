@@ -18,7 +18,7 @@ export function InstanceDisplay(props: { className?: string }) {
 
   // Platforms from world release assets
   const releaseAssets = world && worldAssets
-    ? worldAssets.filter((a) => a.version === world.release)
+    ? worldAssets.filter((a) => a.version === world.release.resolved)
     : null;
   const platforms = releaseAssets
     ? [...new Set(releaseAssets.map((a) => a.platform.toLowerCase()))]

@@ -42,7 +42,7 @@ export default function WorldVersionsPage() {
             key={v}
             version={v}
             assets={byVersion[v]}
-            isRelease={v === world.release}
+            isRelease={v === world.release.resolved}
         />)}
     </div>;
 }

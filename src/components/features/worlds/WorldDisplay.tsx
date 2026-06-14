@@ -27,7 +27,7 @@ export function WorldDisplay(props: { className?: string }) {
   }, [world?.owner]);
 
   const releaseAssets = world && allAssets
-    ? allAssets.filter((a) => a.version === world.release)
+    ? allAssets.filter((a) => a.version === world.release.resolved)
     : null;
 
   const platforms = releaseAssets
