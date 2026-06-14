@@ -7,9 +7,10 @@ import { Icon } from '@iconify/react';
 
 import { useApi } from '@/lib/api/context';
 import { createInstance } from '@/lib/api/instances';
-import { searchWorlds } from '@/lib/api/worlds';
+import { searchWorlds, getWorldAssets } from '@/lib/api/worlds';
 import { listServers } from '@/lib/api/servers';
 import type { ApiServer, ApiWorld } from '@/types/api';
+import { NoxIdentifier } from '@/types/nox-identifier';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ModalDrawer } from '@/components/shared/ModalDrawer';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 
 interface CreateInstanceDrawerProps {
     defaultWorld?: ApiWorld;
@@ -71,6 +80,9 @@ export function CreateInstanceDrawer({
     const [tags, setTags] = useState<string[]>([]);
     const [thumbnail, setThumbnail] = useState<string | null>(defaultWorld?.thumbnail ?? null);
     const [region, setRegion] = useState<string>(config?.default_region ?? '');
+    const [worldVersion, setWorldVersion] = useState<number | null>(null);
+    const [worldVersionRaw, setWorldVersionRaw] = useState('-1');
+    const [versionValid, setVersionValid] = useState(true);
 
     // Sync region when config loads
     useEffect(() => {
@@ -81,6 +93,7 @@ export function CreateInstanceDrawer({
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [mode, setMode] = useState<'simple' | 'advanced'>('simple');
+    const [showConfirm, setShowConfirm] = useState(false);
 
     // Init home server — only when not yet initialized (undefined), not when user cleared it (null)
     useEffect(() => {
@@ -113,7 +126,26 @@ export function CreateInstanceDrawer({
         setCapacity(selectedWorld.capacity);
         setTags([]);
         setThumbnail(selectedWorld.thumbnail ?? null);
+        setWorldVersion(null);
+        setWorldVersionRaw('-1');
+        setVersionValid(true);
     }, [selectedWorld]);
+
+    // Check version validity when value or world changes
+    useEffect(() => {
+        if (!selectedWorld || worldVersion == null || worldVersion === -1) {
+            setVersionValid(true);
+            return;
+        }
+        const worldRef = new NoxIdentifier(null, String(selectedWorld.id), selectedWorld.server).toString(null);
+        let cancelled = false;
+        getWorldAssets(worldRef, worldVersion).then(res => {
+            if (!cancelled) setVersionValid(res.total > 0);
+        }).catch(() => {
+            if (!cancelled) setVersionValid(false);
+        });
+        return () => { cancelled = true; };
+    }, [selectedWorld?.id, selectedWorld?.server, worldVersion]);
 
     const isLocal = !!selectedAddress && selectedAddress === homeAddress;
 
@@ -138,6 +170,9 @@ export function CreateInstanceDrawer({
         setError(null);
         setMode('simple');
         setRegion(config?.default_region ?? '');
+        setWorldVersion(null);
+        setWorldVersionRaw('-1');
+        setVersionValid(true);
     }
 
     function handleOpenChange(o: boolean) {
@@ -154,11 +189,27 @@ export function CreateInstanceDrawer({
         e.preventDefault();
         if (!selectedWorld || !isLocal) return;
         if (nameInvalid) return;
+        if (!versionValid && worldVersion != null && worldVersion !== -1) {
+            setShowConfirm(true);
+            return;
+        }
+        doSubmit();
+    }
+
+    async function doSubmit() {
+        if (!selectedWorld || !isLocal) return;
+        setShowConfirm(false);
         setSubmitting(true);
         setError(null);
         try {
+            const worldRef = new NoxIdentifier(
+                'w',
+                String(selectedWorld.id),
+                selectedWorld.server,
+                worldVersion != null ? { v: String(worldVersion) } : undefined,
+            ).toString();
             const created = await createInstance({
-                world: `w:${selectedWorld.id}@${selectedWorld.server}`,
+                world: worldRef,
                 capacity,
                 name: name.trim() || undefined,
                 title: title.trim() || undefined,
@@ -446,6 +497,30 @@ export function CreateInstanceDrawer({
                             <p className="text-xs text-muted-foreground">{t('instance.field_capacity_desc')}</p>
                         </section>
 
+                        {/* World version */}
+                        <section className="space-y-2">
+                            <Label htmlFor="ci-world-version">{t('instance.field_world_version', 'World Version')}</Label>
+                            <div className="relative">
+                                <Input
+                                    id="ci-world-version"
+                                    value={worldVersionRaw}
+                                    onChange={(e) => {
+                                        const v = e.target.value;
+                                        setWorldVersionRaw(v);
+                                        const n = parseInt(v, 10);
+                                        setWorldVersion(v === '' || isNaN(n) ? null : n);
+                                    }}
+                                    placeholder="-1"
+                                    disabled={submitting}
+                                    className="w-full pr-8"
+                                />
+                                {worldVersionRaw !== '' && worldVersionRaw !== '-' && worldVersionRaw !== '-1' && !versionValid && (
+                                    <Icon icon="material-symbols:error-rounded" className="absolute right-2.5 top-1/2 -translate-y-1/2 size-4 text-yellow-500" />
+                                )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{t('instance.field_world_version_desc', '-1 = auto (recommended), or pick a specific version.')}</p>
+                        </section>
+
                         {/* Thumbnail */}
                         <section className="space-y-2">
                             <Label>{t('instance.field_thumbnail')}</Label>
@@ -522,15 +597,36 @@ export function CreateInstanceDrawer({
     );
 
     return (
-        <ModalDrawer
-            open={open}
-            onOpenChange={handleOpenChange}
-            header={t('instance.create_title')}
-            headerEnd={modeToggle}
-            footer={submitButton}
-        >
-            {formContent}
-        </ModalDrawer>
+        <>
+            <ModalDrawer
+                open={open && !showConfirm}
+                onOpenChange={handleOpenChange}
+                header={t('instance.create_title')}
+                headerEnd={modeToggle}
+                footer={submitButton}
+            >
+                {formContent}
+            </ModalDrawer>
+
+            <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('instance.confirm_title')}</DialogTitle>
+                        <DialogDescription>
+                            {t('instance.confirm_desc')}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={submitting}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button onClick={doSubmit} disabled={submitting}>
+                            {t('instance.confirm_continue')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
 

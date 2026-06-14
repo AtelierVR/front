@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import type { NoxIdentifier } from '@/types/nox-identifier';
+import type { NoxIdString } from '@/types/nox-identifier';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 interface IdentifierProps {
-    value: NoxIdentifier;
+    value: NoxIdString;
     className?: string;
 }
 

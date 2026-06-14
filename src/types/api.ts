@@ -1,4 +1,4 @@
-import type { NoxIdentifier } from './nox-identifier';
+import type { NoxIdString } from './nox-identifier';
 import { NoxWellKnown } from './wellknown';
 
 // ── Shared sub-types ──────────────────────────────────────────────────────────
@@ -72,8 +72,8 @@ export interface ApiCurrentUser extends ApiUser {
     email: string | null;
     email_verified: boolean;
     created_at: number;
-    home: NoxIdentifier | null;
-    avatar: NoxIdentifier | null;
+    home: NoxIdString | null;
+    avatar: NoxIdString | null;
     twofa_enabled: boolean;
 }
 
@@ -96,14 +96,14 @@ export interface ApiWorld {
     capacity: number;
     release: { resolved: number; raw: number };
     server: string;
-    owner: NoxIdentifier;
-    contributors: NoxIdentifier[];
+    owner: NoxIdString;
+    contributors: NoxIdString[];
     alias: ApiAlias[];
 }
 
 export interface ApiWorldList extends ApiSearchResult<ApiWorld> {
     query: string | null;
-    ids: NoxIdentifier[];
+    ids: NoxIdString[];
 }
 
 export interface ApiWorldAsset {
@@ -139,14 +139,14 @@ export interface ApiAvatar {
     tags: string[];
     release: { resolved: number; raw: number };
     server: string;
-    owner: NoxIdentifier;
-    contributors: NoxIdentifier[];
+    owner: NoxIdString;
+    contributors: NoxIdString[];
     alias: ApiAlias[];
 }
 
 export interface ApiAvatarList extends ApiSearchResult<ApiAvatar> {
     query: string | null;
-    ids: NoxIdentifier[];
+    ids: NoxIdString[];
 }
 
 export interface ApiAvatarAsset {
@@ -180,7 +180,7 @@ export interface ApiInstanceConnection {
 }
 
 export interface ApiInstancePlayer {
-    user: NoxIdentifier | null;
+    user: NoxIdString | null;
     display: string;
 }
 
@@ -192,8 +192,8 @@ export interface ApiInstance {
     thumbnail: string | null;
     capacity: number;
     server: string;
-    owner: NoxIdentifier;
-    world: NoxIdentifier;
+    owner: NoxIdString;
+    world: NoxIdString;
     tags: string[];
     connection: ApiInstanceConnection | null;
     count: number;
@@ -203,14 +203,14 @@ export interface ApiInstance {
 
 export interface ApiInstanceList extends ApiSearchResult<ApiInstance> {
     query: string | null;
-    ids: NoxIdentifier[];
+    ids: NoxIdString[];
 }
 
 // ── Search ────────────────────────────────────────────────────────────────────
 
 export interface ApiUserSearchResult extends ApiSearchResult<ApiUser> {
     query: string | null;
-    ids: NoxIdentifier[];
+    ids: NoxIdString[];
 }
 
 // ── Relations ─────────────────────────────────────────────────────────────────
@@ -229,7 +229,7 @@ export interface ApiRelationListResult extends ApiSearchResult<ApiRelation> {}
 
 export interface ApiConversation {
     id: number;
-    participants: NoxIdentifier[];
+    participants: NoxIdString[];
     last_message: ApiMessage | null;
     updated_at: number;
     created_at: number;
@@ -238,7 +238,7 @@ export interface ApiConversation {
 export interface ApiMessage {
     id: number;
     conversation_id: number;
-    sender: NoxIdentifier;
+    sender: NoxIdString;
     content: string;
     created_at: number;
     edited_at: number | null;

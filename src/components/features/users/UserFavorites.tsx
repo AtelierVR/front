@@ -7,7 +7,7 @@ import { listUserPublic, getUserPublicEntry } from '@/lib/api/users';
 import { getWorld } from '@/lib/api/worlds';
 import { getAvatar } from '@/lib/api/avatars';
 import type { ApiWorld, ApiAvatar } from '@/types/api';
-import type { NoxIdentifier } from '@/types/nox-identifier';
+import type { NoxIdString } from '@/types/nox-identifier';
 import { noxIdToSegment } from '@/types/nox-identifier';
 import {
     ResultItem,
@@ -21,7 +21,7 @@ import { useApi } from '@/lib/api/context';
 
 interface FavoriteContent {
     label?: string;
-    values: NoxIdentifier[];
+    values: NoxIdString[];
 }
 
 interface ResolvedGroup {
