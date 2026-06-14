@@ -216,6 +216,9 @@ export function CreateInstanceDrawer({
                 description: description.trim() || undefined,
                 tags,
                 region: region || undefined,
+                thumbnail: thumbnail && !thumbnail.startsWith('data:') 
+                    ? thumbnail 
+                    : undefined,
             });
             if (thumbnail?.startsWith('data:')) {
                 const blob = await fetch(thumbnail).then(r => r.blob());

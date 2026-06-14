@@ -9,6 +9,7 @@ export interface CreateInstancePayload {
     description?: string;
     tags?: string[];
     region?: string;
+    thumbnail?: string;
 }
 
 export function createInstance(payload: CreateInstancePayload): Promise<ApiInstance> {
