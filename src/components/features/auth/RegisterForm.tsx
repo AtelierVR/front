@@ -27,13 +27,10 @@ export function RegisterForm() {
     const [submitting, setSubmitting] = useState(false);
 
     // Guard: registration must be open
-    if (config !== null && !config.allowUserRegistration) {
-        return (
-            <FormCard title={t('auth.register_title')} description={t('auth.register_description')}>
-                <p className="text-center text-sm text-muted-foreground">{t('auth.registration_closed')}</p>
-            </FormCard>
-        );
-    }
+    if (config !== null && !config.allow_user_registration)
+        return <FormCard title={t('auth.register_title')} description={t('auth.register_description')}>
+            <p className="text-center text-sm text-muted-foreground">{t('auth.registration_closed')}</p>
+        </FormCard>;
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();

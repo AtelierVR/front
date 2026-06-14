@@ -8,6 +8,7 @@ export interface CreateInstancePayload {
     title?: string;
     description?: string;
     tags?: string[];
+    region?: string;
 }
 
 export function createInstance(payload: CreateInstancePayload): Promise<ApiInstance> {

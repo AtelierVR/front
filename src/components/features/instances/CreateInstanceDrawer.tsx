@@ -21,6 +21,14 @@ import { TagListInput } from '@/components/ui/tag-list-input';
 import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
 import { uploadInstanceThumbnail } from '@/lib/api/instances';
 import { ImageInput } from '@/components/ui/image-input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Dialog,
     DialogContent,
@@ -63,7 +71,7 @@ export function CreateInstanceDrawer({
 }: CreateInstanceDrawerProps) {
     const { t } = useTranslation();
     const router = useRouter();
-    const { wellKnown } = useApi();
+    const { wellKnown, config } = useApi();
     const isDesktop = useIsDesktop();
 
     const homeAddress = wellKnown?.address ?? null;
@@ -88,9 +96,17 @@ export function CreateInstanceDrawer({
     const [capacity, setCapacity] = useState(defaultWorld?.capacity ?? 0);
     const [tags, setTags] = useState<string[]>([]);
     const [thumbnail, setThumbnail] = useState<string | null>(defaultWorld?.thumbnail ?? null);
+    const [region, setRegion] = useState<string>(config?.default_region ?? '');
+
+    // Sync region when config loads
+    useEffect(() => {
+        if (config?.default_region !== undefined && config.default_region !== null && !region) 
+            setRegion(config.default_region);
+    }, [config, region]);
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [mode, setMode] = useState<'simple' | 'advanced'>('simple');
 
     // Init home server — only when not yet initialized (undefined), not when user cleared it (null)
     useEffect(() => {
@@ -146,6 +162,8 @@ export function CreateInstanceDrawer({
         setTags([]);
         setThumbnail(defaultWorld?.thumbnail ?? null);
         setError(null);
+        setMode('simple');
+        setRegion(config?.default_region ?? null);
     }
 
     function handleOpenChange(o: boolean) {
@@ -172,6 +190,7 @@ export function CreateInstanceDrawer({
                 title: title.trim() || undefined,
                 description: description.trim() || undefined,
                 tags,
+                region: region || undefined,
             });
             if (thumbnail?.startsWith('data:')) {
                 const blob = await fetch(thumbnail).then(r => r.blob());
@@ -202,186 +221,296 @@ export function CreateInstanceDrawer({
 
     const formContent = (
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-4 py-2">
-            {/* Server */}
-            <div className="relative space-y-2">
-                <Label htmlFor="ci-server">{t('instance.select_server')}</Label>
-                {selectedAddress ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5">
-                        <Icon icon="material-symbols:dns" className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="flex-1 text-sm font-medium">{selectedAddress}</span>
-                        {selectedServerMeta?.isHome
-                            ? <Badge variant="secondary" className="text-xs">{t('instance.home_badge')}</Badge>
-                            : <span className="text-xs text-muted-foreground">{t('instance.remote_disabled')}</span>
-                        }
-                        <button
-                            type="button"
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                            onClick={() => { setSelectedAddress(null); setServerQuery(''); }}
-                            disabled={submitting}
-                        >
-                            <Icon icon="material-symbols:close-rounded" className="size-4" />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="relative">
-                        <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                        <Input
-                            id="ci-server"
-                            className="pl-9"
-                            placeholder={t('instance.search_servers', 'Search servers…')}
-                            value={serverQuery}
-                            onChange={(e) => { setServerQuery(e.target.value); setServerSearchOpen(true); }}
-                            onFocus={() => setServerSearchOpen(true)}
-                            onBlur={() => setTimeout(() => setServerSearchOpen(false), 150)}
-                            autoComplete="off"
-                            disabled={submitting}
-                        />
-                        {serverSearchOpen && filteredServers.length > 0 && (
-                            <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-background shadow-lg overflow-hidden">
-                                {filteredServers.map(({ address, isHome }) => (
-                                    <button
-                                        key={address}
-                                        type="button"
-                                        className="flex w-full items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
-                                        onMouseDown={() => { setSelectedAddress(address); setServerQuery(''); setServerSearchOpen(false); }}
-                                    >
-                                        <Icon icon="material-symbols:dns" className="size-4 shrink-0 text-muted-foreground" />
-                                        <span className="flex-1 text-start font-medium">{address}</span>
-                                        {isHome
-                                            ? <Badge variant="secondary" className="text-xs shrink-0">{t('instance.home_badge')}</Badge>
-                                            : <span className="text-xs text-muted-foreground shrink-0">{t('instance.remote_disabled')}</span>
-                                        }
-                                    </button>
-                                ))}
+            {mode === 'simple' ? (
+                /* ── Simple mode: World, Title, Description ──── */
+                <div className="flex flex-col gap-5">
+                    {/* World */}
+                    <div className="relative space-y-2">
+                        <Label htmlFor="ci-world">{t('instance.select_world')}</Label>
+                        {selectedWorld ? (
+                            <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5">
+                                <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
+                                <span className="flex-1 text-sm font-medium">{selectedWorld.title}</span>
+                                <span className="text-xs text-muted-foreground">{selectedWorld.server}</span>
+                                <button
+                                    type="button"
+                                    className="text-muted-foreground hover:text-foreground transition-colors"
+                                    onClick={() => { setSelectedWorld(null); setWorldQuery(''); }}
+                                    disabled={submitting}
+                                >
+                                    <Icon icon="material-symbols:close-rounded" className="size-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                                <Input
+                                    id="ci-world"
+                                    className="pl-9"
+                                    placeholder={t('instance.search_worlds')}
+                                    value={worldQuery}
+                                    onChange={(e) => { setWorldQuery(e.target.value); setWorldSearchOpen(true); }}
+                                    onFocus={() => setWorldSearchOpen(true)}
+                                    onBlur={() => setTimeout(() => setWorldSearchOpen(false), 150)}
+                                    autoComplete="off"
+                                    disabled={submitting}
+                                />
+                                {worldSearchOpen && worldResults.length > 0 && (
+                                    <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-background shadow-lg overflow-hidden">
+                                        {worldResults.map((w) => (
+                                            <button
+                                                key={`${w.id}@${w.server}`}
+                                                type="button"
+                                                className="flex w-full items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+                                                onMouseDown={() => selectWorld(w)}
+                                            >
+                                                <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
+                                                <span className="flex-1 text-start font-medium">{w.title}</span>
+                                                <span className="text-xs text-muted-foreground shrink-0">{w.server}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
-            </div>
 
-            {/* World */}
-            <div className="relative space-y-2">
-                <Label htmlFor="ci-world">{t('instance.select_world')}</Label>
-                {selectedWorld ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5">
-                        <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="flex-1 text-sm font-medium">{selectedWorld.title}</span>
-                        <span className="text-xs text-muted-foreground">{selectedWorld.server}</span>
-                        <button
-                            type="button"
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                            onClick={() => { setSelectedWorld(null); setWorldQuery(''); }}
-                            disabled={submitting}
-                        >
-                            <Icon icon="material-symbols:close-rounded" className="size-4" />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="relative">
-                        <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                        <Input
-                            id="ci-world"
-                            className="pl-9"
-                            placeholder={t('instance.search_worlds')}
-                            value={worldQuery}
-                            onChange={(e) => { setWorldQuery(e.target.value); setWorldSearchOpen(true); }}
-                            onFocus={() => setWorldSearchOpen(true)}
-                            onBlur={() => setTimeout(() => setWorldSearchOpen(false), 150)}
-                            autoComplete="off"
+                    {/* Title */}
+                    <section className="space-y-2">
+                        <Label>{t('instance.field_title')}</Label>
+                        <TextInput
+                            value={title}
+                            onChange={setTitle}
+                            placeholder={t('instance.field_title_placeholder')}
+                            maxLength={128}
                             disabled={submitting}
                         />
-                        {worldSearchOpen && worldResults.length > 0 && (
-                            <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-background shadow-lg overflow-hidden">
-                                {worldResults.map((w) => (
+                    </section>
+
+                    {/* Description */}
+                    <section className="space-y-2">
+                        <Label>{t('instance.field_description')}</Label>
+                        <MarkdownAreaInput
+                            value={description}
+                            onChange={setDescription}
+                            placeholder={t('instance.field_description_placeholder')}
+                        />
+                    </section>
+                </div>
+            ) : (
+                /* ── Advanced mode: full two columns ─────────── */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+                    {/* ── Left column ──────────────────────────────── */}
+                    <div className="flex flex-col gap-5">
+                        {/* Server */}
+                        <div className="space-y-2">
+                            <Label htmlFor="ci-server">{t('instance.select_server')}</Label>
+                            {selectedAddress ? (
+                                <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5">
+                                    <Icon icon="material-symbols:dns" className="size-4 shrink-0 text-muted-foreground" />
+                                    <span className="flex-1 text-sm font-medium">{selectedAddress}</span>
+                                    {selectedServerMeta?.isHome && (
+                                        <Badge variant="secondary" className="text-xs">{t('instance.home_badge')}</Badge>
+                                    )}
                                     <button
-                                        key={`${w.id}@${w.server}`}
                                         type="button"
-                                        className="flex w-full items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
-                                        onMouseDown={() => selectWorld(w)}
+                                        className="text-muted-foreground hover:text-foreground transition-colors"
+                                        onClick={() => { setSelectedAddress(null); setServerQuery(''); }}
+                                        disabled={submitting}
                                     >
-                                        <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
-                                        <span className="flex-1 text-start font-medium">{w.title}</span>
-                                        <span className="text-xs text-muted-foreground shrink-0">{w.server}</span>
+                                        <Icon icon="material-symbols:close-rounded" className="size-4" />
                                     </button>
-                                ))}
-                            </div>
-                        )}
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                                    <Input
+                                        id="ci-server"
+                                        className="pl-9"
+                                        placeholder={t('instance.search_servers', 'Search servers…')}
+                                        value={serverQuery}
+                                        onChange={(e) => { setServerQuery(e.target.value); setServerSearchOpen(true); }}
+                                        onFocus={() => setServerSearchOpen(true)}
+                                        onBlur={() => setTimeout(() => setServerSearchOpen(false), 150)}
+                                        autoComplete="off"
+                                        disabled={submitting}
+                                    />
+                                    {serverSearchOpen && filteredServers.length > 0 && (
+                                        <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-background shadow-lg overflow-hidden">
+                                            {filteredServers.map(({ address, isHome }) => (
+                                                <button
+                                                    key={address}
+                                                    type="button"
+                                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+                                                    onMouseDown={() => { setSelectedAddress(address); setServerQuery(''); setServerSearchOpen(false); }}
+                                                >
+                                                    <Icon icon="material-symbols:dns" className="size-4 shrink-0 text-muted-foreground" />
+                                                    <span className="flex-1 text-start font-medium">{address}</span>
+                                                    {isHome && (
+                                                        <Badge variant="secondary" className="text-xs shrink-0">{t('instance.home_badge')}</Badge>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            <p className="text-xs text-muted-foreground">{t('instance.remote_disabled')}</p>
+                        </div>
+
+                        {/* World */}
+                        <div className="relative space-y-2">
+                            <Label htmlFor="ci-world">{t('instance.select_world')}</Label>
+                            {selectedWorld ? (
+                                <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2.5">
+                                    <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
+                                    <span className="flex-1 text-sm font-medium">{selectedWorld.title}</span>
+                                    <span className="text-xs text-muted-foreground">{selectedWorld.server}</span>
+                                    <button
+                                        type="button"
+                                        className="text-muted-foreground hover:text-foreground transition-colors"
+                                        onClick={() => { setSelectedWorld(null); setWorldQuery(''); }}
+                                        disabled={submitting}
+                                    >
+                                        <Icon icon="material-symbols:close-rounded" className="size-4" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                                    <Input
+                                        id="ci-world"
+                                        className="pl-9"
+                                        placeholder={t('instance.search_worlds')}
+                                        value={worldQuery}
+                                        onChange={(e) => { setWorldQuery(e.target.value); setWorldSearchOpen(true); }}
+                                        onFocus={() => setWorldSearchOpen(true)}
+                                        onBlur={() => setTimeout(() => setWorldSearchOpen(false), 150)}
+                                        autoComplete="off"
+                                        disabled={submitting}
+                                    />
+                                    {worldSearchOpen && worldResults.length > 0 && (
+                                        <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-background shadow-lg overflow-hidden">
+                                            {worldResults.map((w) => (
+                                                <button
+                                                    key={`${w.id}@${w.server}`}
+                                                    type="button"
+                                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+                                                    onMouseDown={() => selectWorld(w)}
+                                                >
+                                                    <Icon icon="material-symbols:language" className="size-4 shrink-0 text-muted-foreground" />
+                                                    <span className="flex-1 text-start font-medium">{w.title}</span>
+                                                    <span className="text-xs text-muted-foreground shrink-0">{w.server}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Title */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_title')}</Label>
+                            <TextInput
+                                value={title}
+                                onChange={setTitle}
+                                placeholder={t('instance.field_title_placeholder')}
+                                maxLength={128}
+                                disabled={submitting}
+                            />
+                        </section>
+
+                        {/* Description */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_description')}</Label>
+                            <MarkdownAreaInput
+                                value={description}
+                                onChange={setDescription}
+                                placeholder={t('instance.field_description_placeholder')}
+                            />
+                        </section>
                     </div>
-                )}
-            </div>
 
-            {/* Title */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_title')}</h2>
-                <TextInput
-                    value={title}
-                    onChange={setTitle}
-                    placeholder={t('instance.field_title_placeholder')}
-                    maxLength={128}
-                    disabled={submitting}
-                />
-            </section>
+                    {/* ── Right column ─────────────────────────────── */}
+                    <div className="flex flex-col gap-5">
+                        {/* Region */}
+                        {config?.regions && config.regions.length > 0 && (
+                            <section className="space-y-2">
+                                <Label>{t('instance.field_region')}</Label>
+                                <Select value={region} onValueChange={(v) => setRegion(v ?? '')} disabled={submitting}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={t('instance.field_region_placeholder')} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {config.regions.map((r) => (
+                                            <SelectItem key={r} value={r}>
+                                                {r.toUpperCase()}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </section>
+                        )}
 
-            {/* Description */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_description')}</h2>
-                <MarkdownAreaInput
-                    value={description}
-                    onChange={setDescription}
-                    placeholder={t('instance.field_description_placeholder')}
-                />
-            </section>
+                        {/* Capacity */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_capacity')}</Label>
+                            <InputGroup>
+                                <InputGroupInput
+                                    type="number"
+                                    min={0}
+                                    max={65535}
+                                    value={capacity}
+                                    onChange={(e) => {
+                                        const v = parseInt(e.target.value, 10);
+                                        setCapacity(isNaN(v) ? 0 : Math.max(0, Math.min(65535, v)));
+                                    }}
+                                    disabled={submitting}
+                                />
+                            </InputGroup>
+                            <p className="text-xs text-muted-foreground">{t('instance.field_capacity_desc')}</p>
+                        </section>
 
-            {/* Capacity */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_capacity')}</h2>
-                <InputGroup>
-                    <InputGroupInput
-                        type="number"
-                        min={1}
-                        max={65535}
-                        value={capacity}
-                        onChange={(e) => setCapacity(Math.max(1, parseInt(e.target.value, 10) || 16))}
-                        disabled={submitting}
-                    />
-                </InputGroup>
-            </section>
+                        {/* Thumbnail */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_thumbnail')}</Label>
+                            <ImageInput
+                                value={thumbnail}
+                                onChange={setThumbnail}
+                                aspectRatio="16/9"
+                                className="w-full"
+                                alt={title || t('instance.field_thumbnail')}
+                            />
+                        </section>
 
-            {/* Thumbnail */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_thumbnail')}</h2>
-                <ImageInput
-                    value={thumbnail}
-                    onChange={setThumbnail}
-                    aspectRatio="16/9"
-                    className="w-full"
-                    alt={title || t('instance.field_thumbnail')}
-                />
-            </section>
+                        {/* Tags */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_tags')}</Label>
+                            <TagListInput
+                                tags={tags}
+                                onChange={setTags}
+                            />
+                        </section>
 
-            {/* Tags */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_tags')}</h2>
-                <TagListInput
-                    tags={tags}
-                    onChange={setTags}
-                />
-            </section>
-
-            {/* Name */}
-            <section className="space-y-2">
-                <h2 className="text-base font-semibold">{t('instance.field_name')}</h2>
-                <TextInput
-                    value={name}
-                    onChange={setName}
-                    placeholder={t('instance.field_name_placeholder')}
-                    maxLength={8}
-                    disabled={submitting}
-                />
-                {nameInvalid && (
-                    <p className="text-xs text-destructive">{t('instance.field_name_invalid')}</p>
-                )}
-            </section>
+                        {/* Name */}
+                        <section className="space-y-2">
+                            <Label>{t('instance.field_name')}</Label>
+                            <TextInput
+                                value={name}
+                                onChange={setName}
+                                placeholder={t('instance.field_name_placeholder')}
+                                maxLength={8}
+                                disabled={submitting}
+                            />
+                            <p className="text-xs text-muted-foreground">{t('instance.field_name_desc')}</p>
+                            {nameInvalid && (
+                                <p className="text-xs text-destructive">{t('instance.field_name_invalid')}</p>
+                            )}
+                        </section>
+                    </div>
+                </div>
+            )}
 
             {error && (
                 <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -390,6 +519,18 @@ export function CreateInstanceDrawer({
                 </div>
             )}
         </form>
+    );
+
+    const modeToggle = (
+        <Tabs
+            value={mode}
+            onValueChange={(v) => setMode(v as 'simple' | 'advanced')}
+        >
+            <TabsList>
+                <TabsTrigger value="simple">{t('instance.mode_simple')}</TabsTrigger>
+                <TabsTrigger value="advanced">{t('instance.mode_advanced')}</TabsTrigger>
+            </TabsList>
+        </Tabs>
     );
 
     const submitButton = (
@@ -409,9 +550,10 @@ export function CreateInstanceDrawer({
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={handleOpenChange}>
-                <DialogContent className="sm:max-w-2xl overflow-y-auto max-h-[90vh]">
-                    <DialogHeader>
+                <DialogContent className="sm:max-w-3xl lg:max-w-4xl overflow-y-auto max-h-[90vh]">
+                    <DialogHeader className="flex-row items-center gap-4 pr-10">
                         <DialogTitle>{t('instance.create_title')}</DialogTitle>
+                        {modeToggle}
                     </DialogHeader>
                     {formContent}
                     <DialogFooter>{submitButton}</DialogFooter>
@@ -423,8 +565,9 @@ export function CreateInstanceDrawer({
     return (
         <Drawer open={open} onOpenChange={handleOpenChange}>
             <DrawerContent className="max-h-[90vh]">
-                <DrawerHeader>
+                <DrawerHeader className="flex-row items-center gap-4">
                     <DrawerTitle>{t('instance.create_title')}</DrawerTitle>
+                    {modeToggle}
                 </DrawerHeader>
                 <div className="overflow-y-auto">
                     {formContent}

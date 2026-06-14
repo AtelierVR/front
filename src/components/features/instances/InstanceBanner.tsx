@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useInstance } from './InstanceContext';
+import { addUrlQuery } from '@/lib/url';
 
 export function InstanceBanner() {
   const { instance } = useInstance();
@@ -16,7 +17,7 @@ export function InstanceBanner() {
         <Image
           className="object-cover w-full"
           style={{ aspectRatio: '128 / 45' }}
-          src={instance.thumbnail}
+          src={addUrlQuery(instance.thumbnail, 'size', '1024')}
           alt={instance.title}
           width={1024}
           height={360}

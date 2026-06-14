@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { InstanceCard } from '@/components/features/instances/InstanceCard';
 import { CreateInstanceDrawer } from '@/components/features/instances/CreateInstanceDrawer';
@@ -10,6 +9,7 @@ import { useWorld } from '@/components/features/worlds/WorldContext';
 import { useApi } from '@/lib/api/context';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { ResultGrid, SkeletonGrid } from '@/components/shared/ResultGrid';
 import type { ApiInstance } from '@/types/api';
 
 export default function WorldInstancesPage() {
@@ -58,19 +58,17 @@ export default function WorldInstancesPage() {
 
       {/* Instance list */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[0, 1, 2].map((i) => <Skeleton key={i} className="h-36 rounded-lg" />)}
-        </div>
+        <SkeletonGrid count={6} />
       ) : !instances || instances.length === 0 ? (
         <div className="text-center text-muted-foreground border border-dashed rounded-xl py-12">
           {t('world.no_instances')}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ResultGrid>
           {instances.map((instance) => (
             <InstanceCard key={instance.id} instance={instance} />
           ))}
-        </div>
+        </ResultGrid>
       )}
     </div>
   );

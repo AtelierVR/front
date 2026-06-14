@@ -41,12 +41,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const logout = useCallback(async () => {
-    // Invalidate the session on the backend before clearing local state
-    try {
-      await apiFetch('/auth/logout', { method: 'POST' });
-    } catch {
-      // ignore errors — still clear local state
-    }
     clearToken();
     setTokenState(null);
     setCurrentUser(null);

@@ -65,7 +65,7 @@ export function Header() {
   const { wellKnown, config, currentUser, logout } = useApi();
 
   const instanceName = resolveLocalized(wellKnown?.metadata.title, i18n.language) || 'Nox';
-  const registrationOpen = config?.allowUserRegistration === true;
+  const registrationOpen = config?.allow_user_registration === true;
 
   const navLinks = [
     { href: '/', label: t('nav.home') },

@@ -176,6 +176,7 @@ export interface ApiAvatarAssetList {
 export interface ApiInstanceConnection {
     method: string;
     data: string;
+    region: string | null;
 }
 
 export interface ApiInstancePlayer {

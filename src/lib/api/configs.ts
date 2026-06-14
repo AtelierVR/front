@@ -1,13 +1,16 @@
 import { fetchWellKnown } from './wellknown';
 
 export interface InstanceConfig {
-  allowUserRegistration: boolean;
-  allowInstanceCreation: boolean;
-  allowInstanceCreationByExternal: boolean;
-  allowWorldCreation: boolean;
-  allowWorldCreationByExternal: boolean;
-  allowAvatarCreation: boolean;
-  allowAvatarCreationByExternal: boolean;
+  allow_user_registration: boolean;
+  allow_instance_creation: boolean;
+  allow_instance_creation_by_external: boolean;
+  allow_world_creation: boolean;
+  allow_world_creation_by_external: boolean;
+  allow_avatar_creation: boolean;
+  allow_avatar_creation_by_external: boolean;
+  regions: string[];
+  default_region: string | null;
+  allowed_image_widths: number[];
 }
 
 export async function fetchConfigs(): Promise<InstanceConfig | null> {

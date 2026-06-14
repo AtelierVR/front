@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { EditCoverOverlay } from '@/components/shared/EditCoverOverlay';
 import { useWorld } from './WorldContext';
+import { addUrlQuery } from '@/lib/url';
 
 export function WorldBanner() {
   const { world, isOwner } = useWorld();
@@ -17,7 +18,7 @@ export function WorldBanner() {
         <Image
           className="object-cover w-full"
           style={{ aspectRatio: '128 / 45' }}
-          src={world.thumbnail}
+          src={addUrlQuery(world.thumbnail, 'size', '1024')}
           alt={world.title}
           width={1024}
           height={360}

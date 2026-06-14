@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useAvatar } from './AvatarContext';
+import { addUrlQuery } from '@/lib/url';
 
 export function AvatarBanner() {
   const { avatar } = useAvatar();
@@ -16,7 +17,7 @@ export function AvatarBanner() {
         <Image
           className="object-cover w-full"
           style={{ aspectRatio: '128 / 45' }}
-          src={avatar.thumbnail}
+          src={addUrlQuery(avatar.thumbnail, 'size', '1024')}
           alt={avatar.title}
           width={1024}
           height={360}
