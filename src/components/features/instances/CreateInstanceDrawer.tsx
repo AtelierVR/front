@@ -29,32 +29,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter,
-} from '@/components/ui/dialog';
-import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerFooter,
-} from '@/components/ui/drawer';
-
-function useIsDesktop() {
-    const [isDesktop, setIsDesktop] = useState(false);
-    useEffect(() => {
-        const mq = window.matchMedia('(min-width: 640px)');
-        setIsDesktop(mq.matches);
-        const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-        mq.addEventListener('change', handler);
-        return () => mq.removeEventListener('change', handler);
-    }, []);
-    return isDesktop;
-}
+import { ModalDrawer } from '@/components/shared/ModalDrawer';
 
 interface CreateInstanceDrawerProps {
     defaultWorld?: ApiWorld;
@@ -72,7 +47,6 @@ export function CreateInstanceDrawer({
     const { t } = useTranslation();
     const router = useRouter();
     const { wellKnown, config } = useApi();
-    const isDesktop = useIsDesktop();
 
     const homeAddress = wellKnown?.address ?? null;
 
@@ -163,7 +137,7 @@ export function CreateInstanceDrawer({
         setThumbnail(defaultWorld?.thumbnail ?? null);
         setError(null);
         setMode('simple');
-        setRegion(config?.default_region ?? null);
+        setRegion(config?.default_region ?? '');
     }
 
     function handleOpenChange(o: boolean) {
@@ -547,34 +521,16 @@ export function CreateInstanceDrawer({
         </Button>
     );
 
-    if (isDesktop) {
-        return (
-            <Dialog open={open} onOpenChange={handleOpenChange}>
-                <DialogContent className="sm:max-w-3xl lg:max-w-4xl overflow-y-auto max-h-[90vh]">
-                    <DialogHeader className="flex-row items-center gap-4 pr-10">
-                        <DialogTitle>{t('instance.create_title')}</DialogTitle>
-                        {modeToggle}
-                    </DialogHeader>
-                    {formContent}
-                    <DialogFooter>{submitButton}</DialogFooter>
-                </DialogContent>
-            </Dialog>
-        );
-    }
-
     return (
-        <Drawer open={open} onOpenChange={handleOpenChange}>
-            <DrawerContent className="max-h-[90vh]">
-                <DrawerHeader className="flex-row items-center gap-4">
-                    <DrawerTitle>{t('instance.create_title')}</DrawerTitle>
-                    {modeToggle}
-                </DrawerHeader>
-                <div className="overflow-y-auto">
-                    {formContent}
-                </div>
-                <DrawerFooter>{submitButton}</DrawerFooter>
-            </DrawerContent>
-        </Drawer>
+        <ModalDrawer
+            open={open}
+            onOpenChange={handleOpenChange}
+            header={t('instance.create_title')}
+            headerEnd={modeToggle}
+            footer={submitButton}
+        >
+            {formContent}
+        </ModalDrawer>
     );
 }
 

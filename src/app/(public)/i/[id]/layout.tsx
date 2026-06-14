@@ -145,7 +145,7 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                 </div>
             </div>
 
-            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} title={t('instance.tab_edit')}>
+            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('instance.tab_edit')}>
                 <InstanceEditForm />
             </ModalDrawer>
         </InstanceContext.Provider>
