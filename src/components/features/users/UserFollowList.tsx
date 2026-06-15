@@ -9,6 +9,7 @@ import type { ApiUser } from '@/types/api';
 import { SkeletonList, EmptyState, PageNav, ResultList } from '@/components/shared/ResultGrid';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { getAlias } from '@/lib/api';
 import Link from 'next/link';
 
 interface Props {
@@ -44,7 +45,7 @@ function UserRow({ u }: { u: ApiUser }) {
             </div>
             <div>
                 <p className="font-bold text-lg">{displayName}</p>
-                <p className="text-sm text-muted-foreground">@{u.username}</p>
+                <p className="text-sm text-muted-foreground">{getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid')}</p>
             </div>
         </Link>
     );

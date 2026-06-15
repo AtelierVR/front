@@ -1,20 +1,48 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { useUser } from './UserContext';
-import Link from 'next/link';
+import { UserFollowModal } from './UserFollowModal';
 
-function StatItem({ count, label, href }: { count: number; label: string; href: string }) {
-    return <Link href={href} className="flex-1 text-center cursor-pointer">
+type FollowMode = 'followers' | 'following';
+
+function StatItem({ count, label, onClick }: { count: number; label: string; onClick: () => void }) {
+    return <button onClick={onClick} className="flex-1 text-center cursor-pointer hover:opacity-80 transition-opacity">
         <p className="text-2xl font-bold font-heading ">{count}</p>
         <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-    </Link>;
+    </button>;
 }
 
 export function UserFollowStats() {
     const { user } = useUser();
     const { t } = useTranslation();
+    const router = useRouter();
+    const pathname = usePathname();
+    const [modal, setModal] = useState<FollowMode | null>(null);
+
+    // Sync with URL hash so back/forward works
+    useEffect(() => {
+        const sync = () => {
+            const h = window.location.hash.slice(1);
+            setModal(h === 'followers' ? 'followers' : h === 'following' ? 'following' : null);
+        };
+        sync();
+        window.addEventListener('hashchange', sync);
+        return () => window.removeEventListener('hashchange', sync);
+    }, []);
+
+    const openModal = (mode: FollowMode) => {
+        setModal(mode);
+        router.push(`${pathname}#${mode}`);
+    };
+
+    const closeModal = () => {
+        setModal(null);
+        router.replace(pathname);
+    };
 
     if (!user)
         return <Card>
@@ -33,20 +61,30 @@ export function UserFollowStats() {
     if (user.followers === -1 && user.following === -1)
         return null;
 
-    return <Card>
-        <CardContent>
-            <div className="flex items-center divide-x divide-border">
-                {user.followers > -1 && <StatItem
-                    count={user.followers}
-                    label={t('user.followers')}
-                    href={`/u/${user.username}/followers`}
-                />}
-                {user.following > -1 && <StatItem
-                    count={user.following}
-                    label={t('user.following')}
-                    href={`/u/${user.username}/following`}
-                />}
-            </div>
-        </CardContent>
-    </Card>;
+    return <>
+        <Card>
+            <CardContent>
+                <div className="flex items-center divide-x divide-border">
+                    {user.followers > -1 && <StatItem
+                        count={user.followers}
+                        label={t('user.followers')}
+                        onClick={() => openModal('followers')}
+                    />}
+                    {user.following > -1 && <StatItem
+                        count={user.following}
+                        label={t('user.following')}
+                        onClick={() => openModal('following')}
+                    />}
+                </div>
+            </CardContent>
+        </Card>
+
+        {modal && (
+            <UserFollowModal
+                mode={modal}
+                open={!!modal}
+                onOpenChange={(open) => { if (!open) closeModal(); }}
+            />
+        )}
+    </>;
 }
