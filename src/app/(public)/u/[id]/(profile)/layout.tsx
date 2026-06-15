@@ -18,6 +18,7 @@ import { PresenceOverlay } from '@/components/features/users/PresenceOverlay';
 import { PageTitle } from '@/components/shared/PageTitle';
 import { useUser } from '@/components/features/users/UserContext';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
@@ -91,14 +92,17 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
             <Tabs
               value={activeTab}
               onValueChange={(v) => {
-                if (v === 'edit') { router.push('/settings/profile'); return; }
                 router.push(v === 'description' ? baseHref : `${baseHref}/${v}`);
               }}
             >
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="description">{t('users.description')}</TabsTrigger>
                 <TabsTrigger value="favorites">{t('users.favorites')}</TabsTrigger>
-                {isSame && <TabsTrigger value="edit">{tl('user.edit')}</TabsTrigger>}
+                {isSame && (
+                  <Button variant="ghost" size="icon-sm" className="shrink-0 ml-auto" onClick={() => router.push('/settings/profile')} aria-label={tl('user.edit')}>
+                    <Icon icon="material-symbols:edit-rounded" className="size-4" />
+                  </Button>
+                )}
               </TabsList>
             </Tabs>
 

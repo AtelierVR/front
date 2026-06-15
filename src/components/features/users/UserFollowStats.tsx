@@ -3,21 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { useUser } from './UserContext';
 import { UserFollowModal } from './UserFollowModal';
 
 type FollowMode = 'followers' | 'following';
 
-function StatItem({ count, label, onClick }: { count: number; label: string; onClick: () => void }) {
-    return <button onClick={onClick} className="flex-1 text-center cursor-pointer hover:opacity-80 transition-opacity">
-        <p className="text-2xl font-bold font-heading ">{count}</p>
+function StatItem({ count, label, href, onClick }: { count: number; label: string; href?: string; onClick?: () => void }) {
+    const className = "flex-1 text-center cursor-pointer hover:opacity-80 transition-opacity";
+    const content = <>
+        <p className="text-2xl font-bold font-heading">{count}</p>
         <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-    </button>;
+    </>;
+
+    if (href) return <Link href={href} className={className}>{content}</Link>;
+    return <button onClick={onClick} className={className}>{content}</button>;
 }
 
 export function UserFollowStats() {
-    const { user } = useUser();
+    const { user, isSame } = useUser();
     const { t } = useTranslation();
     const router = useRouter();
     const pathname = usePathname();
@@ -68,12 +73,14 @@ export function UserFollowStats() {
                     {user.followers > -1 && <StatItem
                         count={user.followers}
                         label={t('user.followers')}
-                        onClick={() => openModal('followers')}
+                        href={isSame ? '/settings/relations/followers' : undefined}
+                        onClick={isSame ? undefined : () => openModal('followers')}
                     />}
                     {user.following > -1 && <StatItem
                         count={user.following}
                         label={t('user.following')}
-                        onClick={() => openModal('following')}
+                        href={isSame ? '/settings/relations/following' : undefined}
+                        onClick={isSame ? undefined : () => openModal('following')}
                     />}
                 </div>
             </CardContent>
