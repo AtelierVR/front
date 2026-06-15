@@ -31,21 +31,17 @@ interface ModalDrawerProps {
 export function ModalDrawer({ open, onOpenChange, header, children, footer, headerEnd }: ModalDrawerProps) {
     const isMobile = useIsMobile();
 
-    const headerElement = typeof header === 'string' ? (
-        <>
-            <DialogTitle className="text-lg">{header}</DialogTitle>
-            {headerEnd}
-        </>
-    ) : (
-        header
-    );
-
     if (!isMobile) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
                 <DialogContent className="sm:max-w-3xl lg:max-w-4xl overflow-y-auto max-h-[90vh]">
                     <DialogHeader className="flex-row items-center gap-4 pr-10">
-                        {headerElement}
+                        {typeof header === 'string' ? (
+                            <>
+                                <DialogTitle className="text-lg">{header}</DialogTitle>
+                                {headerEnd}
+                            </>
+                        ) : header}
                     </DialogHeader>
                     {children}
                     {footer && <DialogFooter>{footer}</DialogFooter>}
@@ -58,7 +54,12 @@ export function ModalDrawer({ open, onOpenChange, header, children, footer, head
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent className="max-h-[90vh]">
                 <DrawerHeader className="flex-row items-center gap-4">
-                    {headerElement}
+                    {typeof header === 'string' ? (
+                        <>
+                            <DrawerTitle className="text-lg">{header}</DrawerTitle>
+                            {headerEnd}
+                        </>
+                    ) : header}
                 </DrawerHeader>
                 <div className="overflow-y-auto px-4 pb-2">
                     {children}

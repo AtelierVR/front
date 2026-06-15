@@ -1,17 +1,11 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog';
-import {
-    Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle,
-} from '@/components/ui/drawer';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { ModalDrawer } from '@/components/shared/ModalDrawer';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -66,33 +60,35 @@ async function cropDataUrl_(
             const srcW = img.naturalWidth;
             const srcH = img.naturalHeight;
 
-            // Scaled source dimensions
-            const scaledW = srcW * zoom;
-            const scaledH = srcH * zoom;
-
-            // Output canvas size = cropped to target ratio
-            let outW: number, outH: number;
-            if (scaledW / scaledH > targetRatio) {
-                outH = scaledH;
-                outW = scaledH * targetRatio;
+            // Maximum crop area at targetRatio that fits the source image (zoom=1)
+            let baseCropW: number, baseCropH: number;
+            if (srcW / srcH > targetRatio) {
+                baseCropH = srcH;
+                baseCropW = srcH * targetRatio;
             } else {
-                outW = scaledW;
-                outH = scaledW / targetRatio;
+                baseCropW = srcW;
+                baseCropH = srcW / targetRatio;
             }
 
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.round(outW);
-            canvas.height = Math.round(outH);
-            const ctx = canvas.getContext('2d');
-            if (!ctx) { resolve(dataUrl); return; }
-
-            // sourceX/sourceY in original image coords
-            const srcCropW = outW / zoom;
-            const srcCropH = outH / zoom;
+            // Crop region in source pixels shrinks as zoom increases
+            const srcCropW = baseCropW / zoom;
+            const srcCropH = baseCropH / zoom;
             const srcX = offsetX * srcW - srcCropW / 2;
             const srcY = offsetY * srcH - srcCropH / 2;
 
-            ctx.drawImage(img, srcX, srcY, srcCropW, srcCropH, 0, 0, canvas.width, canvas.height);
+            // Clamp to source boundaries (belt-and-suspenders)
+            const clampedSrcX = Math.max(0, Math.min(srcX, srcW - srcCropW));
+            const clampedSrcY = Math.max(0, Math.min(srcY, srcH - srcCropH));
+            const clampedW = Math.min(srcCropW, srcW - clampedSrcX);
+            const clampedH = Math.min(srcCropH, srcH - clampedSrcY);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(baseCropW);
+            canvas.height = Math.round(baseCropH);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { resolve(dataUrl); return; }
+
+            ctx.drawImage(img, clampedSrcX, clampedSrcY, clampedW, clampedH, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = () => resolve(dataUrl);
@@ -110,16 +106,26 @@ interface CropModalProps {
     targetRatio: number;
 }
 
-function CropControls({
+export interface CropControlsHandle {
+    zoom: number;
+    offsetX: number;
+    offsetY: number;
+}
+
+interface CropControlsProps {
+    dataUrl: string;
+    targetRatio: number;
+}
+
+const CropControls = forwardRef<CropControlsHandle, CropControlsProps>(function CropControls({
     dataUrl,
     targetRatio,
-    onConfirm,
-    onClose,
-}: Omit<CropModalProps, 'open'>) {
-    const [minZoom, setMinZoom] = useState(1);
+}, ref) {
     const [zoom, setZoom] = useState(1);
     const [offsetX, setOffsetX] = useState(0.5);
     const [offsetY, setOffsetY] = useState(0.5);
+
+    useImperativeHandle(ref, () => ({ zoom, offsetX, offsetY }), [zoom, offsetX, offsetY]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
@@ -128,81 +134,94 @@ function CropControls({
     // img natural size (loaded lazily)
     const naturalRef = useRef({ w: 1, h: 1 });
 
-    /**
-     * Minimum zoom so the image always covers the crop viewport with no empty space.
-     * = max(imgRatio/targetRatio, targetRatio/imgRatio)
-     */
-    const computeMinZoom = useCallback((w: number, h: number) => {
-        const imgRatio = w / h;
-        return Math.max(imgRatio / targetRatio, targetRatio / imgRatio);
+    /** Maximum crop area that fits the image at targetRatio (state → triggers re-render). */
+    const [baseCrop, setBaseCrop] = useState({ w: 1, h: 1 });
+    /** CSS scale multiplier so the object-contain image fills the viewport (state → triggers re-render). */
+    const [displayScale, setDisplayScale] = useState(1);
+
+    const computeBaseCrop = useCallback((w: number, h: number) => {
+        if (w / h > targetRatio) 
+            return { w: h * targetRatio, h };
+        return { w, h: w / targetRatio };
     }, [targetRatio]);
 
     const clampOffset = useCallback((x: number, y: number, z: number) => {
         const { w, h } = naturalRef.current;
-        const scaledW = w * z;
-        const scaledH = h * z;
-
-        // half of the crop window in image coords
-        let cropW: number, cropH: number;
-        if (scaledW / scaledH > targetRatio) {
-            cropH = scaledH; cropW = cropH * targetRatio;
-        } else {
-            cropW = scaledW; cropH = cropW / targetRatio;
-        }
-        const halfCropW = cropW / 2 / (w * z);
-        const halfCropH = cropH / 2 / (h * z);
+        // Crop region in image pixels at current zoom
+        const cropW = baseCrop.w / z;
+        const cropH = baseCrop.h / z;
+        const halfCropW = cropW / 2 / w;
+        const halfCropH = cropH / 2 / h;
 
         return {
             x: Math.min(1 - halfCropW, Math.max(halfCropW, x)),
             y: Math.min(1 - halfCropH, Math.max(halfCropH, y)),
         };
-    }, [targetRatio]);
+    }, [targetRatio, baseCrop]);
 
-    const onMouseDown = (e: React.MouseEvent) => {
-        draggingRef.current = true;
-        lastPosRef.current = { x: e.clientX, y: e.clientY };
-    };
-    const onMouseMove = (e: React.MouseEvent) => {
+    // Per-axis mouse sensitivity: the "tight" axis (where object-fit leaves
+    // gaps) needs displayScale×zoom to convert mouse px → offset fraction;
+    // the "loose" axis only needs zoom.
+    const mouseScaleX = zoom * (naturalRef.current.w / naturalRef.current.h > targetRatio ? displayScale : 1);
+    const mouseScaleY = zoom * (naturalRef.current.w / naturalRef.current.h < targetRatio ? displayScale : 1);
+
+    // global mouse listeners so dragging survives cursor leaving the modal.
+    // Uses accumulated delta from the mousedown position (not incremental)
+    // to avoid drift from nested state updaters and floating-point creep.
+    const grabOffsetRef = useRef({ x: 0.5, y: 0.5 });
+
+    const handleMouseMove = useCallback((e: MouseEvent) => {
         if (!draggingRef.current || !containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
         const dx = (e.clientX - lastPosRef.current.x) / rect.width;
         const dy = (e.clientY - lastPosRef.current.y) / rect.height;
+        const c = clampOffset(
+            grabOffsetRef.current.x - dx / mouseScaleX,
+            grabOffsetRef.current.y - dy / mouseScaleY,
+            zoom,
+        );
+        setOffsetX(c.x);
+        setOffsetY(c.y);
+    }, [zoom, clampOffset, mouseScaleX, mouseScaleY]);
+
+    const handleMouseUp = useCallback(() => {
+        draggingRef.current = false;
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+    }, [handleMouseMove]);
+
+    const onMouseDown = useCallback((e: React.MouseEvent) => {
+        draggingRef.current = true;
         lastPosRef.current = { x: e.clientX, y: e.clientY };
-        setOffsetX(ox => {
-            setOffsetY(oy => {
-                const c = clampOffset(ox - dx / zoom, oy - dy / zoom, zoom);
-                setOffsetX(c.x);
-                setOffsetY(c.y);
-                return c.y;
-            });
-            return ox;
-        });
-    };
-    const onMouseUp = () => { draggingRef.current = false; };
+        grabOffsetRef.current = { x: offsetX, y: offsetY };
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+    }, [handleMouseMove, handleMouseUp, offsetX, offsetY]);
 
     // touch
     const lastTouchRef = useRef({ x: 0, y: 0 });
+    const grabTouchOffsetRef = useRef({ x: 0.5, y: 0.5 });
     const onTouchStart = (e: React.TouchEvent) => {
         lastTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        grabTouchOffsetRef.current = { x: offsetX, y: offsetY };
     };
     const onTouchMove = (e: React.TouchEvent) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
         const dx = (e.touches[0].clientX - lastTouchRef.current.x) / rect.width;
         const dy = (e.touches[0].clientY - lastTouchRef.current.y) / rect.height;
-        lastTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        setOffsetX(ox => {
-            const ny = offsetY - dy / zoom;
-            const c = clampOffset(ox - dx / zoom, ny, zoom);
-            setOffsetX(c.x);
-            setOffsetY(c.y);
-            return c.x;
-        });
+        const c = clampOffset(
+            grabTouchOffsetRef.current.x - dx / mouseScaleX,
+            grabTouchOffsetRef.current.y - dy / mouseScaleY,
+            zoom,
+        );
+        setOffsetX(c.x);
+        setOffsetY(c.y);
     };
 
     const changeZoom = (delta: number) => {
         setZoom(z => {
-            const next = Math.min(5, Math.max(minZoom, z + delta));
+            const next = Math.min(5, Math.max(1, z + delta));
             const c = clampOffset(offsetX, offsetY, next);
             setOffsetX(c.x);
             setOffsetY(c.y);
@@ -210,9 +229,16 @@ function CropControls({
         });
     };
 
-    // preview: show image shifted so the cropped region is centered
-    // transform-origin = center of viewport
-    const previewTransform = `translate(${-(offsetX - 0.5) * 100 * zoom}%, ${-(offsetY - 0.5) * 100 * zoom}%) scale(${zoom})`;
+    // preview: CSS transform — displayScale ensures the object-contain image
+    // fills the viewport at zoom=1; user zoom multiplies on top.
+    // Translate uses different scales per axis: the "tight" axis (where
+    // object-fit leaves gaps) needs displayScale×zoom, the "loose" axis
+    // (where content naturally fills) only needs zoom.
+    const cssScale = displayScale * zoom;
+    const imgRatio = naturalRef.current.w / naturalRef.current.h;
+    const txScale = cssScale * (imgRatio > targetRatio ? 1 : imgRatio / targetRatio);
+    const tyScale = cssScale * (imgRatio > targetRatio ? targetRatio / imgRatio : 1);
+    const previewTransform = `translate(${-(offsetX - 0.5) * 100 * txScale}%, ${-(offsetY - 0.5) * 100 * tyScale}%) scale(${cssScale})`;
 
     return (
         <div className="flex flex-col gap-4">
@@ -222,9 +248,10 @@ function CropControls({
                 className="relative overflow-hidden rounded-lg border border-border select-none cursor-grab active:cursor-grabbing"
                 style={{ aspectRatio: targetRatio }}
                 onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-                onMouseUp={onMouseUp}
-                onMouseLeave={onMouseUp}
+                onWheel={(e) => {
+                    e.preventDefault();
+                    changeZoom(e.deltaY > 0 ? -0.1 : 0.1);
+                }}
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
             >
@@ -239,9 +266,19 @@ function CropControls({
                         const w = img.naturalWidth;
                         const h = img.naturalHeight;
                         naturalRef.current = { w, h };
-                        const mz = computeMinZoom(w, h);
-                        setMinZoom(mz);
-                        setZoom(z => Math.max(z, mz));
+
+                        const crop = computeBaseCrop(w, h);
+                        setBaseCrop(crop);
+
+                        const ds = Math.max(w / h / targetRatio, targetRatio / (w / h));
+                        setDisplayScale(ds);
+
+                        // Start at ~1.1× zoom so there is at least 5 % panning room
+                        // in the tightest dimension (user can always zoom back to 1×).
+                        const defaultZoom = 1.1;
+                        setZoom(defaultZoom);
+                        setOffsetX(0.5);
+                        setOffsetY(0.5);
                     }}
                     draggable={false}
                 />
@@ -249,12 +286,12 @@ function CropControls({
 
             {/* Zoom controls */}
             <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon-sm" onClick={() => changeZoom(-0.25)} disabled={zoom <= minZoom}>
+                <Button variant="outline" size="icon-sm" onClick={() => changeZoom(-0.25)} disabled={zoom <= 1}>
                     <Icon icon="material-symbols:remove-rounded" className="size-3.5" />
                 </Button>
                 <input
                     type="range"
-                    min={minZoom} max={5} step={0.05}
+                    min={1} max={5} step={0.05}
                     value={zoom}
                     onChange={e => { const z = Number(e.target.value); setZoom(z); const c = clampOffset(offsetX, offsetY, z); setOffsetX(c.x); setOffsetY(c.y); }}
                     className="flex-1 h-1.5 accent-primary"
@@ -264,44 +301,30 @@ function CropControls({
                 </Button>
                 <span className="text-xs text-muted-foreground tabular-nums w-10 text-right">{zoom.toFixed(2)}×</span>
             </div>
-
-            <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={onClose}>Cancel</Button>
-                <Button onClick={() => onConfirm(zoom, offsetX, offsetY)}>Apply</Button>
-            </div>
         </div>
     );
-}
+});
 
 function CropModal({ open, onClose, onConfirm, dataUrl, targetRatio }: CropModalProps) {
-    const isMobile = useIsMobile();
-
-    if (isMobile) {
-        return (
-            <Drawer open={open} onOpenChange={v => !v && onClose()}>
-                <DrawerContent>
-                    <DrawerHeader>
-                        <DrawerTitle>Adjust image</DrawerTitle>
-                    </DrawerHeader>
-                    <div className="px-4 pb-2">
-                        <CropControls dataUrl={dataUrl} targetRatio={targetRatio} onConfirm={onConfirm} onClose={onClose} />
-                    </div>
-                    <DrawerFooter />
-                </DrawerContent>
-            </Drawer>
-        );
-    }
+    const controlsRef = useRef<CropControlsHandle>(null);
 
     return (
-        <Dialog open={open} onOpenChange={v => !v && onClose()}>
-            <DialogContent className="sm:max-w-lg" showCloseButton={false}>
-                <DialogHeader>
-                    <DialogTitle>Adjust image</DialogTitle>
-                </DialogHeader>
-                <CropControls dataUrl={dataUrl} targetRatio={targetRatio} onConfirm={onConfirm} onClose={onClose} />
-                <DialogFooter />
-            </DialogContent>
-        </Dialog>
+        <ModalDrawer
+            open={open}
+            onOpenChange={v => !v && onClose()}
+            header="Adjust image"
+            footer={
+                <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button onClick={() => {
+                        const c = controlsRef.current;
+                        if (c) onConfirm(c.zoom, c.offsetX, c.offsetY);
+                    }}>Apply</Button>
+                </div>
+            }
+        >
+            <CropControls ref={controlsRef} dataUrl={dataUrl} targetRatio={targetRatio} />
+        </ModalDrawer>
     );
 }
 

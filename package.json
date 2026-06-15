@@ -32,6 +32,7 @@
     "fumadocs-ui": "^16.8.10",
     "i18next": "^26.0.4",
     "i18next-browser-languagedetector": "^8.2.1",
+    "image-in-browser": "^3.5.2",
     "next": "16.2.3",
     "next-themes": "^0.4.6",
     "postprocessing": "^6.39.0",
