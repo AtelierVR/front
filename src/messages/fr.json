@@ -249,12 +249,64 @@
     "field_capacity_desc": "Nombre maximum de joueurs simultanés. Zéro pour illimité."
   },
   "settings": {
-    "profile": "Profil",
-    "account": "Compte",
+    "nav": {
+      "profile": "Profil"
+    },
+    "account": {
+      "title": "Compte",
+      "description": "Gérez vos paramètres de compte, nom d'utilisateur et tags.",
+      "username": {
+        "title": "Nom d'utilisateur",
+        "description": "Votre identifiant unique. Le changer modifiera l'URL de votre profil."
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Tags de préférences et visibilité commençant par usr:."
+      }
+    },
     "security": "Sécurité",
     "sessions": "Sessions",
     "follow": "Abonnements",
-    "tables": "Tables de données"
+    "tables": "Tables de données",
+    "profile": {
+      "description": "Gérez vos informations de profil public.",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "saved": "Profil enregistré avec succès.",
+      "display": {
+        "title": "Nom d'affichage",
+        "description": "Votre nom public. 50 caractères maximum."
+      },
+      "bio": {
+        "title": "Bio",
+        "description": "Une courte description à propos de vous. Supporte le format Markdown.",
+        "placeholder": "Écrivez quelque chose à propos de vous…"
+      },
+      "pronoun": {
+        "title": "Pronom",
+        "description": "Votre pronom préféré, ex. iel, elle/la, il/le."
+      },
+      "presence": {
+        "title": "Présence",
+        "description": "Votre statut en ligne visible par les autres utilisateurs.",
+        "placeholder": "Quoi de neuf ?"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Tags personnalisés commençant par usr:. Utilisés pour les préférences et la visibilité.",
+        "hint": "Format : usr:lettres_minuscules. Seuls a-z, 0-9 et underscores après le préfixe. Exemple : usr:hide_followers"
+      },
+      "images": {
+        "title": "Images du profil",
+        "thumbnail": "Avatar",
+        "thumbnail_desc": "Votre photo de profil.",
+        "thumbnail_hint": "512×512px — 1:1",
+        "banner": "Bannière",
+        "banner_desc": "Votre image d'en-tête.",
+        "banner_hint": "1024×768px — 4:3",
+        "change": "Modifier"
+      }
+    }
   },
   "search": {
     "title": "Rechercher",

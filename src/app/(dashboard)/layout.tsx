@@ -157,12 +157,56 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 icon: <Icon icon="material-symbols:dashboard-rounded" />,
             },
             ...adminItems,
-            { type: 'separator' },
+            { type: 'separator', name: t('nav.settings') },
             {
-                type: 'page',
+                type: 'folder',
                 name: t('nav.settings'),
-                url: '/settings',
                 icon: <Icon icon="material-symbols:settings-rounded" />,
+                index: {
+                    type: 'page',
+                    name: t('settings.nav.profile'),
+                    url: '/settings/profile',
+                    icon: <Icon icon="material-symbols:person-rounded" />,
+                },
+                children: [
+                    {
+                        type: 'page',
+                        name: t('settings.nav.profile'),
+                        url: '/settings/profile',
+                        icon: <Icon icon="material-symbols:person-rounded" />,
+                    },
+                    {
+                        type: 'page',
+                        name: t('settings.account.title'),
+                        url: '/settings/account',
+                        icon: <Icon icon="material-symbols:manage-accounts-rounded" />,
+                    },
+                    {
+                        type: 'folder',
+                        name: t('user.followers', 'Relations'),
+                        icon: <Icon icon="material-symbols:group-rounded" />,
+                        index: {
+                            type: 'page',
+                            name: t('user.followers'),
+                            url: '/settings/relations/followers',
+                            icon: <Icon icon="material-symbols:person-add-rounded" />,
+                        },
+                        children: [
+                            {
+                                type: 'page',
+                                name: t('user.followers'),
+                                url: '/settings/relations/followers',
+                                icon: <Icon icon="material-symbols:person-add-rounded" />,
+                            },
+                            {
+                                type: 'page',
+                                name: t('user.following'),
+                                url: '/settings/relations/following',
+                                icon: <Icon icon="material-symbols:how-to-reg-rounded" />,
+                            },
+                        ],
+                    },
+                ],
             },
         ],
     };

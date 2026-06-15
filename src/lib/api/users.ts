@@ -44,6 +44,8 @@ export interface UpdateCurrentUserPayload {
     tags?: string[] | null;
     home?: string | null;
     avatar?: string | null;
+    presence?: string;
+    presence_status?: string | null;
 }
 
 export async function updateCurrentUser(data: UpdateCurrentUserPayload): Promise<ApiCurrentUser> {

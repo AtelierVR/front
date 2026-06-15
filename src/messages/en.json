@@ -248,12 +248,64 @@
     "field_capacity_desc": "Maximum number of simultaneous players. Zero for unlimited."
   },
   "settings": {
-    "profile": "Profile",
-    "account": "Account",
+    "nav": {
+      "profile": "Profile"
+    },
+    "account": {
+      "title": "Account",
+      "description": "Manage your account settings, username and tags.",
+      "username": {
+        "title": "Username",
+        "description": "Your unique username. Changing it will update your profile URL."
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Preferences and visibility tags starting with usr:."
+      }
+    },
     "security": "Security",
     "sessions": "Sessions",
     "follow": "Follow",
-    "tables": "Data Tables"
+    "tables": "Data Tables",
+    "profile": {
+      "description": "Manage your public profile information.",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Profile saved successfully.",
+      "display": {
+        "title": "Display name",
+        "description": "Your public display name. 50 characters max."
+      },
+      "bio": {
+        "title": "Bio",
+        "description": "A short description about you. Supports Markdown formatting.",
+        "placeholder": "Write something about yourself…"
+      },
+      "pronoun": {
+        "title": "Pronoun",
+        "description": "Your preferred pronoun, e.g. they/them, she/her, he/him."
+      },
+      "presence": {
+        "title": "Presence",
+        "description": "Your online status visible to other users.",
+        "placeholder": "What are you up to?"
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Custom tags starting with usr:. Used for preferences and visibility settings.",
+        "hint": "Format: usr:lowercase_letters. Only a-z, 0-9 and underscores after the prefix. Example: usr:hide_followers"
+      },
+      "images": {
+        "title": "Profile images",
+        "thumbnail": "Avatar",
+        "thumbnail_desc": "Your profile picture.",
+        "thumbnail_hint": "512×512px — 1:1",
+        "banner": "Banner",
+        "banner_desc": "Your profile header.",
+        "banner_hint": "1024×768px — 4:3",
+        "change": "Change"
+      }
+    }
   },
   "profile": {
     "worlds": "Worlds",
@@ -390,7 +442,6 @@
     "col_display": "Display",
     "col_player_id": "ID",
     "col_client_id": "Client",
-    "col_user": "User",
     "col_joined_at": "Joined At",
     "col_connected_at": "Connected At",
     "col_flags": "Flags"

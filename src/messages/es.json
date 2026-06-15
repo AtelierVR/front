@@ -241,12 +241,53 @@
     "field_capacity_desc": "Número máximo de jugadores simultáneos. Cero para ilimitado."
   },
   "settings": {
-    "profile": "Perfil",
+    "nav": {
+      "profile": "Perfil"
+    },
     "account": "Cuenta",
     "security": "Seguridad",
     "sessions": "Sesiones",
     "follow": "Seguidos",
-    "tables": "Tablas de datos"
+    "tables": "Tablas de datos",
+    "profile": {
+      "description": "Gestiona tu información de perfil público.",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "saved": "Perfil guardado correctamente.",
+      "display": {
+        "title": "Nombre",
+        "description": "Tu nombre público. Máximo 50 caracteres."
+      },
+      "bio": {
+        "title": "Bio",
+        "description": "Una breve descripción sobre ti. Soporta formato Markdown.",
+        "placeholder": "Escribe algo sobre ti…"
+      },
+      "pronoun": {
+        "title": "Pronombre",
+        "description": "Tu pronombre preferido, ej. elle, ella/la, él/le."
+      },
+      "presence": {
+        "title": "Presencia",
+        "description": "Tu estado en línea visible para otros usuarios.",
+        "placeholder": "¿Qué estás haciendo?"
+      },
+      "tags": {
+        "title": "Etiquetas",
+        "description": "Etiquetas personalizadas que empiezan por usr:. Se usan para preferencias y visibilidad.",
+        "hint": "Formato: usr:letras_minúsculas. Solo a-z, 0-9 y guiones bajos tras el prefijo. Ejemplo: usr:hide_followers"
+      },
+      "images": {
+        "title": "Imágenes de perfil",
+        "thumbnail": "Avatar",
+        "thumbnail_desc": "Tu foto de perfil.",
+        "thumbnail_hint": "512×512px — 1:1",
+        "banner": "Banner",
+        "banner_desc": "Tu imagen de cabecera.",
+        "banner_hint": "1024×768px — 4:3",
+        "change": "Cambiar"
+      }
+    }
   },
   "profile": {
     "worlds": "Mundos",
