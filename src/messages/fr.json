@@ -305,6 +305,26 @@
         "banner_desc": "Votre image d'en-tête.",
         "banner_hint": "1024×768px — 4:3",
         "change": "Modifier"
+      },
+      "country": {
+        "title": "Pays",
+        "description": "Votre pays affiché sur votre profil.",
+        "selected": "Sélectionné ({{count}})",
+        "none": "Aucun pays sélectionné.",
+        "add": "Ajouter un pays",
+        "search": "Rechercher un pays…",
+        "no_match": "Aucun pays ne correspond.",
+        "all_added": "Tous les pays ont été ajoutés."
+      },
+      "language": {
+        "title": "Langues",
+        "description": "Langues que vous parlez.",
+        "selected": "Sélectionnée ({{count}})",
+        "none": "Aucune langue sélectionnée.",
+        "add": "Ajouter une langue",
+        "search": "Rechercher une langue…",
+        "no_match": "Aucune langue ne correspond.",
+        "all_added": "Toutes les langues ont été ajoutées."
       }
     }
   },

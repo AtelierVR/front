@@ -304,6 +304,26 @@
         "banner_desc": "Your profile header.",
         "banner_hint": "1024×768px — 4:3",
         "change": "Change"
+      },
+      "country": {
+        "title": "Country",
+        "description": "Your country shown on your profile.",
+        "selected": "Selected ({{count}})",
+        "none": "No country selected.",
+        "add": "Add a country",
+        "search": "Search countries…",
+        "no_match": "No countries match your search.",
+        "all_added": "All countries have been added."
+      },
+      "language": {
+        "title": "Languages",
+        "description": "Languages you speak.",
+        "selected": "Selected ({{count}})",
+        "none": "No language selected.",
+        "add": "Add a language",
+        "search": "Search languages…",
+        "no_match": "No languages match your search.",
+        "all_added": "All languages have been added."
       }
     }
   },

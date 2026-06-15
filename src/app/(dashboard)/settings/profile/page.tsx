@@ -12,11 +12,21 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { DOT_COLORS } from '@/components/features/users/PresenceBadge';
+import { useCountries } from '@/lib/hooks/useCountries';
+import { useLanguages } from '@/lib/hooks/useLanguages';
+import { localeFlagUrl } from '@/lib/languages';
 import type { ApiUserPresence } from '@/types/api';
 
 type PresenceStatus = ApiUserPresence['status'];
 
 const PRESENCE_OPTIONS: PresenceStatus[] = ['oja', 'ojf', 'online', 'busy', 'dnd', 'stream', 'offline'];
+
+const CTY_TAG = 'usr:country_';
+const LNG_TAG = 'usr:lang_';
+
+function countryTag(code: string) { return `${CTY_TAG}${code.toLowerCase()}`; }
+function langTag(code: string) { return `${LNG_TAG}${code.toLowerCase()}`; }
+function isNotCtyOrLng(t: string) { return !t.startsWith(CTY_TAG) && !t.startsWith(LNG_TAG); }
 
 export default function ProfilePage() {
     const { t } = useTranslation();
@@ -29,11 +39,16 @@ export default function ProfilePage() {
     const [presenceStatus, setPresenceStatus] = useState<string | undefined>();
     const [thumbnail, setThumbnail] = useState<string | null | undefined>();
     const [banner, setBanner] = useState<string | null | undefined>();
+    const [selectedCty, setSelectedCty] = useState<string[] | undefined>();
+    const [selectedLng, setSelectedLng] = useState<string[] | undefined>();
 
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [dirty, setDirty] = useState(false);
+
+    const { countries, loading: ctyLoading } = useCountries();
+    const { languages, loading: lngLoading } = useLanguages();
 
     // Reset on user change
     useEffect(() => {
@@ -63,12 +78,24 @@ export default function ProfilePage() {
         setError(null);
         setSuccess(false);
         try {
+            // Build tags: preserve original for untouched categories, use new selection for touched ones
+            const allCurrentTags = currentUser?.tags ?? [];
+            const ctyTags = selectedCty !== undefined
+                ? selectedCty.map(c => countryTag(c))
+                : allCurrentTags.filter(t => t.startsWith(CTY_TAG));
+            const lngTags = selectedLng !== undefined
+                ? selectedLng.map(c => langTag(c))
+                : allCurrentTags.filter(t => t.startsWith(LNG_TAG));
+            const otherTags = allCurrentTags.filter(isNotCtyOrLng);
+            const allTags = [...otherTags, ...ctyTags, ...lngTags];
+
             await updateCurrentUser({
                 display: display ?? undefined,
                 bio: bio !== undefined ? (bio || null) : undefined,
                 pronoun: pronoun !== undefined ? (pronoun || null) : undefined,
                 presence: presence ?? undefined,
                 presence_status: presenceStatus !== undefined ? (presenceStatus || null) : undefined,
+                tags: (selectedCty !== undefined || selectedLng !== undefined) ? allTags : undefined,
             });
             // Upload images if changed
             if (thumbnail === null) {
@@ -191,6 +218,30 @@ export default function ProfilePage() {
                             <p className="text-sm text-muted-foreground">{t('settings.profile.presence.description')}</p>
                         </section>
 
+                        {/* Country / Language */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <section className="space-y-2">
+                                <h2 className="text-base font-semibold">{t('settings.profile.country.title')}</h2>
+                                <p className="text-sm text-muted-foreground">{t('settings.profile.country.description')}</p>
+                                <CountriesPicker
+                                    countries={countries}
+                                    loading={ctyLoading}
+                                    selected={selectedCty ?? currentUser.tags.filter(t => t.startsWith(CTY_TAG)).map(t => t.slice(CTY_TAG.length))}
+                                    onChange={codes => { setSelectedCty(codes); markDirty(); }}
+                                />
+                            </section>
+                            <section className="space-y-2">
+                                <h2 className="text-base font-semibold">{t('settings.profile.language.title')}</h2>
+                                <p className="text-sm text-muted-foreground">{t('settings.profile.language.description')}</p>
+                                <LanguagesPicker
+                                    languages={languages}
+                                    loading={lngLoading}
+                                    selected={selectedLng ?? currentUser.tags.filter(t => t.startsWith(LNG_TAG)).map(t => t.slice(LNG_TAG.length))}
+                                    onChange={codes => { setSelectedLng(codes); markDirty(); }}
+                                />
+                            </section>
+                        </div>
+
                     </div>
 
                     {/* Right: Images */}
@@ -224,5 +275,150 @@ export default function ProfilePage() {
                 </div>
             </div>
         </>
+    );
+}
+
+// ── Inline pickers ──────────────────────────────────────────────────────────
+
+function CountriesPicker({ countries, loading, selected, onChange }: { countries: { id: string; name: string; flag: string }[]; loading: boolean; selected: string[]; onChange: (codes: string[]) => void }) {
+    const { t } = useTranslation();
+    const [q, setQ] = useState('');
+    const add = (id: string) => { if (!selected.includes(id)) onChange([...selected, id]); };
+    const remove = (id: string) => onChange(selected.filter(c => c !== id));
+    const available = countries.filter(c => !selected.includes(c.id) && c.name.toLowerCase().includes(q.toLowerCase()));
+
+    return (
+        <div className="space-y-3">
+            <div className="space-y-1.5">
+                <h3 className="text-sm font-medium">{t('settings.profile.country.selected', { count: selected.length })}</h3>
+                <div className="flex flex-wrap gap-2">
+                    {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.country.none')}</p>}
+                    {selected.map(id => {
+                        const c = countries.find(x => x.id === id);
+                        if (!c) return null;
+                        return (
+                            <span key={id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(id)}>
+                                <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
+                                <span>{c.name}</span>
+                                <Icon icon="material-symbols:close-rounded" className="size-3" />
+                            </span>
+                        );
+                    })}
+                </div>
+            </div>
+            <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-medium">{t('settings.profile.country.add')}</h3>
+                    <div className="relative w-full sm:w-48">
+                        <Icon icon="material-symbols:search-rounded" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <input
+                            className="flex h-8 w-full rounded-md border border-input bg-transparent pl-8 pr-8 text-sm"
+                            placeholder={t('settings.profile.country.search')}
+                            value={q}
+                            onChange={e => setQ(e.target.value)}
+                        />
+                        {q && (
+                            <button onClick={() => setQ('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                <Icon icon="material-symbols:close-rounded" className="size-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+                <div className="h-36 overflow-y-auto pr-1">
+                    {loading ? (
+                        <div className="flex flex-wrap gap-2">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="h-7 w-24 bg-fd-muted animate-pulse rounded-full" />
+                            ))}
+                        </div>
+                    ) : available.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {available.map(c => (
+                                <span key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(c.id)}>
+                                    <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
+                                    <span>{c.name}</span>
+                                    <Icon icon="material-symbols:add-rounded" className="size-3" />
+                                </span>
+                            ))}
+                        </div>
+                    ) : q ? (
+                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.no_match')}</p>
+                    ) : (
+                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.all_added')}</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function LanguagesPicker({ languages, loading, selected, onChange }: { languages: { code: string; name: string; flag: string }[]; loading: boolean; selected: string[]; onChange: (codes: string[]) => void }) {
+    const { t } = useTranslation();
+    const [q, setQ] = useState('');
+    const add = (code: string) => { if (!selected.includes(code)) onChange([...selected, code]); };
+    const remove = (code: string) => onChange(selected.filter(c => c !== code));
+    const available = languages.filter(l => !selected.includes(l.code) && l.name.toLowerCase().includes(q.toLowerCase()));
+
+    return (
+        <div className="space-y-3">
+            <div className="space-y-1.5">
+                <h3 className="text-sm font-medium">{t('settings.profile.language.selected', { count: selected.length })}</h3>
+                <div className="flex flex-wrap gap-2">
+                    {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.language.none')}</p>}
+                    {selected.map(code => {
+                        const l = languages.find(x => x.code === code);
+                        return (
+                            <span key={code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(code)}>
+                                {l?.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                                <span>{l?.name ?? code}</span>
+                                <Icon icon="material-symbols:close-rounded" className="size-3" />
+                            </span>
+                        );
+                    })}
+                </div>
+            </div>
+            <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-medium">{t('settings.profile.language.add')}</h3>
+                    <div className="relative w-full sm:w-48">
+                        <Icon icon="material-symbols:search-rounded" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <input
+                            className="flex h-8 w-full rounded-md border border-input bg-transparent pl-8 pr-8 text-sm"
+                            placeholder={t('settings.profile.language.search')}
+                            value={q}
+                            onChange={e => setQ(e.target.value)}
+                        />
+                        {q && (
+                            <button onClick={() => setQ('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                <Icon icon="material-symbols:close-rounded" className="size-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+                <div className="h-36 overflow-y-auto pr-1">
+                    {loading ? (
+                        <div className="flex flex-wrap gap-2">
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="h-7 w-20 bg-fd-muted animate-pulse rounded-full" />
+                            ))}
+                        </div>
+                    ) : available.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {available.map(l => (
+                                <span key={l.code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(l.code)}>
+                                    {l.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                                    <span>{l.name}</span>
+                                    <Icon icon="material-symbols:add-rounded" className="size-3" />
+                                </span>
+                            ))}
+                        </div>
+                    ) : q ? (
+                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.no_match')}</p>
+                    ) : (
+                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.all_added')}</p>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
