@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { getAlias, useApi } from '@/lib/api';
 import { noxIdToSegment } from '@/types/nox-identifier';
+import { localeFlagUrl } from '@/lib/languages';
 import type { ApiInstance } from '@/types/api';
 
 interface InstanceCardProps {
@@ -15,6 +17,17 @@ interface InstanceCardProps {
 
 export function InstanceCard({ instance }: InstanceCardProps) {
   const { t } = useTranslation();
+  const [flagUrl, setFlagUrl] = useState<string | null>(null);
+
+  const region = instance.connection?.region ?? null;
+
+  useEffect(() => {
+    if (region) {
+      localeFlagUrl(region).then(setFlagUrl);
+    } else {
+      setFlagUrl(null);
+    }
+  }, [region]);
 
   const unlimited = instance.capacity === 0;
   const isFull = !unlimited && instance.count >= instance.capacity;
@@ -61,6 +74,18 @@ export function InstanceCard({ instance }: InstanceCardProps) {
           )}
         </div>
       </div>
+
+      {/* Region flag — top-left */}
+      {flagUrl && (
+        <div className="absolute top-3 left-3 z-10 rounded-sm overflow-hidden shadow-md">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={flagUrl}
+            alt={region ?? 'region'}
+            className="h-5 object-cover"
+          />
+        </div>
+      )}
     </Link>
   );
 }
