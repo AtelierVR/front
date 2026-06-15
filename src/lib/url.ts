@@ -5,7 +5,7 @@
 export function addUrlQuery(url: string | URL, key: string, value?: string): string {
   const u = new URL(url.toString());
   u.searchParams.set(key, value ?? '');
-  return u.toString();
+  return u.toString().replace(/(\&|\?)\=/g, '$1').replace(/\=$/g, '');
 }
 
 export function removeUrlQuery(url: string | URL, key: string): string {

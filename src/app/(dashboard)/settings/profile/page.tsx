@@ -15,6 +15,7 @@ import { DOT_COLORS } from '@/components/features/users/PresenceBadge';
 import { useCountries } from '@/lib/hooks/useCountries';
 import { useLanguages } from '@/lib/hooks/useLanguages';
 import { localeFlagUrl } from '@/lib/languages';
+import { addUrlQuery, removeUrlQuery } from '@/lib/url';
 import type { ApiUserPresence } from '@/types/api';
 
 type PresenceStatus = ApiUserPresence['status'];
@@ -27,6 +28,12 @@ const LNG_TAG = 'usr:lang_';
 function countryTag(code: string) { return `${CTY_TAG}${code.toLowerCase()}`; }
 function langTag(code: string) { return `${LNG_TAG}${code.toLowerCase()}`; }
 function isNotCtyOrLng(t: string) { return !t.startsWith(CTY_TAG) && !t.startsWith(LNG_TAG); }
+
+/** Strips the `size` query param from a remote image URL. Returns null for falsy values. */
+function cleanImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  return addUrlQuery(removeUrlQuery(url, 'size'), 'unoptimized');
+}
 
 export default function ProfilePage() {
     const { t } = useTranslation();
@@ -69,8 +76,8 @@ export default function ProfilePage() {
     const getPronoun = () => pronoun ?? currentUser?.pronoun ?? '';
     const getPresence = () => presence ?? currentUser?.presence?.status ?? 'offline';
     const getPresenceStatus = () => presenceStatus ?? currentUser?.presence?.text ?? '';
-    const getThumbnail = () => thumbnail !== undefined ? thumbnail : currentUser?.thumbnail ?? null;
-    const getBanner = () => banner !== undefined ? banner : currentUser?.banner ?? null;
+    const getThumbnail = () => thumbnail !== undefined ? thumbnail : cleanImageUrl(currentUser?.thumbnail);
+    const getBanner = () => banner !== undefined ? banner : cleanImageUrl(currentUser?.banner);
 
     const handleSave = async () => {
         if (!dirty || saving) return;
