@@ -30,6 +30,8 @@
     "date-fns": "^4.1.0",
     "fumadocs-core": "^16.8.10",
     "fumadocs-ui": "^16.8.10",
+    "gif.js": "^0.2.0",
+    "gifuct-js": "^2.1.2",
     "i18next": "^26.0.4",
     "i18next-browser-languagedetector": "^8.2.1",
     "image-in-browser": "^3.5.2",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/gif.js": "^0.2.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

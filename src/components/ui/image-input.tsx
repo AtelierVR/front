@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ModalDrawer } from '@/components/shared/ModalDrawer';
+import { isAnimatedGif, cropAnimatedGif } from '@/lib/image-animated';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -344,8 +345,9 @@ interface ImageInputProps {
     cropOnAspectMismatch?: boolean;
     /**
      * When true (default), strips image metadata (EXIF, ICC, etc.) by
-     * redrawing onto a canvas. Has no effect on animated GIF/WebP frames
-     * that the browser can't repaint — in those cases the original is kept.
+     * redrawing onto a canvas. Animated GIFs are detected and kept
+     * intact — metadata stripping is skipped for them to preserve
+     * animation. Cropping animated GIFs is done frame-by-frame.
      */
     stripMetadata?: boolean;
     className?: string;
@@ -367,6 +369,8 @@ export function ImageInput({
 
     // crop modal state
     const [cropDataUrl, setCropDataUrl] = useState<string | null>(null);
+    // Track whether the image currently in the crop modal is animated
+    const cropIsAnimatedRef = useRef(false);
     const targetRatio = parseRatio(aspectRatio);
 
     const processFile = useCallback(async (file: File) => {
@@ -377,6 +381,9 @@ export function ImageInput({
             reader.onload = (e) => res(e.target!.result as string);
             reader.readAsDataURL(file);
         });
+
+        // Detect animated GIF early (before any canvas processing)
+        const animated = await isAnimatedGif(file, rawDataUrl);
 
         // Check whether the image ratio matches
         const needsCrop = await new Promise<boolean>((res) => {
@@ -390,8 +397,13 @@ export function ImageInput({
         });
 
         if (cropOnAspectMismatch && needsCrop) {
-            // Open crop modal — defer metadata stripping to after crop
+            // Open crop modal — for animated GIFs the actual crop is deferred to handleCropConfirm
+            cropIsAnimatedRef.current = animated;
             setCropDataUrl(rawDataUrl);
+        } else if (animated) {
+            // Animated GIF with matching ratio: keep original (canvas processing kills animation)
+            setImageError(false);
+            onChange(rawDataUrl);
         } else {
             const result = stripMetadata ? await stripMetadataFromDataUrl(rawDataUrl) : rawDataUrl;
             setImageError(false);
@@ -414,8 +426,17 @@ export function ImageInput({
 
     const handleCropConfirm = useCallback(async (zoom: number, offsetX: number, offsetY: number) => {
         if (!cropDataUrl) return;
-        const cropped = await cropDataUrl_(cropDataUrl, targetRatio, zoom, offsetX, offsetY);
-        const result = stripMetadata ? await stripMetadataFromDataUrl(cropped) : cropped;
+
+        let result: string;
+        if (cropIsAnimatedRef.current) {
+            // Frame-by-frame animated GIF crop — preserves all frames and delays
+            result = await cropAnimatedGif(cropDataUrl, targetRatio, zoom, offsetX, offsetY);
+        } else {
+            const cropped = await cropDataUrl_(cropDataUrl, targetRatio, zoom, offsetX, offsetY);
+            result = stripMetadata ? await stripMetadataFromDataUrl(cropped) : cropped;
+        }
+
+        cropIsAnimatedRef.current = false;
         setCropDataUrl(null);
         setImageError(false);
         onChange(result);
