@@ -96,15 +96,7 @@ export default function ProfilePage() {
             const otherTags = allCurrentTags.filter(isNotCtyOrLng);
             const allTags = [...otherTags, ...ctyTags, ...lngTags];
 
-            await updateCurrentUser({
-                display: display ?? undefined,
-                bio: bio !== undefined ? (bio || null) : undefined,
-                pronoun: pronoun !== undefined ? (pronoun || null) : undefined,
-                presence: presence ?? undefined,
-                presence_status: presenceStatus !== undefined ? (presenceStatus || null) : undefined,
-                tags: (selectedCty !== undefined || selectedLng !== undefined) ? allTags : undefined,
-            });
-            // Upload images if changed
+            // Upload images first so updateCurrentUser returns fresh URLs
             if (thumbnail === null) {
                 // TODO: delete thumbnail API not available yet
             } else if (thumbnail?.startsWith('data:')) {
@@ -117,6 +109,18 @@ export default function ProfilePage() {
                 const blob = await (await fetch(banner)).blob();
                 await uploadUserBanner(blob);
             }
+
+            // updateCurrentUser calls dispatchCurrentUserReplace which refreshes
+            // currentUser in context (including new thumbnail/banner URLs).
+            await updateCurrentUser({
+                display: display ?? undefined,
+                bio: bio !== undefined ? (bio || null) : undefined,
+                pronoun: pronoun !== undefined ? (pronoun || null) : undefined,
+                presence: presence ?? undefined,
+                presence_status: presenceStatus !== undefined ? (presenceStatus || null) : undefined,
+                tags: (selectedCty !== undefined || selectedLng !== undefined) ? allTags : undefined,
+            });
+
             setDisplay(undefined);
             setBio(undefined);
             setPronoun(undefined);
