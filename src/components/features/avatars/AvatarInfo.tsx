@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useAvatar } from './AvatarContext';
+import { releaseVersion } from '@/types/api';
 
 export function AvatarInfo() {
   const { avatar, isOwner, isContributor } = useAvatar();
@@ -25,7 +26,7 @@ export function AvatarInfo() {
         {avatar && (
           <div className="flex items-center justify-between gap-2">
             <dt className="text-muted-foreground">{t('avatar.release')}</dt>
-            <dd className="font-mono text-xs">{avatar.release.resolved >= 0 ? `v${avatar.release.resolved}` : '—'}</dd>
+            <dd className="font-mono text-xs">{releaseVersion(avatar.release) >= 0 ? `v${releaseVersion(avatar.release)}` : '—'}</dd>
           </div>
         )}
 

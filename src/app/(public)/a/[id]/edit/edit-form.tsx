@@ -15,6 +15,7 @@ import { ImageInput } from '@/components/ui/image-input';
 import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { UserListInput } from '@/components/ui/user-list-input';
 import { ApiError } from '@/types/envelope';
+import { releaseVersion, releaseIsAuto } from '@/types/api';
 import { Icon } from '@iconify/react';
 
 // ── Flags ────────────────────────────────────────────────────────────────────
@@ -200,7 +201,7 @@ export function AvatarEditForm() {
                         <InputGroup>
                             <InputGroupInput
                                 type="number"
-                                value={release ?? (avatar.release.raw !== -1 ? String(avatar.release.raw) : '-1')}
+                                value={release ?? (!releaseIsAuto(avatar.release) ? String(releaseVersion(avatar.release)) : '-1')}
                                 onChange={e => { setRelease(e.target.value); setFlags(f => f | F_RELEASE); }}
                                 placeholder="-1"
                             />

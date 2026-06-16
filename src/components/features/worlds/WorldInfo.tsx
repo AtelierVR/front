@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useWorld } from './WorldContext';
+import { releaseVersion } from '@/types/api';
 
 export function WorldInfo() {
   const { world, isOwner, isContributor } = useWorld();
@@ -34,7 +35,7 @@ export function WorldInfo() {
         {world && (
           <div className="flex items-center justify-between gap-2">
             <dt className="text-muted-foreground">{t('world.release')}</dt>
-            <dd className="font-mono text-xs">{world.release.resolved >= 0 ? `v${world.release.resolved}` : '—'}</dd>
+            <dd className="font-mono text-xs">{releaseVersion(world.release) >= 0 ? `v${releaseVersion(world.release)}` : '—'}</dd>
           </div>
         )}
       </dl>

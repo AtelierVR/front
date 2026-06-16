@@ -1,6 +1,20 @@
 import type { NoxIdString } from './nox-identifier';
 import { NoxWellKnown } from './wellknown';
 
+// ── Release helpers ───────────────────────────────────────────────────────────
+
+export type ApiRelease = number | { value: number; auto: boolean };
+
+/** Extract the resolved version number from a release field. */
+export function releaseVersion(r: ApiRelease): number {
+    return typeof r === 'number' ? r : r.value;
+}
+
+/** Whether the release was auto-detected (latest). */
+export function releaseIsAuto(r: ApiRelease): boolean {
+    return typeof r === 'object' && r.auto;
+}
+
 // ── Shared sub-types ──────────────────────────────────────────────────────────
 
 export interface ApiLink {
@@ -94,7 +108,7 @@ export interface ApiWorld {
     thumbnail: string | null;
     tags: string[];
     capacity: number;
-    release: { resolved: number; raw: number };
+    release: ApiRelease;
     server: string;
     owner: NoxIdString;
     contributors: NoxIdString[];
@@ -137,7 +151,7 @@ export interface ApiAvatar {
     description: string | null;
     thumbnail: string | null;
     tags: string[];
-    release: { resolved: number; raw: number };
+    release: ApiRelease;
     server: string;
     owner: NoxIdString;
     contributors: NoxIdString[];

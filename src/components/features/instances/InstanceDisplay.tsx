@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { PLATFORMS } from '@/lib/platform';
+import { releaseVersion } from '@/types/api';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { noxIdToPath } from '@/types/nox-identifier';
 import { useInstance } from './InstanceContext';
@@ -18,7 +19,7 @@ export function InstanceDisplay(props: { className?: string }) {
 
   // Platforms from world release assets
   const releaseAssets = world && worldAssets
-    ? worldAssets.filter((a) => a.version === world.release.resolved)
+    ? worldAssets.filter((a) => a.version === releaseVersion(world.release))
     : null;
   const platforms = releaseAssets
     ? [...new Set(releaseAssets.map((a) => a.platform.toLowerCase()))]

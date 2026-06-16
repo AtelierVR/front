@@ -11,6 +11,7 @@ import { getWorld, getWorldAssets } from '@/lib/api/worlds';
 import { getUser } from '@/lib/api/users';
 import { parseNoxId, noxIdToSegment } from '@/types/nox-identifier';
 import type { ApiInstance, ApiUser, ApiWorld, ApiWorldAsset } from '@/types/api';
+import { releaseVersion } from '@/types/api';
 import { entityStore } from '@/lib/cache/store';
 import { InstanceContext } from '@/components/features/instances/InstanceContext';
 import { InstanceBanner } from '@/components/features/instances/InstanceBanner';
@@ -69,7 +70,7 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                         if (cancelled) return;
                         setWorld(w);
                         try {
-                            const assets = await getWorldAssets(inst.world, w.release.resolved);
+                            const assets = await getWorldAssets(inst.world, releaseVersion(w.release));
                             if (!cancelled) setWorldAssets(assets.items);
                         } catch {
                             if (!cancelled) setWorldAssets([]);

@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAvatar } from '@/components/features/avatars/AvatarContext';
 import { useTranslation } from 'react-i18next';
 import type { ApiAvatarAsset } from '@/types/api';
+import { releaseVersion } from '@/types/api';
 import { Badge } from '@/components/ui/badge';
 import { Icon } from '@iconify/react';
 import { PLATFORMS, ENGINES, formatSize } from '@/lib/platform';
@@ -175,7 +176,7 @@ export default function AvatarVersionsPage() {
                     key={v}
                     version={v}
                     assets={byVersion[v]}
-                    isRelease={v === avatar.release.resolved}
+                    isRelease={v === releaseVersion(avatar.release)}
                 />
             ))}
         </div>

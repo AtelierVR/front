@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatNoxId } from '@/types/nox-identifier';
 import { useAvatar } from './AvatarContext';
 import type { ApiUser } from '@/types/api';
+import { releaseVersion } from '@/types/api';
 import { cn } from '@/lib/utils';
 
 export function AvatarDisplay(props: { className?: string }) {
@@ -27,7 +28,7 @@ export function AvatarDisplay(props: { className?: string }) {
   }, [avatar?.owner]);
 
   const releaseAssets = avatar && allAssets
-    ? allAssets.filter((a) => a.version === avatar.release.resolved)
+    ? allAssets.filter((a) => a.version === releaseVersion(avatar.release))
     : null;
 
   const platforms = releaseAssets

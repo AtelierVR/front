@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatNoxId } from '@/types/nox-identifier';
 import { useWorld } from './WorldContext';
 import type { ApiUser } from '@/types/api';
+import { releaseVersion } from '@/types/api';
 import { cn } from '@/lib/utils';
 
 export function WorldDisplay(props: { className?: string }) {
@@ -27,7 +28,7 @@ export function WorldDisplay(props: { className?: string }) {
   }, [world?.owner]);
 
   const releaseAssets = world && allAssets
-    ? allAssets.filter((a) => a.version === world.release.resolved)
+    ? allAssets.filter((a) => a.version === releaseVersion(world.release))
     : null;
 
   const platforms = releaseAssets

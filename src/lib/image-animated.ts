@@ -164,7 +164,7 @@ export async function cropAnimatedGif(
 
         // Draw this frame's patch
         if (patch && dims.width > 0 && dims.height > 0) {
-            const imageData = new ImageData(patch, dims.width, dims.height);
+            const imageData = new ImageData(patch as any, dims.width, dims.height);
             // We must use a temp canvas because putImageData ignores globalCompositeOperation
             const temp = document.createElement('canvas');
             temp.width = dims.width;

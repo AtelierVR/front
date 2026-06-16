@@ -6,6 +6,7 @@ import { VersionCard } from '@/components/features/worlds/VersionCard';
 import { useWorld } from '@/components/features/worlds/WorldContext';
 import { useTranslation } from 'react-i18next';
 import type { ApiWorldAsset } from '@/types/api';
+import { releaseVersion } from '@/types/api';
 
 export default function WorldVersionsPage() {
     const { world, allAssets } = useWorld();
@@ -42,7 +43,7 @@ export default function WorldVersionsPage() {
             key={v}
             version={v}
             assets={byVersion[v]}
-            isRelease={v === world.release.resolved}
+            isRelease={v === releaseVersion(world.release)}
         />)}
     </div>;
 }

@@ -16,6 +16,7 @@ import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { TagListInput } from '@/components/ui/tag-list-input';
 import { UserListInput } from '@/components/ui/user-list-input';
 import { ApiError } from '@/types/envelope';
+import { releaseVersion, releaseIsAuto } from '@/types/api';
 import { Icon } from '@iconify/react';
 
 // ── Flags ────────────────────────────────────────────────────────────────────
@@ -226,7 +227,7 @@ export function WorldEditForm() {
                         <InputGroup>
                             <InputGroupInput
                                 type="number"
-                                value={release ?? (world.release.raw !== -1 ? String(world.release.raw) : '-1')}
+                                value={release ?? (!releaseIsAuto(world.release) ? String(releaseVersion(world.release)) : '-1')}
                                 onChange={e => { setRelease(e.target.value); setFlags(f => f | F_RELEASE); }}
                                 placeholder="-1"
                             />
