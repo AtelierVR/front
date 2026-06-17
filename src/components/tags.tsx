@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useState, type ReactNode } from 'react';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { Countries } from '@/lib/countries';
 import { Languages } from '@/lib/languages';
 import { useTranslation } from 'react-i18next';

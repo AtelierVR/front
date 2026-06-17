@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { EditCoverOverlay } from '@/components/shared/EditCoverOverlay';

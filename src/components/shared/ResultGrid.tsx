@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'next-themes';
@@ -10,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
+import Image from '@/components/NoxImage';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

@@ -8,7 +8,7 @@ import { ButtonItem } from '@/components/layout/ButtonItem';
 import { type UserNav, type UserNavItem } from '@/lib/layout.shared';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslation } from 'react-i18next';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';

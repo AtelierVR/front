@@ -1,9 +1,8 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { useState } from 'react';
 import { useAvatar } from './AvatarContext';
-import { addUrlQuery } from '@/lib/url';
 
 export function AvatarBanner() {
   const { avatar } = useAvatar();
@@ -17,7 +16,7 @@ export function AvatarBanner() {
         <Image
           className="object-cover w-full"
           style={{ aspectRatio: '128 / 45' }}
-          src={addUrlQuery(avatar.thumbnail, 'size', '1024')}
+          src={avatar.thumbnail}
           alt={avatar.title}
           width={1024}
           height={360}

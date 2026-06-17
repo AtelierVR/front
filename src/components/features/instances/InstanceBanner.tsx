@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { useState, useEffect } from 'react';
 import { useInstance } from './InstanceContext';
 import { addUrlQuery } from '@/lib/url';

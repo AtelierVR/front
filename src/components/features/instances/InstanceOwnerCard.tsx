@@ -8,7 +8,7 @@ import { useApi } from '@/lib/api/context';
 import { noxIdToSegment } from '@/types/nox-identifier';
 import { getAlias } from '@/lib/api';
 import { SidebarCard } from '@/components/shared/SidebarCard';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 
 export function InstanceOwnerCard() {
     const { instance, owner } = useInstance();

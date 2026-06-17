@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -274,10 +274,8 @@ const CropControls = forwardRef<CropControlsHandle, CropControlsProps>(function 
                         const ds = Math.max(w / h / targetRatio, targetRatio / (w / h));
                         setDisplayScale(ds);
 
-                        // Start at ~1.1× zoom so there is at least 5 % panning room
-                        // in the tightest dimension (user can always zoom back to 1×).
-                        const defaultZoom = 1.1;
-                        setZoom(defaultZoom);
+                        // Start at 1× zoom — user can zoom in if needed.
+                        setZoom(1);
                         setOffsetX(0.5);
                         setOffsetY(0.5);
                     }}

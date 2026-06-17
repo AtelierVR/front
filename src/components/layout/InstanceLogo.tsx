@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { useTranslation } from 'react-i18next';
 import { useInstanceIcon } from '@/lib/useInstanceIcon';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 
 export function InstanceLogo({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     const { wellKnown } = useApi();

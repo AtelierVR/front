@@ -7,7 +7,7 @@ import { useApi } from '@/lib/api/context';
 import { Separator } from '@/components/ui/separator';
 import { NoxWellKnown } from '@/types/wellknown';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import Image from '@/components/NoxImage';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { useInstanceIcon } from '@/lib/useInstanceIcon';
 
