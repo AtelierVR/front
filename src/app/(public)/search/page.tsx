@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
@@ -11,11 +11,8 @@ import { searchWorlds } from '@/lib/api/worlds';
 import { searchAvatars } from '@/lib/api/avatars';
 import { searchInstances } from '@/lib/api/instances';
 import { searchServers } from '@/lib/api/servers';
-import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
-import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { PageTitle } from '@/components/shared/PageTitle';
 import type { ApiSearchResult } from '@/types/api';
 import { getAlias } from '@/lib/api';
@@ -40,8 +37,7 @@ import {
 type TabKey = string;
 
 interface TabDef {
-    key: string;
-    /** Feature flag that must be present in wk.features to show this tab. */
+    /** Feature flag that must be present in wk.features to show this tab. Also used as the tab identifier in URL (?type=). */
     feature: string;
     /** API path segment (no /api/ prefix — gateway.api already includes it). */
     path: string;
@@ -59,10 +55,9 @@ interface SearchResults {
     [key: string]: ApiSearchResult<ResultItem> | Error | undefined;
 }
 
-function buildTabs(localAddress: string, locale: string): TabDef[] {
+function buildTabs(localAddress: string): TabDef[] {
     return [
         {
-            key: 'users',
             feature: 'user',
             path: '/users',
             title: 'search.tab_users',
@@ -88,7 +83,6 @@ function buildTabs(localAddress: string, locale: string): TabDef[] {
             },
         },
         {
-            key: 'worlds',
             feature: 'world',
             path: '/worlds',
             title: 'search.tab_worlds',
@@ -114,7 +108,6 @@ function buildTabs(localAddress: string, locale: string): TabDef[] {
             },
         },
         {
-            key: 'avatars',
             feature: 'avatar',
             path: '/avatars',
             title: 'search.tab_avatars',
@@ -140,7 +133,6 @@ function buildTabs(localAddress: string, locale: string): TabDef[] {
             },
         },
         {
-            key: 'instances',
             feature: 'instance',
             path: '/instances',
             title: 'search.tab_instances',
@@ -166,26 +158,24 @@ function buildTabs(localAddress: string, locale: string): TabDef[] {
             }
         },
         {
-            key: 'servers',
             feature: 'server',
             path: '/servers',
             title: 'search.tab_servers',
             icon: 'material-symbols:dns',
             layout: 'list',
             fetchResults: async (query, limit, offset) => {
-                const data = await searchServers(query, limit, offset, locale);
+                const data = await searchServers(query, limit, offset);
                 return {
                     total: data.total,
                     limit: data.limit,
                     offset: data.offset,
                     items: data.items.map((s) => {
                         const wm = s.wellknown?.metadata;
-                        const title = resolveLocalized(wm?.title, locale) || null;
                         return {
                             id: s.address,
-                            name: title || s.address,
-                            thumbnail: resolveInstanceIcon(wm?.icon),
-                            description: title ? s.address : null,
+                            name: wm?.title ?? s.address,
+                            thumbnail: wm?.icon ?? null,
+                            description: wm?.description ?? (wm?.title ? s.address : null),
                             redirect: `/s/${s.address}`,
                         };
                     }),
@@ -200,119 +190,104 @@ const LIMIT = 20;
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 function SearchPageInner() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { wellKnown } = useApi();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // Derive available tabs from server features (show all while wk is loading)
+    // ── Derive state from URL (single source of truth) ───────────────────────
+
     const localAddress = wellKnown?.address ?? '::';
-    const allTabs = buildTabs(localAddress, i18n.language);
+    const allTabs = buildTabs(localAddress);
     const availableTabs = wellKnown
         ? allTabs.filter((tab) => wellKnown.features.includes(tab.feature))
         : allTabs;
 
-    // ── URL param state ──────────────────────────────────────────────────────
+    const urlQuery = searchParams.get('q') ?? '';
+    const urlTab = (searchParams.get('type') as TabKey) ?? availableTabs[0]?.feature ?? 'user';
+    const urlPage = Math.max(1, Number(searchParams.get('p') ?? 1));
 
-    const queryParam = searchParams.get('q') ?? '';
-    const tabParam = (searchParams.get('type') as TabKey) ?? availableTabs[0]?.key ?? 'users';
-    const pageParam = Math.max(1, Number(searchParams.get('p') ?? 1));
+    // Only tab/page are derived from URL; query is local + debounced
+    const activeTab = availableTabs.some(t => t.feature === urlTab) ? urlTab : (availableTabs[0]?.feature ?? 'user');
+    const page = urlPage;
 
-    const [query, setQuery] = useState(queryParam);
+    const [query, setQuery] = useState(urlQuery);
     const debouncedQuery = useSearch(query, 400);
-    const [activeTab, setActiveTab] = useState<TabKey>(
-        availableTabs.some((tab) => tab.key === tabParam) ? tabParam : (availableTabs[0]?.key ?? 'users'),
-    );
-    const [page, setPage] = useState(pageParam);
 
-    const [loading, setLoading] = useState(false);
+    // ── Fetch state ──────────────────────────────────────────────────────────
+
     const [results, setResults] = useState<SearchResults>({});
+    const [loading, setLoading] = useState(false);
+    const abortRef = useRef<AbortController | null>(null);
+    const fetchIdRef = useRef(0);
 
-    // ── URL sync ─────────────────────────────────────────────────────────────
+    // ── Push URL (only on user action) ───────────────────────────────────────
 
-    const pushParams = useCallback(
-        (q: string, tab: TabKey, p: number) => {
-            const params = new URLSearchParams();
-            if (q) params.set('q', q);
-            params.set('type', tab);
-            if (p > 1) params.set('p', String(p));
-            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-        },
-        [router, pathname],
-    );
+    const pushUrl = useCallback((q: string, tab: string, p: number) => {
+        const params = new URLSearchParams();
+        if (q) params.set('q', q);
+        params.set('type', tab);
+        if (p > 1) params.set('p', String(p));
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [router, pathname]);
 
-    // Reset page & push URL when debounced query changes
+    // Push debounced query to URL
     useEffect(() => {
-        setPage(1);
-        pushParams(debouncedQuery, activeTab, 1);
+        if (debouncedQuery === urlQuery) return;
+        pushUrl(debouncedQuery, activeTab, 1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedQuery]);
 
-    // ── Fetch ─────────────────────────────────────────────────────────────────
+    // ── Fetch ────────────────────────────────────────────────────────────────
 
     useEffect(() => {
-        if (!wellKnown || !debouncedQuery.trim()) {
-            setResults((r) => ({
-                ...r,
-                [activeTab]: debouncedQuery.trim() ? new Error('Feature not available') : undefined,
-            }));
-            return;
-        }
+        if (!wellKnown) return;
 
-        const tabDef = allTabs.find((tab) => tab.key === activeTab);
+        const tabDef = allTabs.find(t => t.feature === activeTab);
         if (!tabDef) return;
 
+        // Cancel previous in-flight request
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        const fetchId = ++fetchIdRef.current;
+
         const offset = (page - 1) * LIMIT;
-        let cancelled = false;
         setLoading(true);
 
         tabDef.fetchResults(debouncedQuery, LIMIT, offset)
             .then((data) => {
-                if (!cancelled)
-                    setResults((r) => ({
-                        ...r,
-                        [activeTab]: data,
-                    }));
+                if (controller.signal.aborted || fetchId !== fetchIdRef.current) return;
+                setResults(r => ({ ...r, [activeTab]: data }));
             })
             .catch(e => {
-                if (!cancelled) {
-                    console.error('Search error:', e);
-                    setResults((r) => ({
-                        ...r,
-                        [activeTab]: e instanceof Error ? e : new Error('An unknown error occurred'),
-                    }));
-                }
+                if (controller.signal.aborted || fetchId !== fetchIdRef.current) return;
+                setResults(r => ({
+                    ...r,
+                    [activeTab]: e instanceof Error ? e : new Error('Unknown error'),
+                }));
             })
             .finally(() => {
-                if (!cancelled)
-                    setLoading(false);
+                if (fetchId === fetchIdRef.current) setLoading(false);
             });
 
-        return () => { cancelled = true; };
+        return () => controller.abort();
     }, [debouncedQuery, activeTab, page, wellKnown]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     function handleTabChange(tab: string) {
-        const key = tab as TabKey;
-        setActiveTab(key);
-        setPage(1);
-        setResults({ // keep existing results but reset error state
-            ...results,
-            [key]: results[key]
-        });
-        pushParams(debouncedQuery, key, 1);
+        pushUrl(debouncedQuery, tab, 1);
     }
 
     function handlePage(p: number) {
-        setPage(p);
-        pushParams(debouncedQuery, activeTab, p);
+        pushUrl(debouncedQuery, activeTab, p);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     const noQuery = !debouncedQuery.trim();
-    const title = t(noQuery ? 'search.title' : `search.results_for`, { query: debouncedQuery.trim() });
+    const title = noQuery ? t('search.title') : t('search.results_for', { query: debouncedQuery.trim() });
 
     // ── Render ────────────────────────────────────────────────────────────────
 
@@ -352,7 +327,7 @@ function SearchPageInner() {
                     {/* Tab selector — right of search bar */}
                     <TabsList className="w-full flex flex-col items-stretch" aria-label={t('search.tabs')}>
                         {availableTabs.map((tab) => (
-                            <TabsTrigger key={tab.key} value={tab.key} className="flex-1 w-full justify-between px-4 py-2">
+                            <TabsTrigger key={tab.feature} value={tab.feature} className="flex-1 w-full justify-between px-4 py-2">
                                 <span>{t(tab.title!)}</span>
                                 {tab.icon && <Icon icon={tab.icon} className="h-4 w-4 ml-2" />}
                             </TabsTrigger>
@@ -363,12 +338,11 @@ function SearchPageInner() {
 
                 {/* Results panels */}
                 {availableTabs.map((tab) => (
-                    <TabsContent key={tab.key} value={tab.key}>
+                    <TabsContent key={tab.feature} value={tab.feature}>
                         <ResultTabContent
                             tab={tab}
-                            data={results[tab.key]}
+                            data={results[tab.feature]}
                             loading={loading}
-                            noQuery={noQuery}
                             onPage={handlePage}
                         />
                     </TabsContent>
@@ -390,18 +364,14 @@ function ResultTabContent({
     tab,
     data,
     loading,
-    noQuery,
     onPage,
 }: {
     tab: TabDef;
     data: ApiSearchResult<ResultItem> | Error | undefined;
     loading: boolean;
-    noQuery: boolean;
     onPage: (p: number) => void;
 }) {
     const { t } = useTranslation();
-    if (noQuery)
-        return <EmptyState label={t('search.empty_no_query')} />;
 
     if (loading || !data) {
         if (tab.layout === 'card') return <SkeletonGrid />;

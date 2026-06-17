@@ -4,17 +4,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'next-themes';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
+import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface ResultItem {
     id: string;
-    name: string;
-    thumbnail: string | null;
-    description: string | null;
+    /** Plain string or locale→string map. Resolved at render time via resolveLocalized. */
+    name: string | Record<string, string>;
+    /** Plain URL, theme-keyed map (e.g. { default, light }), or null. Resolved at render time via resolveInstanceIcon. */
+    thumbnail: string | Record<string, string> | null;
+    /** Plain string, locale→string map, or null. Resolved at render time via resolveLocalized. */
+    description: string | Record<string, string> | null;
     redirect: string;
 }
 
@@ -100,6 +106,12 @@ export function PageNav({
 // ── Card item ─────────────────────────────────────────────────────────────────
 
 export function CardItem(result: ResultItem) {
+    const { i18n } = useTranslation();
+    const { resolvedTheme } = useTheme();
+    const name = resolveLocalized(result.name, i18n.language) || '';
+    const thumbnail = resolveInstanceIcon(result.thumbnail, resolvedTheme);
+    const desc = resolveLocalized(result.description, i18n.language) || null;
+
     return (
         <Link
             href={result.redirect}
@@ -109,16 +121,16 @@ export function CardItem(result: ResultItem) {
             )}
         >
             <Image
-                src={result.thumbnail ?? '/placeholder.png'}
-                alt={result.name}
+                src={thumbnail ?? '/placeholder.png'}
+                alt={name}
                 width={400}
                 height={300}
                 className="w-full object-cover h-full"
             />
             <div className="absolute inset-0 bg-gradient-to-t dark:from-black/80 from-white/20 to-transparent flex flex-col justify-end p-4">
-                <p className="font-bold text-lg">{result.name}</p>
-                {result.description && (
-                    <p className="text-sm text-muted-foreground">{result.description}</p>
+                <p className="font-bold text-lg">{name}</p>
+                {desc && (
+                    <p className="text-sm text-muted-foreground">{desc}</p>
                 )}
             </div>
         </Link>
@@ -128,26 +140,29 @@ export function CardItem(result: ResultItem) {
 // ── List item ─────────────────────────────────────────────────────────────────
 
 export function ListItem(result: ResultItem) {
+    const { i18n } = useTranslation();
+    const { resolvedTheme } = useTheme();
+    const name = resolveLocalized(result.name, i18n.language) || '';
+    const thumbnail = resolveInstanceIcon(result.thumbnail, resolvedTheme);
+    const desc = resolveLocalized(result.description, i18n.language) || null;
+
     return (
         <Link
             href={result.redirect}
             className={cn(
                 buttonVariants({ variant: 'outline', size: 'default' }),
                 'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
-            )}
-        >
+            )}>
             <Image
-                src={result.thumbnail ?? '/placeholder.png'}
-                alt={result.name}
+                src={thumbnail ?? '/placeholder.png'}
+                alt={name}
                 width={48}
                 height={48}
                 className="h-12 w-12 rounded-full object-cover"
             />
             <div>
-                <p className="font-bold text-lg">{result.name}</p>
-                {result.description && (
-                    <p className="text-sm text-muted-foreground">{result.description}</p>
-                )}
+                <p className="font-bold text-lg">{name}</p>
+                {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
             </div>
         </Link>
     );

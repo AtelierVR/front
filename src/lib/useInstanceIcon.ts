@@ -18,10 +18,9 @@ export function resolveInstanceIcon(
     if (typeof icon === 'string') return icon;
 
     const isDark = theme === 'dark';
-    // dark bg → need light icon, light bg → need dark icon
-    const preferred = isDark ? 'light' : 'dark';
+    const preferred = isDark ? 'default' : 'light';
 
-    return icon[preferred] ?? icon['default'] ?? Object.values(icon)[0] ?? null;
+    return icon[preferred] ?? Object.values(icon)[0] ?? null;
 }
 
 /**

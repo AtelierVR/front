@@ -1,6 +1,5 @@
 import { apiFetch } from './client';
 import type { ApiServer, ApiServerDetail } from '@/types/api';
-import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 
 export function listServers(limit?: number, offset?: number): Promise<ApiServer[]> {
     const params = new URLSearchParams();
@@ -10,24 +9,23 @@ export function listServers(limit?: number, offset?: number): Promise<ApiServer[
     return apiFetch<ApiServer[]>(`/servers${qs ? '?' + qs : ''}`);
 }
 
-function serverSearchText(s: ApiServer, locale: string): string {
+function serverSearchText(s: ApiServer): string {
     const parts = [s.address];
     const wm = s.wellknown?.metadata;
     if (wm) {
-        const title = resolveLocalized(wm.title, locale);
+        const title = typeof wm.title === 'object' ? Object.values(wm.title).join(' ') : wm.title;
         if (title) parts.push(title);
-        const desc = resolveLocalized(wm.description, locale);
+        const desc = typeof wm.description === 'object' ? Object.values(wm.description).join(' ') : wm.description;
         if (desc) parts.push(desc);
     }
     return parts.join(' ').toLowerCase();
 }
 
-export async function searchServers(query: string, limit: number, offset: number, locale?: string): Promise<{ total: number; limit: number; offset: number; items: ApiServer[] }> {
+export async function searchServers(query: string, limit: number, offset: number): Promise<{ total: number; limit: number; offset: number; items: ApiServer[] }> {
     const all = await listServers(200, 0);
-    const lang = locale ?? 'en';
     const q = query.trim().toLowerCase();
     const filtered = q
-        ? all.filter((s) => serverSearchText(s, lang).includes(q))
+        ? all.filter((s) => serverSearchText(s).includes(q))
         : all;
     return {
         total: filtered.length,
