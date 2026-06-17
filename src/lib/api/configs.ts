@@ -9,7 +9,6 @@ export interface InstanceConfig {
   allow_avatar_creation: boolean;
   allow_avatar_creation_by_external: boolean;
   regions: string[];
-  default_region: string | null;
   allowed_image_widths: number[];
 }
 
