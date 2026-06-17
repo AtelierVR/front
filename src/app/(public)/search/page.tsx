@@ -11,6 +11,8 @@ import { searchWorlds } from '@/lib/api/worlds';
 import { searchAvatars } from '@/lib/api/avatars';
 import { searchInstances } from '@/lib/api/instances';
 import { searchServers } from '@/lib/api/servers';
+import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
+import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -57,7 +59,7 @@ interface SearchResults {
     [key: string]: ApiSearchResult<ResultItem> | Error | undefined;
 }
 
-function buildTabs(localAddress: string): TabDef[] {
+function buildTabs(localAddress: string, locale: string): TabDef[] {
     return [
         {
             key: 'users',
@@ -171,18 +173,22 @@ function buildTabs(localAddress: string): TabDef[] {
             icon: 'material-symbols:dns',
             layout: 'list',
             fetchResults: async (query, limit, offset) => {
-                const data = await searchServers(query, limit, offset);
+                const data = await searchServers(query, limit, offset, locale);
                 return {
                     total: data.total,
                     limit: data.limit,
                     offset: data.offset,
-                    items: data.items.map((s) => ({
-                        id: s.address,
-                        name: s.address,
-                        thumbnail: null,
-                        description: null,
-                        redirect: `/s/${s.address}`,
-                    })),
+                    items: data.items.map((s) => {
+                        const wm = s.wellknown?.metadata;
+                        const title = resolveLocalized(wm?.title, locale) || null;
+                        return {
+                            id: s.address,
+                            name: title || s.address,
+                            thumbnail: resolveInstanceIcon(wm?.icon),
+                            description: title ? s.address : null,
+                            redirect: `/s/${s.address}`,
+                        };
+                    }),
                 };
             },
         },
@@ -194,7 +200,7 @@ const LIMIT = 20;
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 function SearchPageInner() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { wellKnown } = useApi();
     const router = useRouter();
     const pathname = usePathname();
@@ -202,7 +208,7 @@ function SearchPageInner() {
 
     // Derive available tabs from server features (show all while wk is loading)
     const localAddress = wellKnown?.address ?? '::';
-    const allTabs = buildTabs(localAddress);
+    const allTabs = buildTabs(localAddress, i18n.language);
     const availableTabs = wellKnown
         ? allTabs.filter((tab) => wellKnown.features.includes(tab.feature))
         : allTabs;

@@ -272,6 +272,7 @@ export interface ApiServer {
     rank: number;
     last_seen: number;
     created_at: number;
+    wellknown: NoxWellKnown | null;
 }
 
 export interface ApiServerDetail extends ApiServer {
