@@ -41,6 +41,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const logout = useCallback(async () => {
+    // Call the server logout endpoint to invalidate the session
+    try {
+      await apiFetch<{ success: boolean }>('/auth/logout', { method: 'POST' });
+    } catch { /* best-effort */ }
     clearToken();
     setTokenState(null);
     setCurrentUser(null);
