@@ -24,6 +24,7 @@
     "@shikijs/rehype": "^4.0.2",
     "@tanstack/react-table": "^8.21.3",
     "@types/three": "^0.183.1",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/gif.js": "^0.2.5",
     "@types/node": "^20",
     "@types/react": "^19",

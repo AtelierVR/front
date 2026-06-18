@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SidebarCard } from '@/components/shared/SidebarCard';
+import { UserReference } from '@/components/ui/user-reference';
 import { getUser } from '@/lib/api/users';
 import { formatNoxId } from '@/types/nox-identifier';
 import { useAvatar } from './AvatarContext';
@@ -21,45 +22,41 @@ function ContributorRow({ noxRef, isOwner }: { noxRef: string; isOwner: boolean 
     getUser(noxRef).then(setUser).catch(() => setUser(null));
   }, [noxRef]);
 
-  const displayName = user ? (user.display || user.username) : null;
-  const fallback = formatNoxId(noxRef, wellKnown?.address ?? '::');
-  const href = `/u/${fallback}`;
+  if (user === undefined) {
+    return (
+      <span className="flex items-center gap-3">
+        <Skeleton className="size-8 rounded-full shrink-0" />
+        <div className="flex-1 space-y-1">
+          <Skeleton className="h-3.5 w-28 rounded" />
+          <Skeleton className="h-3 w-20 rounded" />
+        </div>
+      </span>
+    );
+  }
 
-  return (
-    <Link href={href} className="flex items-center gap-3 text-sm group no-underline">
-      <Avatar className="size-8 flex-shrink-0">
-        {user?.thumbnail && <AvatarImage src={user.thumbnail} alt={displayName ?? fallback} />}
-        <AvatarFallback className="bg-primary/10">
-          {user === undefined ? null : displayName ? (
-            displayName.charAt(0).toUpperCase()
-          ) : (
+  if (!user) {
+    const localAddress = wellKnown?.address ?? '::';
+    const fallbackId = formatNoxId(noxRef, localAddress);
+    return (
+      <Link href={`/u/${fallbackId}`} className="flex items-center gap-3 text-sm group no-underline">
+        <Avatar className="size-8 shrink-0">
+          <AvatarFallback className="bg-primary/10">
             <Icon icon="material-symbols:person-rounded" className="size-4 text-muted-foreground" />
-          )}
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        {user === undefined ? (
-          <>
-            <Skeleton className="h-3.5 w-28 mb-1" />
-            <Skeleton className="h-3 w-20" />
-          </>
-        ) : displayName ? (
-          <>
-            <div className="flex items-center gap-1 font-medium truncate">
-              <span className="group-hover:underline">{displayName}</span>
-              {isOwner && <Icon icon="material-symbols:star-rounded" className="size-3 text-muted-foreground flex-shrink-0" />}
-            </div>
-            <div className="text-xs text-muted-foreground truncate font-mono">{noxRef}</div>
-          </>
-        ) : (
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 font-mono text-xs truncate">
-            {isOwner && <Icon icon="material-symbols:star-rounded" className="size-3 text-muted-foreground flex-shrink-0" />}
-            <span className="group-hover:underline">{noxRef}</span>
+            {isOwner && (
+              <Icon icon="material-symbols:star-rounded" className="size-3 text-muted-foreground shrink-0" />
+            )}
+            <span className="group-hover:underline">{fallbackId}</span>
           </div>
-        )}
-      </div>
-    </Link>
-  );
+        </div>
+      </Link>
+    );
+  }
+
+  return <UserReference user={user} isOwner={isOwner} />;
 }
 
 export function AvatarContributors() {

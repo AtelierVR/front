@@ -44,9 +44,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { listActivity, deleteActivity } from '@/lib/api/activity';
 import { batchGetUsers } from '@/lib/api/users';
@@ -55,6 +53,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { ApiActivityEvent, ApiUser } from '@/types/api';
 import { NotFound } from '@/app/(dashboard)/not-found';
+import { UserReference } from '@/components/ui/user-reference';
 import { useApi } from '@/lib/api/context';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -563,16 +562,9 @@ function ActivityPageInner() {
 function AuthorCell({ identifier, userMap }: { identifier: string | null; userMap: Map<string, ApiUser> }) {
     if (!identifier) return <span className="text-xs text-muted-foreground">—</span>;
     const user = userMap.get(identifier);
-    if (!user) return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
-    const initials = (user.display ?? user.username).slice(0, 2).toUpperCase();
-    return (
-        <Link href={`/u/${user.username}`} className="flex items-center gap-2 w-fit hover:underline underline-offset-2">
-            <Avatar className="size-6 shrink-0">
-                <AvatarImage src={user.thumbnail ?? undefined} alt={user.display} />
-                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
-            </Avatar>
-            <span className="text-sm font-medium">{user.display}</span>
-        </Link>
-    );
+    if (user) {
+        return <UserReference compact user={user} />;
+    }
+    return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
 }
 

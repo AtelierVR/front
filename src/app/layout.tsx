@@ -8,6 +8,7 @@ import { StatusBanner } from '@/components/layout/StatusBanner'
 import { WsProvider } from '@/lib/ws/context'
 import { SITE_TITLE, SITE_TITLE_TEMPLATE } from '@/lib/site'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { Toaster } from '@/components/ui/sonner'
 import { FumadocsProvider } from '@/lib/fumadocs-provider'
 
 const funnelDisplay = Funnel_Display({
@@ -51,6 +52,7 @@ export default function RootLayout({
                 <TooltipProvider>
                   <StatusBanner />
                   {children}
+                  <Toaster />
                 </TooltipProvider>
               </ThemeProvider>
             </WsProvider>

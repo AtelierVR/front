@@ -3,12 +3,16 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
-import { Identifier } from '@/components/shared/Identifier';
+import { Identifier } from '@/components/ui/identifier';
 import { getAlias } from '@/lib/api';
 import { useUser } from './UserContext';
 
 export function UserDisplay() {
     const { user, isSame } = useUser();
+
+    const id = user 
+        ? (getAlias(user.alias, 'uid') ?? getAlias(user.alias, 'iid') ?? null) 
+        : null;
 
     return (
         <div className="flex flex-col gap-1">
@@ -30,14 +34,12 @@ export function UserDisplay() {
                     </Link>
                 )}
             </h1>
-            {user?.username ? (
-                <div className="flex items-center divide-x divide-border text-muted-foreground font-medium gap-2">
-                    <Identifier value={getAlias(user.alias, 'uid')!} className='pe-2' />
-                    {user.pronoun && <span className="font-medium">{user.pronoun}</span>}
+            {id
+                ? <div className="flex items-center divide-x divide-border text-muted-foreground font-medium gap-2">
+                    <Identifier value={id} className="pe-2" />
+                    {user?.pronoun && <span className="font-medium">{user.pronoun}</span>}
                 </div>
-            ) : (
-                <div className="animate-pulse rounded-md bg-muted h-4 w-1/3 mt-1" />
-            )}
+                : <div className="animate-pulse rounded-md bg-muted h-4 w-1/3 mt-1" />}
         </div>
     );
 }
