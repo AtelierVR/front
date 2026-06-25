@@ -1,23 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { useApi } from '@/lib/api/context';
+import { useWs } from '@/lib/ws/context';
 import { cn } from '@/lib/utils';
 
 export function StatusBanner() {
   const { wellKnown } = useApi();
+  const { connected: wsConnected } = useWs();
   const { t } = useTranslation();
   const [dismissed, setDismissed] = useState(false);
   const [ready, setReady] = useState(false);
+  const wasEverConnected = useRef(false);
 
   useEffect(() => {
     const id = setTimeout(() => setReady(true), 5000);
     return () => clearTimeout(id);
   }, []);
 
-  const isOffline = wellKnown === null;
+  // Track whether the WS has ever been connected (to avoid false red on initial load)
+  useEffect(() => {
+    if (wsConnected) wasEverConnected.current = true;
+  }, [wsConnected]);
+
+  // Red: API unreachable OR was connected and now disconnected
+  const isOffline = wellKnown === null || (!wsConnected && wasEverConnected.current);
   const isDegraded = wellKnown !== null && wellKnown.status !== 'online';
 
   if (!ready || dismissed || (!isOffline && !isDegraded)) return null;

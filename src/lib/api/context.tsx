@@ -138,6 +138,35 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Periodically retry wellKnown when it's null (API was unreachable at boot)
+  useEffect(() => {
+    if (wellKnown !== null || isLoading) return;
+    const interval = setInterval(async () => {
+      const wk = await fetchWellKnown();
+      if (wk) {
+        setWellKnown(wk);
+        registerGatewayUrl(wk.gateway.api);
+        // Also fetch configs once we have a working API
+        const cfg = await fetchConfigs();
+        setInstanceConfig(cfg);
+        // If we have a stored token, try to restore the session
+        const storedToken = getToken();
+        if (storedToken) {
+          setTokenState(storedToken);
+          try {
+            const user = await apiFetch<ApiCurrentUser>('/users/@me');
+            setCurrentUser(user);
+          } catch {
+            clearToken();
+            setTokenState(null);
+          }
+        }
+        setIsLoading(false);
+      }
+    }, 10_000);
+    return () => clearInterval(interval);
+  }, [wellKnown, isLoading]);
+
   const isAdmin = currentUser?.tags.includes('sys:admin') ?? false;
 
   return (
