@@ -3,13 +3,17 @@
  * Returns the URL as a string.
  */
 export function addUrlQuery(url: string | URL, key: string, value?: string): string {
-  const u = new URL(url.toString());
+  const u = new URL(url.toString(), 'http://localhost');
   u.searchParams.set(key, value ?? '');
-  return u.toString().replace(/(\&|\?)\=/g, '$1').replace(/\=$/g, '');
+  const isRelative = typeof url === 'string' && url.startsWith('/');
+  const result = u.toString().replace(/(\&|\?)\=/g, '$1').replace(/\=$/g, '');
+  return isRelative ? result.replace('http://localhost', '') : result;
 }
 
 export function removeUrlQuery(url: string | URL, key: string): string {
-  const u = new URL(url.toString());
+  const u = new URL(url.toString(), 'http://localhost');
   u.searchParams.delete(key);
-  return u.toString();
+  const isRelative = typeof url === 'string' && url.startsWith('/');
+  const result = u.toString();
+  return isRelative ? result.replace('http://localhost', '') : result;
 }

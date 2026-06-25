@@ -121,7 +121,7 @@ export function CardItem(result: ResultItem) {
             )}
         >
             <Image
-                src={thumbnail ?? '/placeholder.png'}
+                src={thumbnail}
                 alt={name}
                 width={400}
                 height={300}
@@ -154,7 +154,7 @@ export function ListItem(result: ResultItem) {
                 'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
             )}>
             <Image
-                src={thumbnail ?? '/placeholder.png'}
+                src={thumbnail}
                 alt={name}
                 width={48}
                 height={48}

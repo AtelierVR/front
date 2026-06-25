@@ -54,7 +54,7 @@ export function InstanceCard({ instance }: InstanceCardProps) {
       )}
     >
       <Image
-        src={instance.thumbnail ?? '/placeholder.png'}
+        src={instance.thumbnail ?? undefined}
         alt={instance.title ?? instance.name ?? 'Instance'}
         width={400}
         height={300}
