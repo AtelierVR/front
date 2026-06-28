@@ -186,7 +186,11 @@
     "release_recommended": "recommandé",
     "versions": "Versions",
     "no_versions": "Aucune version disponible.",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "favorite": "Ajouter aux favoris",
+    "unfavorite": "Retirer des favoris",
+    "wear": "Porter l'avatar",
+    "remove_wear": "Retirer l'avatar porté"
   },
   "instance": {
     "join": "Rejoindre",
@@ -267,7 +271,30 @@
     "security": "Sécurité",
     "sessions": "Sessions",
     "follow": "Abonnements",
-    "tables": "Tables de données",
+    "tables": {
+      "title": "Tables",
+      "description": "Entrées clé/valeur stockées dans votre compte.",
+      "public": "Publiques",
+      "private": "Privées",
+      "no_public": "Aucune table publique.",
+      "no_private": "Aucune table privée.",
+      "delete_title": "Supprimer la table",
+      "delete_confirm": "Voulez-vous vraiment supprimer",
+      "delete_warning": "Cette action est irréversible.",
+      "deleting": "Suppression…",
+      "load_more": "Charger plus",
+      "loading": "Chargement…",
+      "download": "Télécharger",
+      "delete": "Supprimer",
+      "mime": "Mime",
+      "hash": "Hash",
+      "created": "Créé",
+      "updated": "Mis à jour",
+      "error_load": "Échec du chargement des tables.",
+      "error_delete": "Échec de la suppression de la table.",
+      "search_placeholder": "Filtrer",
+      "refresh": "Actualiser"
+    },
     "profile": {
       "description": "Gérez vos informations de profil public.",
       "save": "Enregistrer",
@@ -473,7 +500,7 @@
     "title": "Tableau de bord"
   },
   "features": {
-    "label": "Fonctionnalités",
+    "label": "Rechercher",
     "user": { "label": "Utilisateurs", "description": "Trouver des personnes sur la plateforme" },
     "world": { "label": "Mondes", "description": "Découvrir des mondes virtuels" },
     "avatar": { "label": "Avatars", "description": "Parcourir les avatars disponibles" },

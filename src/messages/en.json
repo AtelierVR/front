@@ -185,7 +185,11 @@
     "release_recommended": "recommended",
     "versions": "Versions",
     "no_versions": "No versions available.",
-    "edit": "Edit"
+    "edit": "Edit",
+    "favorite": "Add to favorites",
+    "unfavorite": "Remove from favorites",
+    "wear": "Wear avatar",
+    "remove_wear": "Remove worn avatar"
   },
   "instance": {
     "join": "Join",
@@ -266,7 +270,30 @@
     "security": "Security",
     "sessions": "Sessions",
     "follow": "Follow",
-    "tables": "Data Tables",
+    "tables": {
+      "title": "Tables",
+      "description": "Key/value entries stored in your account.",
+      "public": "Public",
+      "private": "Private",
+      "no_public": "No public tables.",
+      "no_private": "No private tables.",
+      "delete_title": "Delete table",
+      "delete_confirm": "Are you sure you want to delete",
+      "delete_warning": "This action cannot be undone.",
+      "deleting": "Deleting…",
+      "load_more": "Load more",
+      "loading": "Loading…",
+      "download": "Download",
+      "delete": "Delete",
+      "mime": "Mime",
+      "hash": "Hash",
+      "created": "Created",
+      "updated": "Updated",
+      "error_load": "Failed to load tables.",
+      "error_delete": "Failed to delete table.",
+      "search_placeholder": "Filter",
+      "refresh": "Refresh"
+    },
     "profile": {
       "description": "Manage your public profile information.",
       "save": "Save",
@@ -470,7 +497,7 @@
     "title":"Dashboard"
   },
   "features": {
-    "label": "Features",
+    "label": "Search",
     "user": { "label": "Users", "description": "Find people on the platform" },
     "world": { "label": "Worlds", "description": "Discover virtual worlds" },
     "avatar": { "label": "Avatars", "description": "Browse available avatars" },
