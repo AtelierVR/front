@@ -10,3 +10,4 @@ export * from './servers';
 export * from './auth';
 export * from './relays';
 export * from './admin';
+export * from './tables';
