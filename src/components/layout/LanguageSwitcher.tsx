@@ -16,9 +16,9 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '@/components/ui/drawer';
-import { RESOURCES } from '@/lib/i18n/constants';
-import React from 'react';
-import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/useLanguage';
+import React, { useCallback } from 'react';
+import Image from 'next/image';
 
 export interface LanguageSwitcherProps {
     trigger?: React.ReactElement | {
@@ -31,6 +31,10 @@ export interface LanguageSwitcherProps {
 
 export function LanguageSwitcher(props: LanguageSwitcherProps = {}) {
     const { i18n, t } = useTranslation();
+
+    const handleSelect = useCallback((code: string) => {
+        i18n.changeLanguage(code);
+    }, [i18n]);
 
     let trigger = props.trigger;
 
@@ -55,24 +59,30 @@ export function LanguageSwitcher(props: LanguageSwitcherProps = {}) {
         <Icon icon="material-symbols:language" className="h-4 w-4" />
     </Button>;
 
-    const items = Object.entries(RESOURCES).map(([code, locale]) => ({ code, label: locale.translation.language }));
+    const languages = useLanguage();
+
+    const items = languages.map(({ code, name, flag: flagUrl }) => ({ code, label: name, flagUrl }));
 
     return (
-        <>
+        <div className={props.className}>
             {/* Desktop: dropdown */}
-            <div className={cn(
-                "hidden md:flex",
-                props.className
-            )}>
+            <div className="hidden md:flex w-full">
                 <DropdownMenu>
                     <DropdownMenuTrigger render={trigger.desktop} />
                     <DropdownMenuContent align="end">
-                        {items.map(({ code, label }) => (
+                        {items.map(({ code, label, flagUrl }) => (
                             <DropdownMenuItem
                                 key={code}
-                                onClick={() => i18n.changeLanguage(code)}
+                                onClick={() => handleSelect(code)}
                                 className={i18n.language === code ? 'font-semibold' : ''}
                             >
+                                {flagUrl && <Image
+                                    src={flagUrl}
+                                    alt={code}
+                                    width={16}
+                                    height={16}
+                                    className="h-4 w-4 rounded-sm object-cover mr-2"
+                                />}
                                 {label}
                             </DropdownMenuItem>
                         ))}
@@ -81,7 +91,7 @@ export function LanguageSwitcher(props: LanguageSwitcherProps = {}) {
             </div>
 
             {/* Mobile: drawer */}
-            <div className="md:hidden flex">
+            <div className="md:hidden flex w-full">
                 <Drawer>
                     <DrawerTrigger asChild>
                         {trigger.mobile}
@@ -91,13 +101,22 @@ export function LanguageSwitcher(props: LanguageSwitcherProps = {}) {
                             <DrawerTitle>{t('nav.language')}</DrawerTitle>
                         </DrawerHeader>
                         <div className="flex flex-col gap-1 px-4 pb-6">
-                            {items.map(({ code, label }) => (
+                            {items.map(({ code, label, flagUrl }) => (
                                 <Button
                                     key={code}
                                     variant={i18n.language === code ? 'secondary' : 'ghost'}
                                     className="justify-start"
-                                    onClick={() => i18n.changeLanguage(code)}
+                                    onClick={() => handleSelect(code)}
                                 >
+                                    {flagUrl && (
+                                        <Image
+                                            src={flagUrl}
+                                            alt={code}
+                                            width={16}
+                                            height={16}
+                                            className="h-4 w-4 rounded-sm object-cover mr-2"
+                                        />
+                                    )}
                                     {label}
                                 </Button>
                             ))}
@@ -105,6 +124,6 @@ export function LanguageSwitcher(props: LanguageSwitcherProps = {}) {
                     </DrawerContent>
                 </Drawer>
             </div>
-        </>
+        </div>
     );
 }

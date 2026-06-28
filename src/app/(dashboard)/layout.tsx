@@ -39,8 +39,8 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
     return (
         <div className="flex flex-col gap-2 px-2 py-2">
             <div className="flex items-center gap-1">
-                <LanguageSwitcher className="flex-1 flex" trigger={{ className: 'flex-1 flex' }} />
-                <ThemeToggle className="flex-1 flex" trigger={{ className: 'flex-1 flex' }} />
+                <LanguageSwitcher className="flex-1" trigger={{ className: 'w-full justify-center' }} />
+                <ThemeToggle className="flex-1" trigger={{ className: 'w-full justify-center' }} />
             </div>
             {!user ? (
                 <div className="flex flex-col gap-2 mt-1">
@@ -180,6 +180,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         name: t('settings.account.title'),
                         url: '/settings/account',
                         icon: <Icon icon="material-symbols:manage-accounts-rounded" />,
+                    },
+                    {
+                        type: 'page',
+                        name: t('settings.tables.title'),
+                        url: '/settings/tables',
+                        icon: <Icon icon="material-symbols:table-rounded" />,
                     },
                     {
                         type: 'folder',

@@ -47,6 +47,10 @@
   --animate-nav-exit-right:  nav-exit-right 200ms ease;
   --animate-nav-exit-left:   nav-exit-left 200ms ease;
 
+  /* Accordion animations */
+  --animate-accordion-down: accordion-down 200ms ease-out;
+  --animate-accordion-up:   accordion-up 200ms ease-out;
+
   /* Fonts */
   --font-heading: var(--font-funnel-display);
   --font-body:    var(--font-inter);
@@ -225,6 +229,16 @@
 @keyframes nav-exit-left {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(-200px); }
+}
+
+/* ── Accordion keyframes ── */
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--accordion-panel-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--accordion-panel-height); }
+  to   { height: 0; }
 }
 
 /* ── Base layer ── */

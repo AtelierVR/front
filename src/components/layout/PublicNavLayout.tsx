@@ -11,6 +11,7 @@ import { useTheme } from '@/components/layout/ThemeProvider';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useLanguage } from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const featureIcons: Record<string, string> = {
     user: 'material-symbols:person-rounded',
@@ -35,89 +36,91 @@ export function PublicNavLayout({ children }: { children: ReactNode }) {
     return <div className="min-h-dvh flex flex-col">
         <div className="flex-1 flex">
             <MainLayout
-            {...baseOptions()}
-            links={[
-                ...((API.wellKnown?.features ?? []).length > 0 ? [
+                {...baseOptions()}
+                links={[
+                    ...((API.wellKnown?.features ?? []).length > 0 ? [
+                        {
+                            type: 'menu' as const,
+                            on: 'nav' as const,
+                            text: t('features.label'),
+                            items: (API.wellKnown?.features ?? []).map(feature => ({
+                                type: 'main' as const,
+                                icon: featureIcons[feature] ? <Icon icon={featureIcons[feature]} className="h-4 w-4" /> : undefined,
+                                description: t(`features.${feature}.description`),
+                                text: t(`features.${feature}.label`),
+                                url: `/search?type=${feature}`,
+                            })),
+                        }
+                    ] : []),
                     {
                         type: 'menu' as const,
                         on: 'nav' as const,
-                        text: t('features.label'),
-                        items: (API.wellKnown?.features ?? []).map(feature => ({
-                            type: 'main' as const,
-                            icon: featureIcons[feature] ? <Icon icon={featureIcons[feature]} className="h-4 w-4" /> : undefined,
-                            description: t(`features.${feature}.description`),
-                            text: t(`features.${feature}.label`),
-                            url: `/search?type=${feature}`,
+                        secondary: true,
+                        text: <Icon icon="material-symbols:language" className="h-4 w-4" />,
+                        items: languages.map(({ code, name, flag: flagUrl }) => ({
+                            type: 'button' as const,
+                            icon: flagUrl ? (
+                                <Image
+                                    src={flagUrl}
+                                    alt={code}
+                                    width={16}
+                                    height={16}
+                                    className="h-4 w-4 rounded-sm object-cover"
+                                />
+                            ) : undefined,
+                            text: name,
+                            active: i18n.language === code,
+                            onClick: () => i18n.changeLanguage(code),
                         })),
-                    }
-                ] : []),
-                {
-                    type: 'menu' as const,
-                    on: 'nav' as const,
-                    secondary: true,
-                    text: <Icon icon="material-symbols:language" className="h-4 w-4" />,
-                    items: languages.map(({ code, name, flag: flagUrl }) => ({
-                        type: 'button' as const,
-                        icon: flagUrl ? (
-                            <img
-                                src={flagUrl}
-                                alt={code}
-                                className="h-4 w-4 rounded-sm object-cover"
-                            />
-                        ) : undefined,
-                        text: name,
-                        active: i18n.language === code,
-                        onClick: () => i18n.changeLanguage(code),
-                    })),
-                },
-                {
-                    type: 'menu' as const,
-                    on: 'nav' as const,
-                    secondary: true,
-                    text: <Icon
-                        icon={themes.find(th => th.value === (theme ?? 'system'))?.icon ?? 'material-symbols:brightness-auto-rounded'}
-                        className="h-4 w-4"
-                    />,
-                    items: themes.map(({ value, label, icon }) => ({
-                        type: 'button' as const,
-                        icon: <Icon icon={icon} />,
-                        text: label,
-                        active: theme === value,
-                        onClick: () => setTheme(value),
-                    })),
-                },
-                {
-                    type: 'menu' as const,
-                    on: 'nav' as const,
-                    text: t('legal.label'),
-                    items: [
-                        {
-                            type: 'main' as const,
-                            icon: <Icon icon="material-symbols:lock" className="h-4 w-4" />,
-                            text: t('legal.privacy.label'),
-                            description: t('legal.privacy.description'),
-                            url: '/privacy',
-                        },
-                        {
-                            type: 'main' as const,
-                            icon: <Icon icon="material-symbols:article-rounded" className="h-4 w-4" />,
-                            text: t('legal.terms.label'),
-                            description: t('legal.terms.description'),
-                            url: '/terms',
-                        },
-                        {
-                            type: 'main' as const,
-                            icon: <Icon icon="material-symbols:gavel-rounded" className="h-4 w-4" />,
-                            text: t('legal.rules.label'),
-                            description: t('legal.rules.description'),
-                            url: '/rules',
-                        },
-                    ],
-                },
-            ]}
-        >
-            {children}
-        </MainLayout>
+                    },
+                    {
+                        type: 'menu' as const,
+                        on: 'nav' as const,
+                        secondary: true,
+                        text: <Icon
+                            icon={themes.find(th => th.value === (theme ?? 'system'))?.icon ?? 'material-symbols:brightness-auto-rounded'}
+                            className="h-4 w-4"
+                        />,
+                        items: themes.map(({ value, label, icon }) => ({
+                            type: 'button' as const,
+                            icon: <Icon icon={icon} />,
+                            text: label,
+                            active: theme === value,
+                            onClick: () => setTheme(value),
+                        })),
+                    },
+                    {
+                        type: 'menu' as const,
+                        on: 'nav' as const,
+                        text: t('legal.label'),
+                        items: [
+                            {
+                                type: 'main' as const,
+                                icon: <Icon icon="material-symbols:lock" className="h-4 w-4" />,
+                                text: t('legal.privacy.label'),
+                                description: t('legal.privacy.description'),
+                                url: '/privacy',
+                            },
+                            {
+                                type: 'main' as const,
+                                icon: <Icon icon="material-symbols:article-rounded" className="h-4 w-4" />,
+                                text: t('legal.terms.label'),
+                                description: t('legal.terms.description'),
+                                url: '/terms',
+                            },
+                            {
+                                type: 'main' as const,
+                                icon: <Icon icon="material-symbols:gavel-rounded" className="h-4 w-4" />,
+                                text: t('legal.rules.label'),
+                                description: t('legal.rules.description'),
+                                url: '/rules',
+                            },
+                        ],
+                    },
+                ]}
+            >
+                {children}
+            </MainLayout>
         </div>
         <Footer />
     </div>;
