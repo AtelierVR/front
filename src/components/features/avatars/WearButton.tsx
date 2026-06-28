@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useApi } from '@/lib/api/context';
 import { updateCurrentUser } from '@/lib/api/users';
 import { parseNoxId } from '@/types/nox-identifier';
@@ -32,14 +33,20 @@ export function WearButton() {
   };
 
   return (
-    <Button
-      variant="ghost"
-      onClick={toggle}
-      disabled={busy}
-      className={isWorn ? 'text-blue-500' : ''}
-      title={t(isWorn ? 'avatar.remove_wear' : 'avatar.wear')}
-    >
-      <Icon icon="material-symbols:person-rounded" className="size-4" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger className="inline-flex">
+        <Button
+          variant="ghost"
+          onClick={toggle}
+          disabled={busy}
+          className={isWorn ? 'text-blue-500' : ''}
+        >
+          <Icon icon="material-symbols:person-rounded" className="size-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{t(isWorn ? 'avatar.remove_wear' : 'avatar.wear')}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }

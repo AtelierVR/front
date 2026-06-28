@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useApi } from '@/lib/api/context';
 import { updateCurrentUser } from '@/lib/api/users';
 import { parseNoxId } from '@/types/nox-identifier';
@@ -32,14 +33,20 @@ export function SetHomeButton() {
   };
 
   return (
-    <Button
-      variant="ghost"
-      onClick={toggle}
-      disabled={busy}
-      className={isHome ? 'text-blue-500' : ''}
-      title={t(isHome ? 'world.remove_home' : 'world.set_home')}
-    >
-      <Icon icon="material-symbols:home-rounded" className="size-4" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger className="inline-flex">
+        <Button
+          variant="ghost"
+          onClick={toggle}
+          disabled={busy}
+          className={isHome ? 'text-blue-500' : ''}
+        >
+          <Icon icon="material-symbols:home-rounded" className="size-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{t(isHome ? 'world.remove_home' : 'world.set_home')}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
