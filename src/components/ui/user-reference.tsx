@@ -194,7 +194,7 @@ function UserReferenceNormal({
         {displayName ? (
           <>
             <div className="flex items-center gap-1 font-medium truncate">
-              <span className="group-hover:underline group-hover:text-primary transition-colors">
+              <span className="group-hover:text-primary transition-colors">
                 {displayName}
               </span>
               {isOwner && (
@@ -207,7 +207,8 @@ function UserReferenceNormal({
             {user && (
               <Identifier
                 value={getAlias(user.alias, 'uid') ?? `${user.id}@${user.server}`}
-                className="text-xs text-muted-foreground"
+                className="text-xs text-muted-foreground cursor-pointer"
+                clickable={false}
               />
             )}
           </>

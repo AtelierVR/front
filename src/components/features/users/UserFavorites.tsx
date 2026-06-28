@@ -14,7 +14,7 @@ import {
     ResultGrid,
     CardItem,
     SkeletonGrid,
-    EmptyState,
+    EmptyBox,
 } from '@/components/shared/ResultGrid';
 import { getAlias } from '@/lib/api';
 import { useApi } from '@/lib/api/context';
@@ -32,11 +32,12 @@ interface ResolvedGroup {
 }
 
 const FAVORITE_MIME = 'application/json+favorite';
-const KEY_PREFIX = 'public.favorite.';
+const KEY_PREFIXES = ['public.favorites.'];
 
 function parseFavoriteKey(key: string): { type: string; entryKey: string; index: number } | null {
-    if (!key.startsWith(KEY_PREFIX)) return null;
-    const rest = key.slice(KEY_PREFIX.length); // "<type>.<group>"
+    const prefix = KEY_PREFIXES.find(p => key.startsWith(p));
+    if (!prefix) return null;
+    const rest = key.slice(prefix.length); // "<type>.<group>"
     const dot = rest.indexOf('.');
     if (dot < 0) return null;
     const type = rest.slice(0, dot);
@@ -44,7 +45,7 @@ function parseFavoriteKey(key: string): { type: string; entryKey: string; index:
     const index = parseInt(group, 10);
     return {
         type,
-        entryKey: `favorite.${type}.${group}`,
+        entryKey: `favorites.${type}.${group}`,
         index
     };
 }
@@ -96,7 +97,7 @@ export function UserFavorites() {
                         const content = await getUserPublicEntry<FavoriteContent>(user.username, entryKey);
                         const values = Array.isArray(content?.values) ? content.values : [];
 
-                        if (type === 'world') {
+                        if (type === 'worlds') {
                             const settled = await Promise.allSettled(values.map(getWorld));
                             const items = settled
                                 .filter((r): r is PromiseFulfilledResult<ApiWorld> => r.status === 'fulfilled')
@@ -109,7 +110,7 @@ export function UserFavorites() {
                             } as ResolvedGroup;
                         }
 
-                        if (type === 'avatar') {
+                        if (type === 'avatars') {
                             const settled = await Promise.allSettled(values.map(getAvatar));
                             const items = settled
                                 .filter((r): r is PromiseFulfilledResult<ApiAvatar> => r.status === 'fulfilled')
@@ -147,9 +148,7 @@ export function UserFavorites() {
 
     if (groups.length === 0) {
         return (
-            <div className="text-center text-muted-foreground border border-dashed rounded-xl py-12">
-                {t('users.favorites_empty')}
-            </div>
+            <EmptyBox>{t('users.favorites_empty')}</EmptyBox>
         );
     }
 

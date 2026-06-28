@@ -9,7 +9,7 @@
  *   i  — Instance (id = int32 | shortname, query: w=<base64 world>, p=<base64 password>)
  */
 
-export type NoxIdentifierType = 'u' | 'w' | 'i';
+export type NoxIdentifierType = 'u' | 'w' | 'i' | 'a';
 
 export type NoxQuery = Record<string, string>;
 
@@ -73,8 +73,8 @@ export class NoxIdentifier {
     const colonIdx = raw.indexOf(':');
     if (colonIdx === 1) {
       const prefix = raw[0];
-      if (prefix === 'u' || prefix === 'w' || prefix === 'i') {
-        type = prefix;
+      if (/^[a-z]$/.test(prefix)) {
+        type = prefix as NoxIdentifierType;
         raw = raw.slice(2);
       }
     }
@@ -95,6 +95,28 @@ export class NoxIdentifier {
       || this.server === ''
       || (localAddress !== undefined && this.server === NoxIdentifier.LOCALSERVER)
       || (localAddress !== undefined && this.server === localAddress);
+  }
+
+  /**
+   * Semantic equality check against another NoxIdentifier or raw string.
+   * Compares type, id, and server. If either side has no type, type is not compared.
+   * Server comparison is tolerant: undefined, '', and '::' are all treated as "local".
+   */
+  match(other: NoxIdentifier | string): boolean {
+    const b = typeof other === 'string' ? NoxIdentifier.parse(other) : other;
+
+    // Id must match
+    if (this.id !== b.id) return false;
+
+    // If both have a type, they must match
+    if (this.type !== null && b.type !== null && this.type !== b.type) return false;
+
+    // Server: both local, or exact match
+    const aLocal = !this.server || this.server === '' || this.server === NoxIdentifier.LOCALSERVER;
+    const bLocal = !b.server || b.server === '' || b.server === NoxIdentifier.LOCALSERVER;
+    if (aLocal && bLocal) return true;
+    if (aLocal !== bLocal) return false;
+    return this.server === b.server;
   }
 
   toString(fallbackServer: string | null = NoxIdentifier.LOCALSERVER): string {

@@ -11,6 +11,7 @@ interface IdentifierProps {
   /** The full nox identifier string (e.g. "u:42@server.com" or "42@server.com") */
   value: NoxIdString;
   className?: string;
+  clickable?: boolean
 }
 
 /**
@@ -20,6 +21,7 @@ interface IdentifierProps {
 export function Identifier({
   value,
   className,
+  clickable = true
 }: IdentifierProps) {
   const { wellKnown } = useApi();
   const localAddress = wellKnown?.address ?? '::';
@@ -46,9 +48,10 @@ export function Identifier({
   return (
     <Confetti ref={confettiRef}>
       <button
-        onClick={copy}
+        onClick={clickable ? copy : undefined}
         className={cn(
-          'text-muted-foreground hover:text-foreground transition-colors cursor-pointer',
+          'text-muted-foreground transition-colors',
+          clickable && "hover:text-foreground cursor-pointer",
           className,
         )}
       >
