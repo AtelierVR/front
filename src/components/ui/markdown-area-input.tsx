@@ -17,7 +17,12 @@ export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, cla
     const [tab, setTab] = useState<'write' | 'preview'>('write');
 
     return (
-        <div className={cn('flex flex-col rounded-lg border border-input overflow-hidden', className)}>
+        <div className={cn(
+            'flex flex-col rounded-lg border border-input overflow-hidden',
+            'transition-colors',
+            'has-[[data-slot=markdown-input]:focus]:border-ring has-[[data-slot=markdown-input]:focus]:ring-3 has-[[data-slot=markdown-input]:focus]:ring-ring/50',
+            className
+        )}>
             {/* Tab bar */}
             <div className="flex border-b border-input bg-muted/30">
                 <button
@@ -49,6 +54,7 @@ export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, cla
             {/* Content */}
             {tab === 'write' ? (
                 <Textarea
+                    data-slot="markdown-input"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder}

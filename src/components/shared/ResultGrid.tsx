@@ -72,6 +72,15 @@ export function EmptyState({ label, details }: { label: string; details?: string
     );
 }
 
+/** Dashed border box for empty states — matches the style used in UserFavorites. */
+export function EmptyBox({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="text-center text-muted-foreground border border-dashed rounded-xl py-12">
+            {children}
+        </div>
+    );
+}
+
 // ── Pagination ────────────────────────────────────────────────────────────────
 
 export function PageNav({

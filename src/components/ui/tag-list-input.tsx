@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { EmptyBox } from '@/components/shared/ResultGrid';
 
 const TAG_EDIT_REGEX = /^usr:([a-z_]+)?$/;
 export const TAG_VALID_REGEX = /^usr:([a-z_])([a-z_]+)?$/;
@@ -49,19 +50,22 @@ export function TagListInput({ tags, onChange, className }: TagListInputProps) {
     return (
         <div className={cn('space-y-2', className)}>
             {currentTags.length === 0 && (
-                <div className="text-sm text-muted-foreground text-center py-4 border border-dashed border-border rounded-lg">
-                    No tags yet.
-                </div>
+                <EmptyBox>No tags yet.</EmptyBox>
             )}
 
             {currentTags.length > 0 && (
-                <div className="rounded-lg border border-border overflow-hidden divide-y divide-border">
+                <div className={cn(
+                    'rounded-lg border border-input overflow-hidden divide-y divide-border',
+                    'transition-colors',
+                    'has-[[data-slot=tag-input]:focus]:border-ring has-[[data-slot=tag-input]:focus]:ring-3 has-[[data-slot=tag-input]:focus]:ring-ring/50',
+                )}>
                     {currentTags.map((tag, index) => (
                         <div
                             key={index}
                             className="flex items-center gap-2 px-3 py-1.5 bg-card hover:bg-muted/50 transition-colors"
                         >
                             <Input
+                                data-slot="tag-input"
                                 ref={(el) => { inputRefs.current[index] = el; }}
                                 value={tag}
                                 onChange={(e) => handleChange(index, e.target.value)}
