@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -255,6 +256,7 @@ function EnvironmentPageInner() {
 
     return (
         <>
+            <PageTitle title={t('admin.environment')} />
             <SiteHeader children={t('admin.environment')} />
             <div className="flex flex-1 flex-col p-4 md:p-6 gap-4">
                 {/* Toolbar */}

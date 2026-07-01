@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useApi } from '@/lib/api/context';
 import { updateCurrentUser } from '@/lib/api/users';
 import { useTranslation } from 'react-i18next';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
@@ -61,6 +62,7 @@ export default function AccountPage() {
 
     return (
         <>
+            <PageTitle title={t('settings.account.title')} />
             <SiteHeader
                 children={t('settings.account.title')}
                 subtitle={t('settings.account.description')}

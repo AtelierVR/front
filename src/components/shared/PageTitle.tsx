@@ -8,19 +8,21 @@ interface PageTitleProps {
 }
 
 /**
- * Dynamically updates document.title from a client component,
- * using the same template as the root layout metadata.
- * Renders nothing — drop it anywhere in a page or layout.
+ * Sets document.title AND renders a <title> element so Next.js's
+ * head manager (SideEffect) picks it up during client-side navigation.
+ * Without the <title> tag, Next.js resets document.title to the root
+ * layout's default metadata on every route change.
  */
 export function PageTitle({ title }: PageTitleProps) {
-  useEffect(() => {
-    document.title = formatPageTitle(title);
-    return () => {
-      document.title = formatPageTitle(null);
-    };
-  }, [title]);
+  const formatted = formatPageTitle(title);
 
-  return null;
+  useEffect(() => {
+    document.title = formatted;
+  }, [formatted]);
+
+  // Render the <title> tag so Next.js's SideEffect/headManager
+  // collects it and doesn't overwrite with the root metadata default.
+  return <title>{formatted}</title>;
 }
 
 export function setTitle(title: string | null) {

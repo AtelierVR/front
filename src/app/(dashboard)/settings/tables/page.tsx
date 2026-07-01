@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -279,6 +280,7 @@ export default function TablesPage() {
 
     return (
         <>
+            <PageTitle title={t('settings.tables.title')} />
             <SiteHeader
                 children={t('settings.tables.title')}
                 subtitle={t('settings.tables.description')}

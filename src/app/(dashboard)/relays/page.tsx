@@ -11,6 +11,7 @@ import {
     type ColumnDef,
     type SortingState,
 } from '@tanstack/react-table';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -437,6 +438,7 @@ function RelaysPageInner() {
 
     return (
         <>
+            <PageTitle title={t('admin.relays')} />
             <SiteHeader
                 children={t('admin.relays')}
                 after={<>

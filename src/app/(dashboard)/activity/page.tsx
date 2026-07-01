@@ -12,6 +12,7 @@ import {
     type SortingState,
     type VisibilityState,
 } from '@tanstack/react-table';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -418,8 +419,9 @@ function ActivityPageInner() {
     });
 
     return <>
+        <PageTitle title={t('admin.activity')} />
         <SiteHeader
-            children={t('admin.activity_log')}
+            children={t('admin.activity')}
             after={<>
                 <Button variant="ghost" size="icon" className="size-8" onClick={() => { setEvents([]); setTotal(-1); fetchEvents(q); }}>
                     <Icon icon="material-symbols:refresh-rounded" className={cn('size-4', loading && 'animate-spin')} />

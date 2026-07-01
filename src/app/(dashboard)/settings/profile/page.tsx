@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useApi } from '@/lib/api/context';
 import { updateCurrentUser, uploadUserThumbnail, uploadUserBanner } from '@/lib/api/users';
 import { useTranslation } from 'react-i18next';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { TextInput } from '@/components/ui/text-input';
 import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
@@ -142,6 +143,7 @@ export default function ProfilePage() {
 
     return (
         <>
+            <PageTitle title={t('settings.nav.profile')} />
             <SiteHeader
                 children={t('settings.nav.profile')}
                 subtitle={t('settings.profile.description')}

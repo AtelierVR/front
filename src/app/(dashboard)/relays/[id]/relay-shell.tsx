@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -384,6 +385,7 @@ export function RelayShell({ children }: { children: React.ReactNode }) {
 
     return (
         <>
+            <PageTitle title={label ?? t('admin.relays')} />
             <SiteHeader
                 before={
                     <Button variant="ghost" size="icon-sm" onClick={() => router.push('/relays')} aria-label="Back">

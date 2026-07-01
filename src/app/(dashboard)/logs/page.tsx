@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
 import { LogsViewer } from '@/components/logs-viewer';
 import { getServerLogs, useApi } from '@/lib/api';
@@ -47,6 +48,7 @@ export default function LogsPage() {
 
     return (
         <>
+            <PageTitle title={t('admin.logs')} />
             <SiteHeader children={t('admin.logs')} />
             <div className="flex flex-1 flex-col p-4 md:p-6 gap-4">
                 <LogsViewer
