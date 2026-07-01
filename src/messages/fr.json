@@ -63,6 +63,17 @@
     "terms_of_service": "Conditions d'utilisation",
     "privacy_policy": "Politique de confidentialité"
   },
+  "confirmation": {
+    "verifying": "Vérification...",
+    "verified": "Email vérifié !",
+    "failed": "Échec de la vérification",
+    "verifying_description": "Vérification de votre email...",
+    "please_wait": "Veuillez patienter un instant.",
+    "success_message": "Votre email a été vérifié avec succès ! Vous pouvez fermer cette page.",
+    "invalid_token": "Ce lien de vérification est invalide ou a expiré.",
+    "missing_token": "Jeton de vérification manquant.",
+    "error_message": "Impossible de vérifier l'email. Veuillez réessayer plus tard."
+  },
   "errors": {
     "401": "Session expirée. Veuillez vous reconnecter.",
     "403": "Vous n'avez pas la permission d'accéder à cette page.",
@@ -258,7 +269,7 @@
     },
     "account": {
       "title": "Compte",
-      "description": "Gérez vos paramètres de compte, nom d'utilisateur et tags.",
+      "description": "Gérez vos paramètres de compte, nom d'utilisateur, tags, email et authentification à deux facteurs.",
       "username": {
         "title": "Nom d'utilisateur",
         "description": "Votre identifiant unique. Le changer modifiera l'URL de votre profil."
@@ -266,9 +277,97 @@
       "tags": {
         "title": "Tags",
         "description": "Tags de préférences et visibilité commençant par usr:."
+      },
+      "email": {
+        "title": "Email",
+        "description": "Votre adresse email pour la récupération et les notifications."
+      },
+      "twofa": {
+        "title": "Authentification à deux facteurs",
+        "description": "Protégez votre compte avec une couche de sécurité supplémentaire."
       }
     },
-    "security": "Sécurité",
+    "security": {
+      "title": "Sécurité",
+      "description": "Gérez les paramètres de sécurité de votre compte.",
+      "email": {
+        "title": "Email",
+        "current_email": "Votre email actuel :",
+        "verified": "Vérifié",
+        "unverified": "Non vérifié",
+        "no_email": "Aucun email",
+        "verified_description": "Votre email est vérifié.",
+        "unverified_description": "Veuillez vérifier votre adresse email.",
+        "no_email_description": "Ajoutez un email pour la récupération de compte et les notifications.",
+        "change_email": "Changer l'email",
+        "add_email": "Ajouter un email",
+        "remove_email": "Supprimer l'email",
+        "verify_email": "Vérifier l'email",
+        "send_verification": "Envoyer la vérification",
+        "change_email_title": "Changer votre email",
+        "add_email_title": "Ajouter un email",
+        "remove_title": "Supprimer l'email",
+        "verify_title": "Vérifier votre email",
+        "change_email_desc": "Entrez votre nouvelle adresse email. Vous devrez la vérifier.",
+        "add_email_desc": "Ajoutez une adresse email pour la récupération de compte.",
+        "remove_description": "Êtes-vous sûr de vouloir supprimer votre email ?",
+        "verify_description": "Entrez le code à 6 chiffres envoyé à votre email.",
+        "verification_code_label": "Code de vérification",
+        "new_email_placeholder": "nouveau@email.com",
+        "confirm_email_placeholder": "Confirmer l'email",
+        "emails_mismatch": "Les emails ne correspondent pas",
+        "update_email": "Mettre à jour",
+        "saving_email": "Enregistrement…",
+        "updated_success": "Email ajouté avec succès.",
+        "verified_success": "Email vérifié avec succès.",
+        "removed_success": "Email supprimé avec succès.",
+        "failed_update": "Échec de l'ajout de l'email.",
+        "failed_verify": "Échec de la vérification de l'email.",
+        "failed_remove": "Échec de la suppression de l'email.",
+        "verification_sent": "Email de vérification envoyé.",
+        "failed_send_verification": "Échec de l'envoi de la vérification.",
+        "sending": "Envoi…",
+        "removing": "Suppression…"
+      },
+      "two_factor": {
+        "title": "Authentification à deux facteurs",
+        "enabled": "Activée",
+        "disabled": "Désactivée",
+        "enabled_description": "Votre compte est protégé par l'authentification à deux facteurs.",
+        "disabled_description": "Ajoutez une couche de sécurité supplémentaire à votre compte.",
+        "enable": "Activer 2FA",
+        "disable": "Désactiver 2FA",
+        "setting_up": "Configuration…",
+        "disabling": "Désactivation…",
+        "enabled_success": "Authentification à deux facteurs activée.",
+        "disabled_success": "Authentification à deux facteurs désactivée.",
+        "failed_setup": "Échec de la configuration 2FA.",
+        "failed_enable": "Échec de l'activation 2FA.",
+        "failed_disable": "Échec de la désactivation 2FA.",
+        "setup_title": "Configurer l'authentification à deux facteurs",
+        "verify_title": "Vérifier votre code",
+        "setup_description": "Scannez le QR code avec votre application d'authentification, ou entrez le code manuellement.",
+        "verify_description": "Entrez le code à 6 chiffres de votre application d'authentification.",
+        "verified": "Vérifié !",
+        "manual_code": "Ou entrez ce code manuellement :",
+        "verification_code": "Code de vérification",
+        "enter_code": "Entrez le code à 6 chiffres",
+        "verify_enable": "Vérifier et activer",
+        "verifying": "Vérification…"
+      },
+      "verification": {
+        "title": "Vérification requise",
+        "description": "Entrez votre code de vérification pour continuer.",
+        "select_method": "Choisissez une méthode de vérification :",
+        "code_label": "Code de vérification",
+        "verified": "Vérifié !",
+        "failed": "Échec de la vérification",
+        "failed_send": "Échec de l'envoi du code.",
+        "resend": "Renvoyer le code",
+        "resend_cooldown": "Renvoyer dans {{seconds}}s",
+        "verify": "Vérifier"
+      }
+    },
     "sessions": "Sessions",
     "follow": "Abonnements",
     "tables": {

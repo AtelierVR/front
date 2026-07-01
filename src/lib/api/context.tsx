@@ -5,15 +5,17 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
 import type { NoxWellKnown } from '@/types/wellknown';
 import type { ApiCurrentUser } from '@/types/api';
 import { fetchWellKnown } from './wellknown';
-import { apiFetch, registerLogoutDispatch, registerGatewayUrl, registerCurrentUserReplace, registerCurrentUserMerge } from './client';
+import { apiFetch, registerLogoutDispatch, registerGatewayUrl, registerCurrentUserReplace, registerCurrentUserMerge, registerVerificationHandler, type VerificationMethod } from './client';
 import { getToken, setToken, clearToken } from '@/lib/auth/storage';
 import { fetchConfigs, type InstanceConfig } from './configs';
+import { VerificationModal } from '@/components/shared/VerificationModal';
 
 // ── Context shape ───────────────────────────────────────────────────────────
 
@@ -39,6 +41,39 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<ApiCurrentUser | null>(null);
   const [token, setTokenState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // ── Global verification modal ──────────────────────────────────────────
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationMethods, setVerificationMethods] = useState<VerificationMethod[]>([]);
+  const verificationResolveRef = useRef<((code: string | null) => void) | null>(null);
+
+  const handleVerificationRequired = useCallback(
+    async (methods: VerificationMethod[]): Promise<string | null> => {
+      setVerificationMethods(methods);
+      setShowVerificationModal(true);
+      return new Promise((resolve) => {
+        verificationResolveRef.current = resolve;
+      });
+    },
+    [],
+  );
+
+  const handleVerificationSuccess = useCallback((code: string) => {
+    setShowVerificationModal(false);
+    verificationResolveRef.current?.(code);
+    verificationResolveRef.current = null;
+  }, []);
+
+  const handleVerificationClose = useCallback(() => {
+    setShowVerificationModal(false);
+    verificationResolveRef.current?.(null);
+    verificationResolveRef.current = null;
+  }, []);
+
+  // Register the global verification handler
+  useEffect(() => {
+    registerVerificationHandler(handleVerificationRequired);
+  }, [handleVerificationRequired]);
 
   const logout = useCallback(async () => {
     // Call the server logout endpoint to invalidate the session
@@ -184,6 +219,12 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      <VerificationModal
+        isOpen={showVerificationModal}
+        onClose={handleVerificationClose}
+        onSuccess={handleVerificationSuccess}
+        methods={verificationMethods}
+      />
     </ApiContext.Provider>
   );
 }

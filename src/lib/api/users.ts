@@ -1,6 +1,8 @@
 import { apiFetch, apiFetchRaw, dispatchCurrentUserReplace } from './client';
 import { getWellKnownAddress } from './wellknown';
 import type { ApiUser, ApiCurrentUser, ApiLink, ApiUserSearchResult, ApiPublicTableList, ApiRelationListResult } from '@/types/api';
+import type { ApiErrorDetails } from '@/types/envelope';
+import { ApiError } from '@/types/envelope';
 
 export function getUser(username: string): Promise<ApiUser> {
     return apiFetch<ApiUser>(`/users/${username}`);
@@ -37,7 +39,6 @@ export interface UpdateCurrentUserPayload {
     display?: string;
     bio?: string | null;
     pronoun?: string | null;
-    email?: string | null;
     current_password?: string;
     password?: string;
     links?: ApiLink[] | null;
@@ -52,6 +53,20 @@ export async function updateCurrentUser(data: UpdateCurrentUserPayload): Promise
     const user = await apiFetch<ApiCurrentUser>('/users/@me', { method: 'POST', body: JSON.stringify(data) });
     dispatchCurrentUserReplace(user);
     return user;
+}
+
+export interface VerificationMethod {
+    type: string;
+    name: string;
+    description: string;
+    enabled: boolean;
+    can_send: boolean;
+    send_data?: Record<string, unknown>;
+    cooldown?: number;
+    code: {
+        length: number;
+        type: 'numeric' | 'alphanumeric' | 'hex';
+    };
 }
 
 export async function uploadUserThumbnail(file: Blob): Promise<void> {

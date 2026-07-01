@@ -12,6 +12,28 @@ let _currentUserReplace: ((user: ApiCurrentUser) => void) | null = null;
 /** Registered by ApiProvider — called to shallowly merge ApiUser fields into currentUser. */
 let _currentUserMerge: ((user: ApiUser) => void) | null = null;
 
+/**
+ * Called by apiFetch when a VERIFICATION_REQUIRED error is received.
+ * Returns a promise that resolves with the verification code (or null if cancelled).
+ */
+type VerificationHandler = (methods: VerificationMethod[]) => Promise<string | null>;
+let _verificationHandler: VerificationHandler | null = null;
+
+export interface VerificationMethod {
+    type: string;
+    name: string;
+    description: string;
+    enabled: boolean;
+    can_send: boolean;
+    send_data?: Record<string, unknown>;
+    cooldown?: number;
+}
+
+/** Register the verification handler so apiFetch can trigger the 2FA modal. */
+export function registerVerificationHandler(handler: VerificationHandler): void {
+    _verificationHandler = handler;
+}
+
 /** Register the logout callback so apiFetch can trigger it on 401. */
 export function registerLogoutDispatch(fn: LogoutDispatch): void {
   _logoutDispatch = fn;
@@ -88,8 +110,33 @@ export async function apiFetch<T>(
 
   const envelope: ApiResponse<T> = await res.json();
 
-  if (envelope.error) 
-    throw new ApiError(envelope.error);
+  if (envelope.error) {
+    const apiErr = new ApiError(envelope.error);
+
+    // Intercept VERIFICATION_REQUIRED globally — show 2FA modal and retry
+    if (apiErr.code === 'VERIFICATION_REQUIRED' && _verificationHandler) {
+      const methods = (envelope.data as { methods?: VerificationMethod[] } | null)?.methods;
+      if (methods?.length) {
+        const code = await _verificationHandler(methods);
+        if (code) {
+          // Retry with the verification code in the body
+          const retryBody = options.body
+            ? JSON.stringify({ ...JSON.parse(options.body as string), factor_code: code })
+            : JSON.stringify({ factor_code: code });
+          const retryRes = await fetch(url, {
+            ...options,
+            headers: { ...Object.fromEntries(headers.entries()), 'Content-Type': 'application/json' },
+            body: retryBody,
+          });
+          const retryEnvelope: ApiResponse<T> = await retryRes.json();
+          if (retryEnvelope.error) throw new ApiError(retryEnvelope.error);
+          return (retryEnvelope as { data: T }).data;
+        }
+      }
+    }
+
+    throw apiErr;
+  }
 
   return (envelope as { data: T }).data;
 }

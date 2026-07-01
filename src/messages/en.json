@@ -62,6 +62,17 @@
     "terms_of_service": "Terms of Service",
     "privacy_policy": "Privacy Policy"
   },
+  "confirmation": {
+    "verifying": "Verifying...",
+    "verified": "Email Verified!",
+    "failed": "Verification Failed",
+    "verifying_description": "Verifying your email...",
+    "please_wait": "Please wait a moment.",
+    "success_message": "Your email has been verified successfully! You can close this page.",
+    "invalid_token": "This verification link is invalid or has expired.",
+    "missing_token": "Missing verification token.",
+    "error_message": "Unable to verify email. Please try again later."
+  },
   "errors": {
     "401": "Session expired. Please log in again.",
     "403": "You do not have permission to access this page.",
@@ -257,7 +268,7 @@
     },
     "account": {
       "title": "Account",
-      "description": "Manage your account settings, username and tags.",
+      "description": "Manage your account settings, username, tags, email and two-factor authentication.",
       "username": {
         "title": "Username",
         "description": "Your unique username. Changing it will update your profile URL."
@@ -265,9 +276,97 @@
       "tags": {
         "title": "Tags",
         "description": "Preferences and visibility tags starting with usr:."
+      },
+      "email": {
+        "title": "Email",
+        "description": "Your email address for recovery and notifications."
+      },
+      "twofa": {
+        "title": "Two-Factor Authentication",
+        "description": "Protect your account with an extra layer of security."
       }
     },
-    "security": "Security",
+    "security": {
+      "title": "Security",
+      "description": "Manage your account security settings.",
+      "email": {
+        "title": "Email",
+        "current_email": "Your current email:",
+        "verified": "Verified",
+        "unverified": "Not verified",
+        "no_email": "No email set",
+        "verified_description": "Your email is verified.",
+        "unverified_description": "Please verify your email address.",
+        "no_email_description": "Add an email for account recovery and notifications.",
+        "change_email": "Change email",
+        "add_email": "Add email",
+        "remove_email": "Remove email",
+        "verify_email": "Verify email",
+        "send_verification": "Send verification",
+        "change_email_title": "Change your email",
+        "add_email_title": "Add an email",
+        "remove_title": "Remove email",
+        "verify_title": "Verify your email",
+        "change_email_desc": "Enter your new email address. You will need to verify it.",
+        "add_email_desc": "Add an email address for account recovery.",
+        "remove_description": "Are you sure you want to remove your email?",
+        "verify_description": "Enter the 6-digit code sent to your email.",
+        "verification_code_label": "Verification code",
+        "new_email_placeholder": "new@email.com",
+        "confirm_email_placeholder": "Confirm email",
+        "emails_mismatch": "Emails don't match",
+        "update_email": "Update email",
+        "saving_email": "Saving…",
+        "updated_success": "Email added successfully.",
+        "verified_success": "Email verified successfully.",
+        "removed_success": "Email removed successfully.",
+        "failed_update": "Failed to add email.",
+        "failed_verify": "Failed to verify email.",
+        "failed_remove": "Failed to remove email.",
+        "verification_sent": "Verification email sent.",
+        "failed_send_verification": "Failed to send verification.",
+        "sending": "Sending…",
+        "removing": "Removing…"
+      },
+      "two_factor": {
+        "title": "Two-Factor Authentication",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "enabled_description": "Your account is protected with two-factor authentication.",
+        "disabled_description": "Add an extra layer of security to your account.",
+        "enable": "Enable 2FA",
+        "disable": "Disable 2FA",
+        "setting_up": "Setting up…",
+        "disabling": "Disabling…",
+        "enabled_success": "Two-factor authentication enabled.",
+        "disabled_success": "Two-factor authentication disabled.",
+        "failed_setup": "Failed to setup 2FA.",
+        "failed_enable": "Failed to enable 2FA.",
+        "failed_disable": "Failed to disable 2FA.",
+        "setup_title": "Set up Two-Factor Authentication",
+        "verify_title": "Verify your code",
+        "setup_description": "Scan the QR code with your authenticator app, or enter the code manually.",
+        "verify_description": "Enter the 6-digit code from your authenticator app.",
+        "verified": "Verified!",
+        "manual_code": "Or enter this code manually:",
+        "verification_code": "Verification code",
+        "enter_code": "Enter 6-digit code",
+        "verify_enable": "Verify & enable",
+        "verifying": "Verifying…"
+      },
+      "verification": {
+        "title": "Verification Required",
+        "description": "Enter your verification code to continue.",
+        "select_method": "Choose a verification method:",
+        "code_label": "Verification code",
+        "verified": "Verified!",
+        "failed": "Verification failed",
+        "failed_send": "Failed to send verification code.",
+        "resend": "Resend code",
+        "resend_cooldown": "Resend in {{seconds}}s",
+        "verify": "Verify"
+      }
+    },
     "sessions": "Sessions",
     "follow": "Follow",
     "tables": {

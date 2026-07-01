@@ -5,10 +5,12 @@ import { useApi } from '@/lib/api/context';
 import { updateCurrentUser } from '@/lib/api/users';
 import { useTranslation } from 'react-i18next';
 import { SiteHeader } from '@/components/site-header';
-import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupText } from '@/components/ui/input-group';
-import { TagListInput } from '@/components/ui/tag-list-input';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
+import { UsernamePart } from './UsernamePart';
+import { TagsPart } from './TagsPart';
+import { EmailPart } from './EmailPart';
+import { TwoFAPart } from './TwoFAPart';
 
 export default function AccountPage() {
     const { t } = useTranslation();
@@ -19,7 +21,7 @@ export default function AccountPage() {
 
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
+    const [success, setSuccess] = useState<string | null>(null);
     const [dirty, setDirty] = useState(false);
 
     useEffect(() => {
@@ -30,14 +32,13 @@ export default function AccountPage() {
 
     const markDirty = () => setDirty(true);
 
-    const getUsername = () => username ?? currentUser?.username ?? '';
     const getTags = () => tags ?? currentUser?.tags ?? [];
 
     const handleSave = async () => {
         if (!dirty || saving) return;
         setSaving(true);
         setError(null);
-        setSuccess(false);
+        setSuccess(null);
         try {
             await updateCurrentUser({
                 username: username ?? undefined,
@@ -46,9 +47,10 @@ export default function AccountPage() {
             setUsername(undefined);
             setTags(undefined);
             setDirty(false);
-            setSuccess(true);
-            setTimeout(() => setSuccess(false), 3000);
+            setSuccess(t('settings.profile.saved'));
+            setTimeout(() => setSuccess(null), 3000);
         } catch (e: any) {
+            console.error('Error', e);
             setError(e?.message ?? t('common.error'));
         } finally {
             setSaving(false);
@@ -84,37 +86,31 @@ export default function AccountPage() {
                     <div className="rounded-lg bg-destructive/10 p-4 text-destructive text-sm mb-6">{error}</div>
                 )}
                 {success && (
-                    <div className="rounded-lg bg-emerald-500/10 p-4 text-emerald-600 text-sm mb-6">{t('settings.profile.saved')}</div>
+                    <div className="rounded-lg bg-emerald-500/10 p-4 text-emerald-600 text-sm mb-6">{success}</div>
                 )}
 
                 <div className="space-y-8">
-                    {/* Username */}
-                    <section id="username" className="space-y-2">
-                        <h2 className="text-base font-semibold">{t('settings.account.username.title')}</h2>
-                        <p className="text-sm text-muted-foreground">{t('settings.account.username.description')}</p>
-                        <InputGroup>
-                            <InputGroupInput
-                                value={getUsername()}
-                                onChange={e => { setUsername(e.target.value); markDirty(); }}
-                                placeholder={currentUser.username}
-                                maxLength={32}
-                            />
-                            <InputGroupAddon align="inline-end">
-                                <InputGroupText>@{currentUser.server}</InputGroupText>
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </section>
+                    <UsernamePart
+                        username={username}
+                        onChange={setUsername}
+                        onDirty={markDirty}
+                    />
 
-                    {/* Tags */}
-                    <section id="tags" className="space-y-2">
-                        <h2 className="text-base font-semibold">{t('settings.account.tags.title')}</h2>
-                        <p className="text-sm text-muted-foreground">{t('settings.account.tags.description')}</p>
-                        <TagListInput
-                            tags={getTags()}
-                            onChange={next => { setTags(next); markDirty(); }}
-                        />
-                        <p className="text-xs text-muted-foreground">{t('settings.profile.tags.hint')}</p>
-                    </section>
+                    <TagsPart
+                        tags={getTags()}
+                        onChange={next => { setTags(next); markDirty(); }}
+                        onDirty={markDirty}
+                    />
+
+                    <EmailPart
+                        setError={setError}
+                        setSuccess={setSuccess}
+                    />
+
+                    <TwoFAPart
+                        setError={setError}
+                        setSuccess={setSuccess}
+                    />
                 </div>
             </div>
         </>

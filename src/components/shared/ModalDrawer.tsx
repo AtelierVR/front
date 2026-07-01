@@ -26,15 +26,21 @@ interface ModalDrawerProps {
     footer?: ReactNode;
     /** Element rendered next to the title (only when header is a string). */
     headerEnd?: ReactNode;
+    /** When true, renders a wide modal (sm:max-w-3xl lg:max-w-4xl). When false (default), renders normal width (sm:max-w-md lg:max-w-lg). */
+    large?: boolean;
 }
 
-export function ModalDrawer({ open, onOpenChange, header, children, footer, headerEnd }: ModalDrawerProps) {
+export function ModalDrawer({ open, onOpenChange, header, children, footer, headerEnd, large = false }: ModalDrawerProps) {
     const isMobile = useIsMobile();
+
+    const dialogClassName = large
+        ? 'sm:max-w-3xl lg:max-w-4xl overflow-y-auto max-h-[90vh]'
+        : 'sm:max-w-md lg:max-w-lg overflow-y-auto max-h-[90vh]';
 
     if (!isMobile) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
-                <DialogContent className="sm:max-w-3xl lg:max-w-4xl overflow-y-auto max-h-[90vh]">
+                <DialogContent className={dialogClassName}>
                     <DialogHeader className="flex-row items-center gap-4 pr-10">
                         {typeof header === 'string' ? (
                             <>
