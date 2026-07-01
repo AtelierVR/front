@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { PLATFORMS } from '@/lib/platform';
 import { releaseVersion } from '@/types/api';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { noxIdToPath } from '@/types/nox-identifier';
+import { noxIdToPath, worldInfoToString } from '@/types/nox-identifier';
 import { useInstance } from './InstanceContext';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -25,7 +25,7 @@ export function InstanceDisplay(props: { className?: string }) {
     ? [...new Set(releaseAssets.map((a) => a.platform.toLowerCase()))]
     : null;
 
-  const worldHref = instance ? noxIdToPath(instance.world, '/w') : null;
+  const worldHref = instance ? noxIdToPath(worldInfoToString(instance.world), '/w') : null;
 
   return (
     <div className={cn('px-6 flex flex-col gap-1', props.className)}>
@@ -43,7 +43,7 @@ export function InstanceDisplay(props: { className?: string }) {
               href={worldHref}
               className="hover:underline pe-2 text-foreground underline-offset-2"
             >
-              {world?.title ?? instance.world}
+              {world?.title ?? worldInfoToString(instance.world)}
             </Link>
           )}
 

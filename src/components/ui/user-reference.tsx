@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Identifier } from '@/components/ui/identifier';
 import { useApi } from '@/lib/api/context';
@@ -11,6 +10,7 @@ import { getUser } from '@/lib/api/users';
 import { getAlias } from '@/lib/api';
 import { formatNoxId } from '@/types/nox-identifier';
 import { cn } from '@/lib/utils';
+import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 import type { ApiUser } from '@/types/api';
 
 // ── Shared props ──────────────────────────────────────────────────────────────
@@ -95,10 +95,13 @@ function UserReferenceCompact({
         className,
       )}
     >
-      <Avatar className="size-6 shrink-0" size="sm">
-        {user?.thumbnail && <AvatarImage src={user.thumbnail} alt={displayName ?? fallbackId} />}
-        <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
-      </Avatar>
+      <AvatarWithPresence
+        presence={user?.presence.status}
+        size="sm"
+        src={user?.thumbnail}
+        alt={displayName ?? fallbackId}
+        fallback={initials}
+      />
       <div className={cn('flex flex-col', !showIdentifier && 'flex-row items-center gap-1.5')}>
         <span className="text-sm font-medium group-hover:text-primary transition-colors">
           {displayName ?? fallbackId}
@@ -178,18 +181,19 @@ function UserReferenceNormal({
         className,
       )}
     >
-      <Avatar className="size-8 shrink-0">
-        {user?.thumbnail && (
-          <AvatarImage src={user.thumbnail} alt={displayName ?? fallbackId} />
-        )}
-        <AvatarFallback className="bg-primary/10">
-          {displayName ? (
+      <AvatarWithPresence
+        presence={user?.presence.status}
+        size="default"
+        src={user?.thumbnail}
+        alt={displayName ?? fallbackId}
+        fallback={
+          displayName ? (
             displayName.charAt(0).toUpperCase()
           ) : (
             <Icon icon="material-symbols:person-rounded" className="size-4 text-muted-foreground" />
-          )}
-        </AvatarFallback>
-      </Avatar>
+          )
+        }
+      />
       <div className="flex-1 min-w-0">
         {displayName ? (
           <>

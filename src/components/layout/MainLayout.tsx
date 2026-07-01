@@ -6,12 +6,12 @@ import type { CustomItemType, MainItemType, MenuItemType } from 'fumadocs-ui/lay
 import type { LinkItemType } from 'fumadocs-ui/layouts/shared';
 import { ButtonItem } from '@/components/layout/ButtonItem';
 import { type UserNav, type UserNavItem } from '@/lib/layout.shared';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTranslation } from 'react-i18next';
 import Image from '@/components/NoxImage';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
+import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 
 export interface ActionItemType {
     type: 'button';
@@ -96,12 +96,14 @@ function UserMenuContent({ userNav }: { userNav: UserNav }) {
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                         <div className="relative p-3 flex flex-row gap-4 items-center">
-                            <div className="w-fit">
-                                <Avatar size="lg" className="border-2 border-white/30">
-                                    {item.thumbnail && <AvatarImage src={item.thumbnail} alt={item.display ?? ''} />}
-                                    <AvatarFallback>{item.display?.slice(0, 2).toUpperCase() ?? '?'}</AvatarFallback>
-                                </Avatar>
-                            </div>
+                            <AvatarWithPresence
+                                presence={item.presenceStatus}
+                                size="default"
+                                src={item.thumbnail}
+                                alt={item.display ?? ''}
+                                fallback={item.display?.slice(0, 2).toUpperCase() ?? '?'}
+                                avatarClassName="border-2 border-white/30"
+                            />
                             <div className="flex flex-col leading-tight">
                                 <p className="text-base font-medium text-white">{item.display}</p>
                                 <p className="text-sm text-white/70 truncate">{uid}</p>
@@ -137,16 +139,20 @@ function transformUser(
     const userItem = userNav.items.find((i): i is Extract<UserNavItem, { type: 'user' }> => i.type === 'user');
     const display = userItem?.display ?? null;
     const thumbnail = userItem?.thumbnail ?? null;
+    const presenceStatus = userItem?.presenceStatus;
     const initials = display ? display.slice(0, 2).toUpperCase() : '?';
     return {
         type: 'menu',
         on: item.on,
         secondary: item.secondary ?? true,
         text: (
-            <Avatar size="sm">
-                {thumbnail && <AvatarImage src={thumbnail} alt={display ?? ''} />}
-                <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
+            <AvatarWithPresence
+                presence={presenceStatus}
+                size="sm"
+                src={thumbnail}
+                alt={display ?? ''}
+                fallback={initials}
+            />
         ),
         items: [{
             type: 'custom',

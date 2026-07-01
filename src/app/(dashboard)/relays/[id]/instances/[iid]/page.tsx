@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRelayInstance } from './instance-context';
+import { useRelayInstance, type RelayInstanceTpsInfo } from './instance-context';
+import { worldInfoToString } from '@/types/nox-identifier';
 
 export default function RelayInstanceDetailPage() {
-    const { instance, loading } = useRelayInstance();
+    const { instance, loading, tpsInfo } = useRelayInstance();
     const { t } = useTranslation();
 
     return (
@@ -23,7 +24,7 @@ export default function RelayInstanceDetailPage() {
                     {loading ? <Skeleton className="h-4 w-40" /> : <span>{instance?.title || '—'}</span>}
                 </InfoCard>
                 <InfoCard icon="material-symbols:public-rounded" label={t('admin.col_world')}>
-                    {loading ? <Skeleton className="h-4 w-36" /> : <span className="font-mono text-xs break-all">{instance?.world || '—'}</span>}
+                    {loading ? <Skeleton className="h-4 w-36" /> : <span className="font-mono text-xs break-all">{instance?.world ? worldInfoToString(instance.world) : '—'}</span>}
                 </InfoCard>
                 <InfoCard icon="material-symbols:person-rounded" label={t('admin.col_owner')}>
                     {loading ? <Skeleton className="h-4 w-36" /> : <span className="font-mono text-xs break-all">{instance?.owner || '—'}</span>}
@@ -35,6 +36,16 @@ export default function RelayInstanceDetailPage() {
                                 ? <>{t('instance.players_count', { count: instance?.count ?? 0 })} · {t('world.unlimited')}</>
                                 : t('instance.players', { count: instance?.count ?? 0, capacity: instance?.capacity ?? '—' })}
                         </span>
+                    )}
+                </InfoCard>
+                <InfoCard icon="material-symbols:speed-rounded" label="TPS">
+                    {loading ? <Skeleton className="h-4 w-24" /> : (
+                        <TpsDisplay tpsInfo={tpsInfo} />
+                    )}
+                </InfoCard>
+                <InfoCard icon="material-symbols:tune-rounded" label="Threshold">
+                    {loading ? <Skeleton className="h-4 w-24" /> : (
+                        <ThresholdDisplay tpsInfo={tpsInfo} />
                     )}
                 </InfoCard>
             </div>
@@ -83,5 +94,39 @@ function InfoCard({ icon, label, children }: { icon: string; label: string; chil
             </div>
             <div className="text-sm">{children}</div>
         </div>
+    );
+}
+
+function TpsDisplay({ tpsInfo }: { tpsInfo: RelayInstanceTpsInfo | null }) {
+    if (!tpsInfo || tpsInfo.tps === null) return <span className="text-muted-foreground">—</span>;
+
+    const effective = tpsInfo.effective_tps ?? tpsInfo.tps;
+    const isThrottled = effective !== tpsInfo.tps;
+
+    return (
+        <span className="font-mono">
+            {isThrottled ? (
+                <>{effective} <span className="text-muted-foreground text-xs">({tpsInfo.tps} max)</span></>
+            ) : (
+                effective
+            )}
+        </span>
+    );
+}
+
+function ThresholdDisplay({ tpsInfo }: { tpsInfo: RelayInstanceTpsInfo | null }) {
+    if (!tpsInfo || tpsInfo.threshold === null) return <span className="text-muted-foreground">—</span>;
+
+    const effective = tpsInfo.effective_threshold ?? tpsInfo.threshold;
+    const isAdjusted = effective !== tpsInfo.threshold;
+
+    return (
+        <span className="font-mono">
+            {isAdjusted ? (
+                <>{effective.toFixed(4)} <span className="text-muted-foreground text-xs">({tpsInfo.threshold.toFixed(4)} base)</span></>
+            ) : (
+                effective.toFixed(4)
+            )}
+        </span>
     );
 }

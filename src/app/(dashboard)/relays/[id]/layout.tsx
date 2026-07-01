@@ -72,6 +72,7 @@ function RelayDetailInner({ children }: { children: React.ReactNode }) {
             'relay_client_disconnected',
             'relay_player_join',
             'relay_player_leave',
+            'relay_instance_settings_changed',
         ];
         if (connected) subscribe(events);
         // ensure unsubscribe on unmount

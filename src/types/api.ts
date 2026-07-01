@@ -360,13 +360,23 @@ export interface ApiRelayLog {
     message: string;
 }
 
+export interface ApiRelayWorldInfo {
+    master_id: number;
+    server: string;
+    version: number;
+}
+
 export interface ApiRelayInstance {
     id: string;       // relay-local slot
     node_id: number;  // DB/federation id
     player_count: number;
     flags: number;
-    world: string;
+    world: ApiRelayWorldInfo | string;  // object from new relay, string from legacy
     capacity: number;
+    tps: number;                  // configured TPS
+    threshold: number;            // configured threshold
+    effective_tps: number;        // effective TPS (load balancing)
+    effective_threshold: number;  // effective threshold (load balancing)
 }
 
 export interface ApiRelayPlayer {
@@ -376,6 +386,10 @@ export interface ApiRelayPlayer {
     flags: number;
     joined_at: number;
     user: string | null;
+    /** Custom TPS override (0 = use instance default). */
+    custom_tps: number;
+    /** Custom threshold override (0 = use instance default). */
+    custom_threshold: number;
 }
 
 export interface ApiRelayClient {
@@ -397,6 +411,14 @@ export interface ApiRelayAssignedInstance {
     owner: string;
     capacity: number;
     created_at: number;
+    /** Configured target TPS, null when relay is offline. */
+    tps: number | null;
+    /** Configured transform threshold, null when relay is offline. */
+    threshold: number | null;
+    /** Effective TPS after load balancing, null when relay is offline. */
+    effective_tps: number | null;
+    /** Effective threshold after load balancing, null when relay is offline. */
+    effective_threshold: number | null;
 }
 
 // ── Environment config ────────────────────────────────────────────────────────

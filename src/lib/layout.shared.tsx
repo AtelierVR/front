@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { resolveLocalized } from './i18n/resolveLocalized';
 import { InstanceLogo } from '@/components/layout/InstanceLogo';
 import { Icon } from '@iconify/react';
+import type { ApiUserPresence } from '@/types/api';
 
 export const featureIcons: Record<string, string> = {
   user: 'material-symbols:person-rounded',
@@ -19,7 +20,7 @@ export type UserNavItem =
   | { type: 'link'; icon: string; label: string; href: string; size?: [number, number] }
   | { type: 'button'; icon: string; label: string; action: () => void; size?: [number, number] }
   | { type: 'separator' }
-  | { type: 'user'; href: string; username: string; display: string; thumbnail?: string; banner?: string; server: string; size?: [number, number] };
+  | { type: 'user'; href: string; username: string; display: string; thumbnail?: string; banner?: string; server: string; presenceStatus?: ApiUserPresence['status']; size?: [number, number] };
 
 export interface UserNav {
   grid: [number, number];
@@ -46,6 +47,7 @@ export function baseOptions() {
           thumbnail: user.thumbnail ?? undefined,
           banner: user.banner ?? undefined,
           server: user.server,
+          presenceStatus: user.presence?.status,
           size: [1, 2] as [number, number]
         },
         {

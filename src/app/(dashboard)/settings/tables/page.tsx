@@ -36,11 +36,11 @@ const MIME_ICONS: Record<string, MimeInfos | ((t: TableMeta) => MimeInfos)> = {
         bg: 'bg-rose-500/20 text-rose-500'
     },
     '+world$': {
-        icon: 'material-symbols:public-rounded',
+        icon: 'material-symbols:public',
         bg: 'bg-emerald-500/20 text-emerald-500'
     },
     '+avatar$': {
-        icon: 'material-symbols:person-rounded',
+        icon: 'material-symbols:accessibility-new-rounded',
         bg: 'bg-violet-500/20 text-violet-500'
     },
     '^application/octet-stream': {

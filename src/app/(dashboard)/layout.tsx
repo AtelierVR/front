@@ -7,8 +7,8 @@ import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
+import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 import type * as PageTree from 'fumadocs-core/page-tree';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,6 +35,15 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
     const initials = name.slice(0, 2).toUpperCase();
     const thumbnail = userItem?.thumbnail ?? undefined;
     const banner = userItem?.banner ?? undefined;
+    const presenceStatus = userItem?.presenceStatus;
+
+    const avProps = {
+        presence: presenceStatus,
+        size: 'default' as const,
+        src: thumbnail,
+        alt: name,
+        fallback: initials,
+    };
 
     return (
         <div className="flex flex-col gap-2 px-2 py-2">
@@ -61,10 +70,7 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
                             />
                         }
                     >
-                        <Avatar className="size-8 rounded-lg">
-                            <AvatarImage src={thumbnail} alt={name} />
-                            <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                        </Avatar>
+                        <AvatarWithPresence {...avProps} />
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-medium">{name}</span>
                             <span className="truncate text-xs text-foreground/70">@{username}</span>
@@ -79,10 +85,7 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
                         >
                             {banner && <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70" />}
                             <div className="relative p-3 flex items-center gap-2 w-full">
-                                <Avatar className="size-8 rounded-lg">
-                                    <AvatarImage src={thumbnail} alt={name} />
-                                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                                </Avatar>
+                                <AvatarWithPresence {...avProps} />
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className={cn('truncate font-medium', banner && 'text-white')}>{name}</span>
                                     <span className={cn('truncate text-xs', banner ? 'text-white/70' : 'text-muted-foreground')}>@{username}</span>
@@ -119,33 +122,45 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const { user, ...layoutProps } = baseOptions();
     const { isAdmin } = useApi();
 
+
     const adminItems: PageTree.Node[] = isAdmin ? [
-        { type: 'separator', name: 'Admin' },
         {
-            type: 'page',
-            name: t('admin.relays'),
-            url: '/relays',
-            icon: <Icon icon="material-symbols:cell-tower-rounded" />,
-        },
-        {
-            type: 'page',
-            name: t('admin.activity'),
-            url: '/activity',
-            icon: <Icon icon="material-symbols:history-rounded" />,
-        },
-        {
-            type: 'page',
-            name: t('admin.logs'),
-            url: '/logs',
-            icon: <Icon icon="material-symbols:terminal-rounded" />,
-        },
-        {
-            type: 'page',
-            name: t('admin.environment'),
-            url: '/environment',
-            icon: <Icon icon="material-symbols:tune-rounded" />,
-        },
-    ] : [];
+            type: 'folder',
+            name: t('nav.admin'),
+            icon: <Icon icon="material-symbols:admin-panel-settings" />,
+            index: {
+                type: 'page',
+                name: t('admin.dashboard'),
+                url: '/admin',
+                icon: <Icon icon="material-symbols:dashboard-rounded" />,
+            },
+            children: [
+                {
+                    type: 'page',
+                    name: t('admin.relays'),
+                    url: '/relays',
+                    icon: <Icon icon="material-symbols:cell-tower-rounded" />,
+                },
+                {
+                    type: 'page',
+                    name: t('admin.activity'),
+                    url: '/activity',
+                    icon: <Icon icon="material-symbols:history-rounded" />,
+                },
+                {
+                    type: 'page',
+                    name: t('admin.logs'),
+                    url: '/logs',
+                    icon: <Icon icon="material-symbols:terminal-rounded" />,
+                },
+                {
+                    type: 'page',
+                    name: t('admin.environment'),
+                    url: '/environment',
+                    icon: <Icon icon="material-symbols:tune-rounded" />,
+                },
+            ]
+        }] : [];
 
     const tree: PageTree.Root = {
         name: 'Dashboard',
@@ -157,7 +172,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 icon: <Icon icon="material-symbols:dashboard-rounded" />,
             },
             ...adminItems,
-            { type: 'separator', name: t('nav.settings') },
+            // { type: 'separator', name: t('nav.settings') },
             {
                 type: 'folder',
                 name: t('nav.settings'),

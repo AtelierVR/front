@@ -6,7 +6,7 @@ import { getRelayInstances } from '@/lib/api';
 import { batchGetUsers } from '@/lib/api/users';
 import { getWorld } from '@/lib/api/worlds';
 import { getWellKnownAddress } from '@/lib/api/wellknown';
-import { parseNoxId } from '@/types/nox-identifier';
+import { parseNoxId, worldInfoToString } from '@/types/nox-identifier';
 import type { ApiRelayAssignedInstance, ApiUser, ApiWorld } from '@/types/api';
 import { ApiError } from '@/types/envelope';
 import { useTranslation } from 'react-i18next';

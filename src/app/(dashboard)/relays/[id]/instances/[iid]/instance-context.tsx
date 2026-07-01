@@ -3,12 +3,20 @@
 import { createContext, useContext } from 'react';
 import type { ApiInstance } from '@/types/api';
 
+export interface RelayInstanceTpsInfo {
+    tps: number | null;
+    threshold: number | null;
+    effective_tps: number | null;
+    effective_threshold: number | null;
+}
+
 interface RelayInstanceContextValue {
     iid: string;
     instance: ApiInstance | null;
     loading: boolean;
     error: string | undefined;
     refresh: () => void;
+    tpsInfo: RelayInstanceTpsInfo | null;
 }
 
 const RelayInstanceContext = createContext<RelayInstanceContextValue | null>(null);

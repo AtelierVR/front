@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Icon } from '@iconify/react';
 import type { ApiUser } from '@/types/api';
-import { DOT_COLORS } from './PresenceBadge';
+import { PresenceIcon } from '@/lib/presences';
 
 interface PresenceOverlayProps {
     user: ApiUser;
@@ -14,10 +14,8 @@ interface PresenceOverlayProps {
 const PILL = 'absolute top-3 left-3 z-10 flex items-center gap-2 rounded-full backdrop-blur-md bg-black/40 px-3 py-1.5 group transition-all duration-300 ease-out w-fit';
 
 export function PresenceOverlay({ user, isSame }: PresenceOverlayProps) {
-    const dot = DOT_COLORS[user.presence.status] ?? DOT_COLORS.offline;
-
     const inner = <>
-        <span className={cn('h-2.5 w-2.5 rounded-full shrink-0', dot)} />
+        <PresenceIcon id={user.presence.status} svgClassName="h-2.5! w-2.5! shrink-0" />
         {user.presence.text && (
             <span className="text-sm font-medium text-white">{user.presence.text}</span>
         )}

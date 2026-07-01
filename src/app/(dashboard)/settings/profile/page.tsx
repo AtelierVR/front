@@ -6,21 +6,20 @@ import { updateCurrentUser, uploadUserThumbnail, uploadUserBanner } from '@/lib/
 import { useTranslation } from 'react-i18next';
 import { SiteHeader } from '@/components/site-header';
 import { TextInput } from '@/components/ui/text-input';
+import { InputGroup, InputGroupInput, InputGroupAddon } from '@/components/ui/input-group';
 import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { ImageInput } from '@/components/ui/image-input';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
-import { DOT_COLORS } from '@/components/features/users/PresenceBadge';
+import { PresenceIcon, PRESENCE_OPTIONS } from '@/lib/presences';
 import { useCountries } from '@/lib/hooks/useCountries';
 import { useLanguages } from '@/lib/hooks/useLanguages';
-import { localeFlagUrl } from '@/lib/languages';
 import { addUrlQuery, removeUrlQuery } from '@/lib/url';
+import { DropdownDrawer } from '@/components/shared/DropdownDrawer';
 import type { ApiUserPresence } from '@/types/api';
 
 type PresenceStatus = ApiUserPresence['status'];
-
-const PRESENCE_OPTIONS: PresenceStatus[] = ['oja', 'ojf', 'online', 'busy', 'dnd', 'stream', 'offline'];
 
 const CTY_TAG = 'usr:country_';
 const LNG_TAG = 'usr:lang_';
@@ -53,6 +52,7 @@ export default function ProfilePage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [dirty, setDirty] = useState(false);
+    const [presenceOpen, setPresenceOpen] = useState(false);
 
     const { countries, loading: ctyLoading } = useCountries();
     const { languages, loading: lngLoading } = useLanguages();
@@ -208,24 +208,32 @@ export default function ProfilePage() {
 
                         <section className="space-y-2">
                             <h2 className="text-base font-semibold">{t('settings.profile.presence.title')}</h2>
-                            <div className="flex flex-wrap gap-1.5">
-                                {PRESENCE_OPTIONS.map(opt => (
-                                    <Button
-                                        key={opt}
-                                        variant={getPresence() === opt ? 'default' : 'outline'}
-                                        size="sm"
-                                        onClick={() => { setPresence(opt); markDirty(); }}
-                                    >
-                                        <span className={cn('h-2 w-2 rounded-full mr-1.5', DOT_COLORS[opt])} />
-                                        {t(`presence.${opt}`)}
-                                    </Button>
-                                ))}
-                            </div>
-                            <TextInput
-                                value={getPresenceStatus()}
-                                onChange={v => { setPresenceStatus(v); markDirty(); }}
-                                placeholder={t('settings.profile.presence.placeholder')}
-                            />
+                            <InputGroup>
+                                <DropdownDrawer
+                                    open={presenceOpen}
+                                    onOpenChange={setPresenceOpen}
+                                    title={t('settings.profile.presence.title')}
+                                    trigger={
+                                        <div className="flex items-center gap-1.5 cursor-pointer px-2 h-full shrink-0 border-r border-input">
+                                            <PresenceIcon id={getPresence()} svgClassName="h-3.5! w-3.5! shrink-0" />
+                                            <span className="text-sm tabular-nums pr-0.5">{t(`presence.${getPresence()}`)}</span>
+                                            <Icon icon="material-symbols:unfold-more-rounded" className="size-4 text-muted-foreground" />
+                                        </div>
+                                    }
+                                    items={PRESENCE_OPTIONS.map(opt => ({
+                                        key: opt.id,
+                                        label: t(opt.label_key),
+                                        icon: <span className="mr-2">{opt.icon}</span>,
+                                        active: getPresence() === opt.id,
+                                        onClick: () => { setPresence(opt.id); markDirty(); },
+                                    }))}
+                                />
+                                <InputGroupInput
+                                    value={getPresenceStatus()}
+                                    onChange={e => { setPresenceStatus(e.target.value); markDirty(); }}
+                                    placeholder={t('settings.profile.presence.placeholder')}
+                                />
+                            </InputGroup>
                             <p className="text-sm text-muted-foreground">{t('settings.profile.presence.description')}</p>
                         </section>
 
@@ -300,63 +308,63 @@ function CountriesPicker({ countries, loading, selected, onChange }: { countries
 
     return (
         <div className="space-y-3">
-            <div className="space-y-1.5">
-                <h3 className="text-sm font-medium">{t('settings.profile.country.selected', { count: selected.length })}</h3>
-                <div className="flex flex-wrap gap-2">
-                    {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.country.none')}</p>}
-                    {selected.map(id => {
-                        const c = countries.find(x => x.id === id);
-                        if (!c) return null;
-                        return (
-                            <span key={id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(id)}>
-                                <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
-                                <span>{c.name}</span>
-                                <Icon icon="material-symbols:close-rounded" className="size-3" />
-                            </span>
-                        );
-                    })}
-                </div>
+            {/* Selected countries */}
+            <div className={cn(
+                'rounded-lg border border-input bg-card min-h-[2.5rem] p-2 flex flex-wrap gap-2',
+                selected.length === 0 && 'items-center justify-center',
+            )}>
+                {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.country.none')}</p>}
+                {selected.map(id => {
+                    const c = countries.find(x => x.id === id);
+                    if (!c) return null;
+                    return (
+                        <span key={id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(id)}>
+                            <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
+                            <span>{c.name}</span>
+                            <Icon icon="material-symbols:close-rounded" className="size-3" />
+                        </span>
+                    );
+                })}
             </div>
-            <div className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-medium">{t('settings.profile.country.add')}</h3>
-                    <div className="relative w-full sm:w-48">
-                        <Icon icon="material-symbols:search-rounded" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <input
-                            className="flex h-8 w-full rounded-md border border-input bg-transparent pl-8 pr-8 text-sm"
-                            placeholder={t('settings.profile.country.search')}
-                            value={q}
-                            onChange={e => setQ(e.target.value)}
-                        />
-                        {q && (
-                            <button onClick={() => setQ('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                                <Icon icon="material-symbols:close-rounded" className="size-4" />
-                            </button>
+
+            {/* Search + available */}
+            <div className="space-y-2">
+                <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                        <Icon icon="material-symbols:search-rounded" className="size-4" />
+                    </InputGroupAddon>
+                    <InputGroupInput
+                        value={q}
+                        onChange={e => setQ(e.target.value)}
+                        placeholder={t('settings.profile.country.search')}
+                    />
+                </InputGroup>
+                <div className={cn(
+                    'rounded-lg border border-input bg-card min-h-[2.5rem] p-2',
+                )}>
+                    <div className="h-36 overflow-y-auto pr-1">
+                        {loading ? (
+                            <div className="flex flex-wrap gap-2">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className="h-7 w-24 bg-fd-muted animate-pulse rounded-full" />
+                                ))}
+                            </div>
+                        ) : available.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {available.map(c => (
+                                    <span key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(c.id)}>
+                                        <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
+                                        <span>{c.name}</span>
+                                        <Icon icon="material-symbols:add-rounded" className="size-3" />
+                                    </span>
+                                ))}
+                            </div>
+                        ) : q ? (
+                            <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.no_match')}</p>
+                        ) : (
+                            <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.all_added')}</p>
                         )}
                     </div>
-                </div>
-                <div className="h-36 overflow-y-auto pr-1">
-                    {loading ? (
-                        <div className="flex flex-wrap gap-2">
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <div key={i} className="h-7 w-24 bg-fd-muted animate-pulse rounded-full" />
-                            ))}
-                        </div>
-                    ) : available.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {available.map(c => (
-                                <span key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(c.id)}>
-                                    <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
-                                    <span>{c.name}</span>
-                                    <Icon icon="material-symbols:add-rounded" className="size-3" />
-                                </span>
-                            ))}
-                        </div>
-                    ) : q ? (
-                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.no_match')}</p>
-                    ) : (
-                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.country.all_added')}</p>
-                    )}
                 </div>
             </div>
         </div>
@@ -372,62 +380,62 @@ function LanguagesPicker({ languages, loading, selected, onChange }: { languages
 
     return (
         <div className="space-y-3">
-            <div className="space-y-1.5">
-                <h3 className="text-sm font-medium">{t('settings.profile.language.selected', { count: selected.length })}</h3>
-                <div className="flex flex-wrap gap-2">
-                    {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.language.none')}</p>}
-                    {selected.map(code => {
-                        const l = languages.find(x => x.code === code);
-                        return (
-                            <span key={code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(code)}>
-                                {l?.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
-                                <span>{l?.name ?? code}</span>
-                                <Icon icon="material-symbols:close-rounded" className="size-3" />
-                            </span>
-                        );
-                    })}
-                </div>
+            {/* Selected languages */}
+            <div className={cn(
+                'rounded-lg border border-input bg-card min-h-[2.5rem] p-2 flex flex-wrap gap-2',
+                selected.length === 0 && 'items-center justify-center',
+            )}>
+                {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.language.none')}</p>}
+                {selected.map(code => {
+                    const l = languages.find(x => x.code === code);
+                    return (
+                        <span key={code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(code)}>
+                            {l?.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                            <span>{l?.name ?? code}</span>
+                            <Icon icon="material-symbols:close-rounded" className="size-3" />
+                        </span>
+                    );
+                })}
             </div>
-            <div className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-medium">{t('settings.profile.language.add')}</h3>
-                    <div className="relative w-full sm:w-48">
-                        <Icon icon="material-symbols:search-rounded" className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <input
-                            className="flex h-8 w-full rounded-md border border-input bg-transparent pl-8 pr-8 text-sm"
-                            placeholder={t('settings.profile.language.search')}
-                            value={q}
-                            onChange={e => setQ(e.target.value)}
-                        />
-                        {q && (
-                            <button onClick={() => setQ('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                                <Icon icon="material-symbols:close-rounded" className="size-4" />
-                            </button>
+
+            {/* Search + available */}
+            <div className="space-y-2">
+                <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                        <Icon icon="material-symbols:search-rounded" className="size-4" />
+                    </InputGroupAddon>
+                    <InputGroupInput
+                        value={q}
+                        onChange={e => setQ(e.target.value)}
+                        placeholder={t('settings.profile.language.search')}
+                    />
+                </InputGroup>
+                <div className={cn(
+                    'rounded-lg border border-input bg-card min-h-[2.5rem] p-2',
+                )}>
+                    <div className="h-36 overflow-y-auto pr-1">
+                        {loading ? (
+                            <div className="flex flex-wrap gap-2">
+                                {[1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className="h-7 w-20 bg-fd-muted animate-pulse rounded-full" />
+                                ))}
+                            </div>
+                        ) : available.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {available.map(l => (
+                                    <span key={l.code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(l.code)}>
+                                        {l.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
+                                        <span>{l.name}</span>
+                                        <Icon icon="material-symbols:add-rounded" className="size-3" />
+                                    </span>
+                                ))}
+                            </div>
+                        ) : q ? (
+                            <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.no_match')}</p>
+                        ) : (
+                            <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.all_added')}</p>
                         )}
                     </div>
-                </div>
-                <div className="h-36 overflow-y-auto pr-1">
-                    {loading ? (
-                        <div className="flex flex-wrap gap-2">
-                            {[1, 2, 3, 4, 5].map(i => (
-                                <div key={i} className="h-7 w-20 bg-fd-muted animate-pulse rounded-full" />
-                            ))}
-                        </div>
-                    ) : available.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {available.map(l => (
-                                <span key={l.code} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(l.code)}>
-                                    {l.flag && <img src={l.flag} alt="" className="h-3.5 w-auto rounded-sm" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />}
-                                    <span>{l.name}</span>
-                                    <Icon icon="material-symbols:add-rounded" className="size-3" />
-                                </span>
-                            ))}
-                        </div>
-                    ) : q ? (
-                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.no_match')}</p>
-                    ) : (
-                        <p className="text-sm text-muted-foreground py-2">{t('settings.profile.language.all_added')}</p>
-                    )}
                 </div>
             </div>
         </div>

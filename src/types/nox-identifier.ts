@@ -171,3 +171,12 @@ export function noxIdToSegment(raw: string, localAddress: string): string {
   if (!parsed.server || parsed.server === '::' || parsed.server === localAddress) return parsed.id;
   return `${parsed.id}@${parsed.server}`;
 }
+
+/**
+ * Convert an ApiRelayWorldInfo object or legacy string to a NoxIdentifier string.
+ * Example: `{ master_id: 1, server: "hactazia.fr", version: 42 }` → `"1@hactazia.fr"`
+ */
+export function worldInfoToString(world: { master_id: number; server: string; version?: number } | string): string {
+    if (typeof world === 'string') return world;
+    return `${world.master_id}@${world.server}`;
+}

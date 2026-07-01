@@ -138,6 +138,8 @@ export default function RelayInstancePlayersPage() {
                                 <th className="px-4 py-3 text-left text-sm font-medium whitespace-nowrap">{t('admin.col_user')}</th>
                                 <th className="px-4 py-3 text-left text-sm font-medium whitespace-nowrap">{t('admin.col_flags')}</th>
                                 <th className="w-20 px-4 py-3 text-left text-sm font-medium whitespace-nowrap">{t('admin.col_client_id')}</th>
+                                <th className="w-20 px-4 py-3 text-left text-sm font-medium whitespace-nowrap">TPS</th>
+                                <th className="w-28 px-4 py-3 text-left text-sm font-medium whitespace-nowrap">Threshold</th>
                                 <th className="w-36 px-4 py-3 text-left text-sm font-medium whitespace-nowrap">{t('admin.col_joined_at')}</th>
                                 <th className="w-10 px-2 py-3" />
                             </tr>
@@ -150,13 +152,15 @@ export default function RelayInstancePlayersPage() {
                                         <td className="px-4 py-3"><Skeleton className="h-6 w-36" /></td>
                                         <td className="px-4 py-3"><Skeleton className="h-5 w-28" /></td>
                                         <td className="px-4 py-3"><Skeleton className="h-4 w-12" /></td>
+                                        <td className="px-4 py-3"><Skeleton className="h-4 w-10" /></td>
+                                        <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
                                         <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
                                         <td className="px-2 py-3" />
                                     </tr>
                                 ))
                             ) : pagePlayers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-12 text-center text-sm text-muted-foreground">
+                                    <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
                                         {t('admin.no_instance_players')}
                                     </td>
                                 </tr>
@@ -167,6 +171,20 @@ export default function RelayInstancePlayersPage() {
                                         <td className="px-4 py-3"><UserCell identifier={player.user} display={player.display} userMap={userMap} /></td>
                                         <td className="px-4 py-3"><PlayerFlagsBadges flags={player.flags} /></td>
                                         <td className="px-4 py-3 font-mono text-sm text-muted-foreground">{player.client_id}</td>
+                                        <td className="px-4 py-3 font-mono text-sm">
+                                            {player.custom_tps ? (
+                                                <span className="text-primary font-medium">{player.custom_tps}</span>
+                                            ) : (
+                                                <span className="text-muted-foreground">—</span>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 font-mono text-sm">
+                                            {player.custom_threshold ? (
+                                                <span className="text-primary font-medium">{player.custom_threshold.toFixed(4)}</span>
+                                            ) : (
+                                                <span className="text-muted-foreground">—</span>
+                                            )}
+                                        </td>
                                         <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap" title={player.joined_at ? format(new Date(player.joined_at), 'PPPP p') : undefined}>
                                             {player.joined_at ? formatDistanceToNow(new Date(player.joined_at), { addSuffix: true }) : '—'}
                                         </td>
