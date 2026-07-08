@@ -15,7 +15,7 @@ const PILL = 'absolute top-3 left-3 z-10 flex items-center gap-2 rounded-full ba
 
 export function PresenceOverlay({ user, isSame }: PresenceOverlayProps) {
     const inner = <>
-        <PresenceIcon id={user.presence.status} svgClassName="h-2.5! w-2.5! shrink-0" />
+        <PresenceIcon id={user.presence.status} svgClassName="h-4! w-4! shrink-0" />
         {user.presence.text && (
             <span className="text-sm font-medium text-white">{user.presence.text}</span>
         )}
