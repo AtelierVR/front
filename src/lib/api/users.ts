@@ -60,13 +60,15 @@ export interface VerificationMethod {
     name: string;
     description: string;
     enabled: boolean;
-    can_send: boolean;
-    send_data?: Record<string, unknown>;
-    cooldown?: number;
-    code: {
-        length: number;
-        type: 'numeric' | 'alphanumeric' | 'hex';
-    };
+    details: {
+        sendable: boolean;
+        data: Record<string, unknown>;
+        code: {
+            length: number;
+            type: 'numeric' | 'alphanumeric' | 'hex';
+        } | null;
+        cooldown: number | null;
+    } | null;
 }
 
 export async function uploadUserThumbnail(file: Blob): Promise<void> {

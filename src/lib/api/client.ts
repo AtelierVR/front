@@ -24,9 +24,15 @@ export interface VerificationMethod {
     name: string;
     description: string;
     enabled: boolean;
-    can_send: boolean;
-    send_data?: Record<string, unknown>;
-    cooldown?: number;
+    details: {
+        sendable: boolean;
+        data: Record<string, unknown>;
+        code: {
+            length: number;
+            type: 'numeric' | 'alphanumeric' | 'hex';
+        } | null;
+        cooldown: number | null;
+    } | null;
 }
 
 /** Register the verification handler so apiFetch can trigger the 2FA modal. */

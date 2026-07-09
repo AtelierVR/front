@@ -96,9 +96,15 @@ export interface VerificationMethod {
     name: string;
     description: string;
     enabled: boolean;
-    can_send: boolean;
-    send_data?: Record<string, unknown>;
-    cooldown?: number;
+    details: {
+        sendable: boolean;
+        data: Record<string, unknown>;
+        code: {
+            length: number;
+            type: 'numeric' | 'alphanumeric' | 'hex';
+        } | null;
+        cooldown: number | null;
+    } | null;
 }
 
 export async function sendVerificationCode(type: string, data: Record<string, unknown>): Promise<{ success: boolean }> {
