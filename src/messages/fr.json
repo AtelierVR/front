@@ -78,8 +78,8 @@
     "401": "Session expirée. Veuillez vous reconnecter.",
     "403": "Vous n'avez pas la permission d'accéder à cette page.",
     "404": "Page introuvable.",
-    "422": "Veuillez corriger les erreurs ci-dessous.",
     "409": "Nom d'utilisateur ou e-mail déjà utilisé.",
+    "422": "Veuillez corriger les erreurs ci-dessous.",
     "offline": "Le serveur est actuellement inaccessible.",
     "generic": "Une erreur s'est produite. Veuillez réessayer.",
     "network": "Erreur réseau. Vérifiez votre connexion."
@@ -155,7 +155,8 @@
       "degraded": "Performance dégradée",
       "maintenance": "En maintenance",
       "offline": "Hors ligne"
-    }
+    },
+    "github": "GitHub"
   },
   "world": {
     "capacity": "Capacité",
@@ -239,7 +240,7 @@
     "field_tags": "Tags",
     "field_tags_placeholder": "social, détendu, débutants",
     "field_thumbnail": "Miniature",
-    "field_name": "Short Name",
+    "field_name": "Nom court",
     "field_name_placeholder": "mon-instance",
     "field_name_invalid": "3 à 8 caractères : lettres minuscules, chiffres, tirets, underscores ou points.",
     "field_name_desc": "3 à 8 caractères : lettres minuscules, chiffres, tirets, underscores ou points. Optionnel.",
@@ -368,7 +369,47 @@
         "verify": "Vérifier"
       }
     },
-    "sessions": "Sessions",
+    "sessions": {
+      "title": "Sessions",
+      "description": "Gérez vos sessions actives et appareils connectés.",
+      "current_session": "Session actuelle",
+      "active_sessions": "Connectées",
+      "idle_sessions": "Autres sessions",
+      "no_active_sessions": "Aucune session connectée.",
+      "no_idle_sessions": "Aucune session inactive.",
+      "search_ip_placeholder": "Filtrer par IP",
+      "other_sessions": "Autres sessions",
+      "no_other_sessions": "Aucune autre session.",
+      "created": "Créée",
+      "expires": "Expire",
+      "status": "Statut",
+      "status_active": "Connectée",
+      "status_idle": "Inactive",
+      "public_key": "Clé publique",
+      "last_seen": "Dernière activité",
+      "devices": "{{count}} appareil",
+      "devices_plural": "{{count}} appareils",
+      "ip": "IP",
+      "user_agent": "User Agent",
+      "revoke_session": "Révoquer la session",
+      "revoke_session_desc": "Cela déconnectera l'appareil de votre compte. Cette action est irréversible.",
+      "revoke": "Révoquer",
+      "revoking": "Révocation…",
+      "revoke_all": "Tout révoquer",
+      "revoke_all_title": "Révoquer toutes les sessions",
+      "revoke_all_desc": "Cela déconnectera toutes vos autres sessions. Votre session actuelle restera active.",
+      "revoke_all_warning": "Voulez-vous vraiment révoquer toutes les autres sessions ?",
+      "revoke_all_button": "Révoquer toutes les sessions",
+      "revoke_all_success": "Toutes les autres sessions ont été révoquées.",
+      "revoked_success": "Session révoquée avec succès.",
+      "error_load": "Échec du chargement des sessions.",
+      "error_delete": "Échec de la révocation de la session.",
+      "error_delete_all": "Échec de la révocation de toutes les sessions.",
+      "unknown_device": "Appareil inconnu",
+      "load_more": "Charger plus",
+      "loading": "Chargement…",
+      "current_badge": "Vous"
+    },
     "follow": "Abonnements",
     "tables": {
       "title": "Tables",
@@ -462,9 +503,7 @@
     "tab_avatars": "Avatars",
     "tab_instances": "Instances",
     "tab_servers": "Serveurs",
-    "empty_query": "Entrez un terme pour lancer la recherche.",
     "empty_no_query": "Entrez un terme pour lancer la recherche.",
-    "no_results": "Aucun résultat.",
     "empty_no_results": "Aucun résultat.",
     "result_count": "{{count}} résultat(s) trouvé(s)",
     "error": "Une erreur s'est produite lors de la recherche. Veuillez réessayer.",
@@ -593,18 +632,34 @@
     "col_client_id": "Client",
     "col_joined_at": "Rejoint le",
     "col_connected_at": "Connecté le",
-    "col_flags": "Rôles"
+    "col_flags": "Rôles",
+    "dashboard": "Tableau de bord"
   },
   "dashboard": {
     "title": "Tableau de bord"
   },
   "features": {
     "label": "Rechercher",
-    "user": { "label": "Utilisateurs", "description": "Trouver des personnes sur la plateforme" },
-    "world": { "label": "Mondes", "description": "Découvrir des mondes virtuels" },
-    "avatar": { "label": "Avatars", "description": "Parcourir les avatars disponibles" },
-    "instance": { "label": "Instances", "description": "Trouver des instances actives" },
-    "server": { "label": "Serveurs", "description": "Explorer les serveurs fédérés" }
+    "user": {
+      "label": "Utilisateurs",
+      "description": "Trouver des personnes sur la plateforme"
+    },
+    "world": {
+      "label": "Mondes",
+      "description": "Découvrir des mondes virtuels"
+    },
+    "avatar": {
+      "label": "Avatars",
+      "description": "Parcourir les avatars disponibles"
+    },
+    "instance": {
+      "label": "Instances",
+      "description": "Trouver des instances actives"
+    },
+    "server": {
+      "label": "Serveurs",
+      "description": "Explorer les serveurs fédérés"
+    }
   },
   "providers": {
     "docker": "Docker",
@@ -619,8 +674,17 @@
   },
   "legal": {
     "label": "Légal",
-    "privacy": { "label": "Politique de confidentialité", "description": "Comment nous gérons vos données" },
-    "terms": { "label": "Conditions d'utilisation", "description": "Nos conditions générales" },
-    "rules": { "label": "Règles", "description": "Pour une communauté sûre" }
+    "privacy": {
+      "label": "Politique de confidentialité",
+      "description": "Comment nous gérons vos données"
+    },
+    "terms": {
+      "label": "Conditions d'utilisation",
+      "description": "Nos conditions générales"
+    },
+    "rules": {
+      "label": "Règles",
+      "description": "Pour une communauté sûre"
+    }
   }
 }

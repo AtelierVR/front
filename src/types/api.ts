@@ -185,6 +185,29 @@ export interface ApiAvatarAssetList {
     items: ApiAvatarAsset[];
 }
 
+// ── Sessions ──────────────────────────────────────────────────────────────────
+
+export interface ApiSessionDevice {
+    user_agent: string;
+    ip: string;
+    last_seen: number;
+}
+
+export interface ApiSessionItem {
+    id: string;
+    current: boolean;
+    expires_at: number;
+    created_at: number;
+    devices: ApiSessionDevice[];
+}
+
+export interface ApiSessionsList {
+    sessions: ApiSessionItem[];
+    total: number;
+    limit: number;
+    offset: number;
+}
+
 // ── Instance ──────────────────────────────────────────────────────────────────
 
 export interface ApiInstanceConnection {
@@ -451,3 +474,6 @@ export interface ApiActivityList {
     offset: number;
     items: ApiActivityEvent[];
 }
+
+
+

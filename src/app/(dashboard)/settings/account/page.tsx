@@ -12,6 +12,7 @@ import { UsernamePart } from './UsernamePart';
 import { TagsPart } from './TagsPart';
 import { EmailPart } from './EmailPart';
 import { TwoFAPart } from './TwoFAPart';
+import { notify } from '@/components/ui/notify';
 
 export default function AccountPage() {
     const { t } = useTranslation();
@@ -21,8 +22,6 @@ export default function AccountPage() {
     const [tags, setTags] = useState<string[] | undefined>();
 
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const [dirty, setDirty] = useState(false);
 
     useEffect(() => {
@@ -38,8 +37,6 @@ export default function AccountPage() {
     const handleSave = async () => {
         if (!dirty || saving) return;
         setSaving(true);
-        setError(null);
-        setSuccess(null);
         try {
             await updateCurrentUser({
                 username: username ?? undefined,
@@ -48,11 +45,10 @@ export default function AccountPage() {
             setUsername(undefined);
             setTags(undefined);
             setDirty(false);
-            setSuccess(t('settings.profile.saved'));
-            setTimeout(() => setSuccess(null), 3000);
+            notify(t('settings.profile.saved'), { type: 'success' });
         } catch (e: any) {
             console.error('Error', e);
-            setError(e?.message ?? t('common.error'));
+            notify(e?.message ?? t('common.error'), { type: 'danger' });
         } finally {
             setSaving(false);
         }
@@ -84,13 +80,6 @@ export default function AccountPage() {
             />
 
             <div className="p-4 md:p-6">
-                {error && (
-                    <div className="rounded-lg bg-destructive/10 p-4 text-destructive text-sm mb-6">{error}</div>
-                )}
-                {success && (
-                    <div className="rounded-lg bg-emerald-500/10 p-4 text-emerald-600 text-sm mb-6">{success}</div>
-                )}
-
                 <div className="space-y-8">
                     <UsernamePart
                         username={username}
@@ -104,15 +93,9 @@ export default function AccountPage() {
                         onDirty={markDirty}
                     />
 
-                    <EmailPart
-                        setError={setError}
-                        setSuccess={setSuccess}
-                    />
+                    <EmailPart />
 
-                    <TwoFAPart
-                        setError={setError}
-                        setSuccess={setSuccess}
-                    />
+                    <TwoFAPart />
                 </div>
             </div>
         </>

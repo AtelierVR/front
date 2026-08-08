@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Countries, type Country } from '@/lib/countries';
+import { countriesService, type Country } from '@/lib/countries';
 
 export function useCountries() {
     const { i18n } = useTranslation();
@@ -12,7 +12,7 @@ export function useCountries() {
 
     useEffect(() => {
         setLoading(true);
-        Countries.get(i18n.language)
+        countriesService.get(i18n.language)
             .then(setCountries)
             .catch(setError)
             .finally(() => setLoading(false));

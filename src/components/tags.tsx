@@ -13,7 +13,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import Image from '@/components/NoxImage';
-import { Countries } from '@/lib/countries';
+import { countriesService } from '@/lib/countries';
 import { Languages } from '@/lib/languages';
 import { useTranslation } from 'react-i18next';
 
@@ -45,9 +45,9 @@ function countryTagHandler(_raw: string, match: RegExpExecArray): TagDisplay | n
     const code = match[1].toLowerCase();
 
     useEffect(() => {
-        Countries.getById(code, i18n.language).then(e => {
-            setLabel(e?.name ?? null);
-            setIcon(e?.flag ?? null);
+        countriesService.getById(code, i18n.language).then(e => {
+            setLabel(e?.name.common ?? null);
+            setIcon(e?.flags.svg ?? null);
         }).catch(_ => { });
     }, [code, i18n.language]);
 

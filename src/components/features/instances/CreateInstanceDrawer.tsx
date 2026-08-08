@@ -79,15 +79,15 @@ export function CreateInstanceDrawer({
     const [capacity, setCapacity] = useState(defaultWorld?.capacity ?? 0);
     const [tags, setTags] = useState<string[]>([]);
     const [thumbnail, setThumbnail] = useState<string | null>(defaultWorld?.thumbnail ?? null);
-    const [region, setRegion] = useState<string>(config?.default_region ?? '');
+    const [region, setRegion] = useState<string>(config?.regions?.[0] ?? '');
     const [worldVersion, setWorldVersion] = useState<number | null>(null);
     const [worldVersionRaw, setWorldVersionRaw] = useState('-1');
     const [versionValid, setVersionValid] = useState(true);
 
     // Sync region when config loads
     useEffect(() => {
-        if (config?.default_region !== undefined && config.default_region !== null && !region) 
-            setRegion(config.default_region);
+        if (config?.regions?.[0] !== undefined && config.regions[0] !== null && !region) 
+            setRegion(config.regions[0]);
     }, [config, region]);
 
     const [submitting, setSubmitting] = useState(false);
@@ -169,7 +169,7 @@ export function CreateInstanceDrawer({
         setThumbnail(defaultWorld?.thumbnail ?? null);
         setError(null);
         setMode('simple');
-        setRegion(config?.default_region ?? '');
+        setRegion(config?.regions?.[0] ?? '');
         setWorldVersion(null);
         setWorldVersionRaw('-1');
         setVersionValid(true);

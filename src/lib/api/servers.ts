@@ -13,9 +13,9 @@ function serverSearchText(s: ApiServer): string {
     const parts = [s.address];
     const wm = s.wellknown?.metadata;
     if (wm) {
-        const title = typeof wm.title === 'object' ? Object.values(wm.title).join(' ') : wm.title;
+        const title = typeof wm.title === 'object' && wm.title !== null ? Object.values(wm.title).join(' ') : wm.title;
         if (title) parts.push(title);
-        const desc = typeof wm.description === 'object' ? Object.values(wm.description).join(' ') : wm.description;
+        const desc = wm.description && typeof wm.description === 'object' ? Object.values(wm.description).join(' ') : wm.description;
         if (desc) parts.push(desc);
     }
     return parts.join(' ').toLowerCase();

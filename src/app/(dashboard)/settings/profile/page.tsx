@@ -18,6 +18,7 @@ import { useCountries } from '@/lib/hooks/useCountries';
 import { useLanguages } from '@/lib/hooks/useLanguages';
 import { addUrlQuery, removeUrlQuery } from '@/lib/url';
 import { DropdownDrawer } from '@/components/shared/DropdownDrawer';
+import { notify } from '@/components/ui/notify';
 import type { ApiUserPresence } from '@/types/api';
 
 type PresenceStatus = ApiUserPresence['status'];
@@ -50,8 +51,6 @@ export default function ProfilePage() {
     const [selectedLng, setSelectedLng] = useState<string[] | undefined>();
 
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [dirty, setDirty] = useState(false);
     const [presenceOpen, setPresenceOpen] = useState(false);
 
@@ -83,8 +82,6 @@ export default function ProfilePage() {
     const handleSave = async () => {
         if (!dirty || saving) return;
         setSaving(true);
-        setError(null);
-        setSuccess(false);
         try {
             // Build tags: preserve original for untouched categories, use new selection for touched ones
             const allCurrentTags = currentUser?.tags ?? [];
@@ -130,10 +127,9 @@ export default function ProfilePage() {
             setThumbnail(undefined);
             setBanner(undefined);
             setDirty(false);
-            setSuccess(true);
-            setTimeout(() => setSuccess(false), 3000);
+            notify(t('settings.profile.saved'), { type: 'success' });
         } catch (e: any) {
-            setError(e?.message ?? t('common.error'));
+            notify(e?.message ?? t('common.error'), { type: 'danger' });
         } finally {
             setSaving(false);
         }
@@ -165,13 +161,6 @@ export default function ProfilePage() {
             />
 
             <div className="p-4 md:p-6">
-                {error && (
-                    <div className="rounded-lg bg-destructive/10 p-4 text-destructive text-sm mb-6">{error}</div>
-                )}
-                {success && (
-                    <div className="rounded-lg bg-emerald-500/10 p-4 text-emerald-600 text-sm mb-6">{t('settings.profile.saved')}</div>
-                )}
-
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Left: Form fields */}
                     <div className="space-y-6 flex-1">
@@ -301,12 +290,13 @@ export default function ProfilePage() {
 
 // ── Inline pickers ──────────────────────────────────────────────────────────
 
-function CountriesPicker({ countries, loading, selected, onChange }: { countries: { id: string; name: string; flag: string }[]; loading: boolean; selected: string[]; onChange: (codes: string[]) => void }) {
+function CountriesPicker({ countries, loading, selected, onChange }: { countries: { cca2: string; name: { common: string }; flags: { svg: string } }[]; loading: boolean; selected: string[]; onChange: (codes: string[]) => void }) {
     const { t } = useTranslation();
     const [q, setQ] = useState('');
-    const add = (id: string) => { if (!selected.includes(id)) onChange([...selected, id]); };
-    const remove = (id: string) => onChange(selected.filter(c => c !== id));
-    const available = countries.filter(c => !selected.includes(c.id) && c.name.toLowerCase().includes(q.toLowerCase()));
+    const selectedUpper = new Set(selected.map(s => s.toUpperCase()));
+    const add = (cca2: string) => { if (!selectedUpper.has(cca2.toUpperCase())) onChange([...selected, cca2]); };
+    const remove = (cca2: string) => onChange(selected.filter(c => c.toUpperCase() !== cca2.toUpperCase()));
+    const available = countries.filter(c => !selectedUpper.has(c.cca2.toUpperCase()) && c.name.common.toLowerCase().includes(q.toLowerCase()));
 
     return (
         <div className="space-y-3">
@@ -316,13 +306,13 @@ function CountriesPicker({ countries, loading, selected, onChange }: { countries
                 selected.length === 0 && 'items-center justify-center',
             )}>
                 {selected.length === 0 && <p className="text-sm text-muted-foreground">{t('settings.profile.country.none')}</p>}
-                {selected.map(id => {
-                    const c = countries.find(x => x.id === id);
+                {selected.map(cca2 => {
+                    const c = countries.find(x => x.cca2.toUpperCase() === cca2.toUpperCase());
                     if (!c) return null;
                     return (
-                        <span key={id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(id)}>
-                            <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
-                            <span>{c.name}</span>
+                        <span key={cca2} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => remove(cca2)}>
+                            <img src={c.flags.svg} alt={c.name.common} className="h-3.5 w-auto rounded-sm" />
+                            <span>{c.name.common}</span>
                             <Icon icon="material-symbols:close-rounded" className="size-3" />
                         </span>
                     );
@@ -354,9 +344,9 @@ function CountriesPicker({ countries, loading, selected, onChange }: { countries
                         ) : available.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
                                 {available.map(c => (
-                                    <span key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(c.id)}>
-                                        <img src={c.flag} alt={c.name} className="h-3.5 w-auto rounded-sm" />
-                                        <span>{c.name}</span>
+                                    <span key={c.cca2} className="inline-flex items-center gap-1.5 rounded-full bg-fd-secondary px-2.5 py-1 text-xs cursor-pointer hover:bg-fd-muted transition-colors" onClick={() => add(c.cca2)}>
+                                        <img src={c.flags.svg} alt={c.name.common} className="h-3.5 w-auto rounded-sm" />
+                                        <span>{c.name.common}</span>
                                         <Icon icon="material-symbols:add-rounded" className="size-3" />
                                     </span>
                                 ))}

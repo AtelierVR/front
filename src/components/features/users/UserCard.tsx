@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 import type { ApiUser } from '@/types/api';
 
 interface UserCardProps {

@@ -47,7 +47,7 @@ export const Confetti = forwardRef<ConfettiRef, ConfettiProps>(
         origin: { y: originY },
         colors: ['#666699', '#CCCCFF', '#a78bfa', '#c4b5fd', '#7c3aed', '#ddd6fe', '#818cf8', '#e0e7ff'],
         disableForReducedMotion: true,
-      } as const;
+      };
 
       for (const { originX, angle } of bursts) {
         confetti({

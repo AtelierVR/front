@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { getRelayClients, batchGetUsers } from '@/lib/api';
-import type { ApiRelayClient, ApiUser } from '@/types/api';
+import type { ApiRelayClient, ApiUser, ApiUserSearchResult } from '@/types/api';
 import { ApiError } from '@/types/envelope';
 import { useWsEvent } from '@/lib/ws/context';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +72,7 @@ export default function RelayClientsPage() {
         if (toFetch.length === 0) return;
         for (const id of toFetch) fetchedUsersRef.current.add(id);
         batchGetUsers(toFetch)
-            .then(res => {
+            .then((res: ApiUserSearchResult) => {
                 setUserMap(prev => {
                     const next = new Map(prev);
                     for (const user of res.items) {

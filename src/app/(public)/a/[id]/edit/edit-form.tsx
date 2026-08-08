@@ -15,6 +15,7 @@ import { ImageInput } from '@/components/ui/image-input';
 import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { UserListInput } from '@/components/ui/user-list-input';
 import { ApiError } from '@/types/envelope';
+import { notify } from '@/components/ui/notify';
 import { releaseVersion, releaseIsAuto } from '@/types/api';
 import { Icon } from '@iconify/react';
 
@@ -42,9 +43,6 @@ export function AvatarEditForm() {
     const [release, setRelease] = useState<string | undefined>();
     const [thumbnail, setThumbnail] = useState<string | null | undefined>();
     const [contributors, setContributors] = useState<string[] | undefined>();
-
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
 
     // Reset local state when the avatar changes
     useEffect(() => {
@@ -78,8 +76,6 @@ export function AvatarEditForm() {
     const handleSave = async () => {
         if (!avatar || !canSave) return;
         setFlags(f => f | F_LOADING);
-        setError(null);
-        setSuccess(false);
         try {
             await updateAvatar(avatar.id, {
                 name: (flags & F_NAME) ? (name?.trim() || null) : undefined,
@@ -102,31 +98,16 @@ export function AvatarEditForm() {
             setRelease(undefined);
             setContributors(undefined);
             setFlags(0);
-            setSuccess(true);
+            notify(t('avatar.edit_saved', 'Changes saved successfully.'), { type: 'success' });
             refresh();
-            setTimeout(() => setSuccess(false), 3000);
         } catch (e) {
-            setError(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'An error occurred');
+            notify(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'An error occurred', { type: 'danger' });
             setFlags(f => f & ~F_LOADING);
         }
     };
 
     return (
         <div className="flex flex-col gap-5">
-            {/* Feedback */}
-            {error && (
-                <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    <Icon icon="material-symbols:error-rounded" className="size-4 shrink-0" />
-                    {error}
-                </div>
-            )}
-            {success && (
-                <div className="flex items-center gap-2 rounded-lg border border-green-500/50 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-                    <Icon icon="material-symbols:check-circle-rounded" className="size-4 shrink-0" />
-                    {t('avatar.edit_saved', 'Changes saved successfully.')}
-                </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                 {/* Left column */}
                 <div className="flex flex-col gap-5">

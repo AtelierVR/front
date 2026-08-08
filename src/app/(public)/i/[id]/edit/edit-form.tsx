@@ -12,6 +12,7 @@ import { InputGroup, InputGroupInput } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { ApiError } from '@/types/envelope';
+import { notify } from '@/components/ui/notify';
 
 // ── Flags ─────────────────────────────────────────────────────────────────────
 const F_LOADING = 1 << 0;
@@ -31,9 +32,6 @@ export function InstanceEditForm({ onDeleteRequest }: { onDeleteRequest?: () => 
     const [capacity, setCapacity] = useState<string | undefined>();
     const [thumbnail, setThumbnail] = useState<string | null | undefined>();
     const [tags, setTags] = useState<string[] | undefined>();
-
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
 
     // Reset when instance changes
     useEffect(() => {
@@ -62,8 +60,6 @@ export function InstanceEditForm({ onDeleteRequest }: { onDeleteRequest?: () => 
     const handleSave = async () => {
         if (!instance || !canSave) return;
         setFlags(f => f | F_LOADING);
-        setError(null);
-        setSuccess(false);
         try {
             await updateInstance(instance.id, {
                 title: (flags & F_TITLE) ? (title?.trim() || undefined) : undefined,
@@ -83,31 +79,16 @@ export function InstanceEditForm({ onDeleteRequest }: { onDeleteRequest?: () => 
             setCapacity(undefined);
             setTags(undefined);
             setFlags(0);
-            setSuccess(true);
+            notify(t('instance.save_success'), { type: 'success' });
             refresh();
-            setTimeout(() => setSuccess(false), 3000);
         } catch (e) {
-            setError(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'An error occurred');
+            notify(e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'An error occurred', { type: 'danger' });
             setFlags(f => f & ~F_LOADING);
         }
     };
 
     return (
         <div className="flex flex-col gap-5">
-            {/* Feedback */}
-            {error && (
-                <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                    <Icon icon="material-symbols:error-rounded" className="size-4 shrink-0" />
-                    {error}
-                </div>
-            )}
-            {success && (
-                <div className="flex items-center gap-2 rounded-lg border border-green-500/50 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-                    <Icon icon="material-symbols:check-circle-rounded" className="size-4 shrink-0" />
-                    {t('instance.save_success')}
-                </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                 {/* Left column */}
                 <div className="flex flex-col gap-5">

@@ -1,5 +1,4 @@
 export * from './context';
-export * from './client';
 export * from './wellknown';
 export * from './utils';
 export * from './users';
@@ -11,3 +10,5 @@ export * from './auth';
 export * from './relays';
 export * from './admin';
 export * from './tables';
+export * from './sessions';
+export { type VerificationMethod, registerVerificationHandler, registerLogoutDispatch, registerGatewayUrl, registerCurrentUserReplace, registerCurrentUserMerge, apiFetch } from './client';

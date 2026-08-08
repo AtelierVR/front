@@ -203,6 +203,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         icon: <Icon icon="material-symbols:table-rounded" />,
                     },
                     {
+                        type: 'page',
+                        name: t('settings.sessions.title'),
+                        url: '/settings/sessions',
+                        icon: <Icon icon="material-symbols:devices-rounded" />,
+                    },
+                    {
                         type: 'folder',
                         name: t('user.followers', 'Relations'),
                         icon: <Icon icon="material-symbols:group-rounded" />,

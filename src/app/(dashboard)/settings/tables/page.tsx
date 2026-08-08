@@ -19,6 +19,7 @@ import {
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { EmptyBox } from '@/components/shared/ResultGrid';
+import { notify } from '@/components/ui/notify';
 import { useApi } from '@/lib/api';
 import { listMyTables, downloadMyTable, deleteMyTable } from '@/lib/api/tables';
 import type { TableMeta } from '@/lib/api/tables';
@@ -181,7 +182,6 @@ export default function TablesPage() {
     const [tables, setTables] = useState<TableMeta[] | null>(null);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [hasLoaded, setHasLoaded] = useState(false);
     const [tableToDelete, setTableToDelete] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
@@ -189,7 +189,6 @@ export default function TablesPage() {
 
     const loadPage = useCallback(async (offset: number, filter?: string) => {
         setLoading(true);
-        setError(null);
         try {
             // Wrap in wildcards for contains match (API uses * prefix/suffix for partial matching)
             const apiFilter = filter ? `*${filter}*` : undefined;
@@ -201,7 +200,7 @@ export default function TablesPage() {
                 return offset === 0 ? res.items : [...(prev ?? []), ...next];
             });
         } catch (e: any) {
-            setError(e?.message ?? t('settings.tables.error_load'));
+            notify(e?.message ?? t('settings.tables.error_load'), { type: 'danger' });
         } finally {
             setLoading(false);
         }
@@ -244,7 +243,7 @@ export default function TablesPage() {
         const ok = await deleteMyTable(tableToDelete);
         setDeleting(false);
         setTableToDelete(null);
-        if (!ok) { setError(t('settings.tables.error_delete')); return; }
+        if (!ok) { notify(t('settings.tables.error_delete'), { type: 'danger' }); return; }
         setTables(prev => (prev ?? []).filter(t => t.key !== tableToDelete));
         setTotal(prev => prev - 1);
     };
@@ -308,13 +307,6 @@ export default function TablesPage() {
             />
 
             <div className="p-4 md:p-6">
-                {error && (
-                    <div className="rounded-lg bg-destructive/10 p-4 text-destructive text-sm mb-6 flex items-center gap-2">
-                        <Icon icon="material-symbols:error-rounded" className="size-4 shrink-0" />
-                        {error}
-                    </div>
-                )}
-
                 <div className="space-y-8">
                     {/* Public tables */}
                     <section className="space-y-3">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { languagesService, type Language } from '@/lib/languages-data';
+import { Languages, type Language } from '@/lib/languages';
 
 export function useLanguages() {
     const [languages, setLanguages] = useState<Language[]>([]);
@@ -10,9 +10,9 @@ export function useLanguages() {
 
     useEffect(() => {
         let cancelled = false;
-        languagesService.get()
-            .then(data => { if (!cancelled) { setLanguages(data); setLoading(false); } })
-            .catch(e => { if (!cancelled) { setError(e.message); setLoading(false); } });
+        Languages.get()
+            .then((data: Language[]) => { if (!cancelled) { setLanguages(data); setLoading(false); } })
+            .catch((e: Error) => { if (!cancelled) { setError(e.message); setLoading(false); } });
         return () => { cancelled = true; };
     }, []);
 

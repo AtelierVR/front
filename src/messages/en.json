@@ -25,7 +25,8 @@
     "legal_desc": "Our policies and guidelines",
     "legal_terms_desc": "Read our terms and conditions",
     "legal_privacy_desc": "How we handle your data",
-    "legal_rules_desc": "Guidelines for a safe community"
+    "legal_rules_desc": "Guidelines for a safe community",
+    "profile": "Profile"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -123,7 +124,8 @@
       "degraded": "Degraded performance",
       "maintenance": "Under maintenance",
       "offline": "Offline"
-    }
+    },
+    "github": "GitHub"
   },
   "presence": {
     "online": "Online",
@@ -367,7 +369,47 @@
         "verify": "Verify"
       }
     },
-    "sessions": "Sessions",
+    "sessions": {
+      "title": "Sessions",
+      "description": "Manage your active sessions and connected devices.",
+      "current_session": "Current session",
+      "active_sessions": "Connected",
+      "idle_sessions": "Other sessions",
+      "no_active_sessions": "No connected sessions.",
+      "no_idle_sessions": "No inactive sessions.",
+      "search_ip_placeholder": "Filter by IP",
+      "other_sessions": "Other sessions",
+      "no_other_sessions": "No other sessions.",
+      "created": "Created",
+      "expires": "Expires",
+      "status": "Status",
+      "status_active": "Connected",
+      "status_idle": "Inactive",
+      "public_key": "Public key",
+      "last_seen": "Last seen",
+      "devices": "{{count}} device",
+      "devices_plural": "{{count}} devices",
+      "ip": "IP",
+      "user_agent": "User Agent",
+      "revoke_session": "Revoke session",
+      "revoke_session_desc": "This will log out the device from your account. This action cannot be undone.",
+      "revoke": "Revoke",
+      "revoking": "Revoking…",
+      "revoke_all": "Revoke all",
+      "revoke_all_title": "Revoke all sessions",
+      "revoke_all_desc": "This will log out all your other sessions. Your current session will remain active.",
+      "revoke_all_warning": "Are you sure you want to revoke all other sessions?",
+      "revoke_all_button": "Revoke all sessions",
+      "revoke_all_success": "All other sessions have been revoked.",
+      "revoked_success": "Session revoked successfully.",
+      "error_load": "Failed to load sessions.",
+      "error_delete": "Failed to revoke session.",
+      "error_delete_all": "Failed to revoke all sessions.",
+      "unknown_device": "Unknown device",
+      "load_more": "Load more",
+      "loading": "Loading…",
+      "current_badge": "You"
+    },
     "follow": "Follow",
     "tables": {
       "title": "Tables",
@@ -543,8 +585,8 @@
     "no_relay_instances": "No instances assigned to this relay",
     "no_activity": "No activity events found.",
     "no_configs": "No configurations match your filters.",
-    "loading_config": "Loading configuration\u2026",
-    "loading_instances": "Loading instances\u2026",
+    "loading_config": "Loading configuration…",
+    "loading_instances": "Loading instances…",
     "relays": "Relays",
     "view_all": "View all",
     "connected": "Connected",
@@ -576,7 +618,7 @@
     "col_engine": "Engine",
     "col_user": "User",
     "no_relay_clients": "No clients connected to this relay",
-    "loading_clients": "Loading clients\u2026",
+    "loading_clients": "Loading clients…",
     "activity": "Activity",
     "logs": "Logs",
     "environment": "Environment",
@@ -590,18 +632,34 @@
     "col_client_id": "Client",
     "col_joined_at": "Joined At",
     "col_connected_at": "Connected At",
-    "col_flags": "Flags"
+    "col_flags": "Flags",
+    "dashboard": "Dashboard"
   },
   "dashboard": {
-    "title":"Dashboard"
+    "title": "Dashboard"
   },
   "features": {
     "label": "Search",
-    "user": { "label": "Users", "description": "Find people on the platform" },
-    "world": { "label": "Worlds", "description": "Discover virtual worlds" },
-    "avatar": { "label": "Avatars", "description": "Browse available avatars" },
-    "instance": { "label": "Instances", "description": "Find active world instances" },
-    "server": { "label": "Servers", "description": "Browse federated servers" }
+    "user": {
+      "label": "Users",
+      "description": "Find people on the platform"
+    },
+    "world": {
+      "label": "Worlds",
+      "description": "Discover virtual worlds"
+    },
+    "avatar": {
+      "label": "Avatars",
+      "description": "Browse available avatars"
+    },
+    "instance": {
+      "label": "Instances",
+      "description": "Find active world instances"
+    },
+    "server": {
+      "label": "Servers",
+      "description": "Browse federated servers"
+    }
   },
   "providers": {
     "docker": "Docker",
@@ -616,8 +674,17 @@
   },
   "legal": {
     "label": "Legal",
-    "privacy": { "label": "Privacy Policy", "description": "How we handle your data" },
-    "terms": { "label": "Terms of Service", "description": "Read our terms and conditions" },
-    "rules": { "label": "Rules", "description": "Guidelines for a safe community" }
+    "privacy": {
+      "label": "Privacy Policy",
+      "description": "How we handle your data"
+    },
+    "terms": {
+      "label": "Terms of Service",
+      "description": "Read our terms and conditions"
+    },
+    "rules": {
+      "label": "Rules",
+      "description": "Guidelines for a safe community"
+    }
   }
 }

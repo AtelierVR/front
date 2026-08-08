@@ -25,7 +25,7 @@ function useNavItems(): NavItem[] {
     { href: '/settings/profile',  label: t('settings.profile'),  icon: <Icon icon="material-symbols:person-rounded" className="h-4 w-4" /> },
     { href: '/settings/account',  label: t('settings.account'),  icon: <Icon icon="material-symbols:manage-accounts-rounded" className="h-4 w-4" /> },
     { href: '/settings/security', label: t('settings.security'), icon: <Icon icon="material-symbols:shield-rounded" className="h-4 w-4" /> },
-    { href: '/settings/sessions', label: t('settings.sessions'), icon: <Icon icon="material-symbols:devices-rounded" className="h-4 w-4" /> },
+    { href: '/settings/sessions', label: t('settings.sessions.title'), icon: <Icon icon="material-symbols:devices-rounded" className="h-4 w-4" /> },
     { href: '/settings/follow',   label: t('settings.follow'),   icon: <Icon icon="material-symbols:group-rounded" className="h-4 w-4" /> },
     { href: '/settings/tables',   label: t('settings.tables'),   icon: <Icon icon="material-symbols:table" className="h-4 w-4" /> },
   ];

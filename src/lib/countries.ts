@@ -1,9 +1,9 @@
 import { getCountries, getSupportedLangs } from '@hotosm/iso-countries-languages';
 
 export interface Country {
-  id: string;
-  name: string;
-  flag: string;
+  cca2: string;
+  name: { common: string };
+  flags: { svg: string };
 }
 
 /** Resolves a locale to a language code supported by iso-countries-languages, falling back to 'en'. */
@@ -15,10 +15,10 @@ function resolveLang(locale: string): string {
   return 'en';
 }
 
-export class Countries {
-  private static cache = new Map<string, Country[]>();
+class CountriesService {
+  private cache = new Map<string, Country[]>();
 
-  static async get(locale?: string): Promise<Country[]> {
+  async get(locale?: string): Promise<Country[]> {
     const lang = resolveLang(locale || 'en');
     const cached = this.cache.get(lang);
     if (cached) return cached;
@@ -27,28 +27,24 @@ export class Countries {
     const countries: Record<string, string> = getCountries(lang);
 
     const list: Country[] = Object.entries(countries).map(([code, name]) => ({
-      id: code.toLowerCase(),
-      name,
-      flag: `https://flagcdn.com/${code.toLowerCase()}.svg`,
+      cca2: code,
+      name: { common: name },
+      flags: { svg: `https://flagcdn.com/${code.toLowerCase()}.svg` },
     }));
 
-    list.unshift({
-      id: 'xx',
-      name: 'No country',
-      flag: 'https://flagcdn.com/xx.svg',
-    });
-
-    const sorted = list.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted = list.sort((a, b) => a.name.common.localeCompare(b.name.common));
     this.cache.set(lang, sorted);
     return sorted;
   }
 
-  static async getById(iso: string, locale?: string): Promise<Country | null> {
+  async getById(cca2: string, locale?: string): Promise<Country | null> {
     const countries = await this.get(locale);
-    return countries.find(c => c.id === iso.toLowerCase()) || null;
+    return countries.find(c => c.cca2.toUpperCase() === cca2.toUpperCase()) || null;
   }
 
-  static clearCache(): void {
+  clearCache(): void {
     this.cache.clear();
   }
 }
+
+export const countriesService = new CountriesService();

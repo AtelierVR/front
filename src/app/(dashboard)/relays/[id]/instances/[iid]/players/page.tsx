@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { getRelayInstancePlayers } from '@/lib/api/relays';
 import { batchGetUsers } from '@/lib/api';
-import type { ApiRelayPlayer, ApiUser } from '@/types/api';
+import type { ApiRelayPlayer, ApiUser, ApiUserSearchResult } from '@/types/api';
 import { ApiError } from '@/types/envelope';
 import { useWsEvent } from '@/lib/ws/context';
 import { useTranslation } from 'react-i18next';
@@ -74,7 +74,7 @@ export default function RelayInstancePlayersPage() {
         if (toFetch.length === 0) return;
         for (const id of toFetch) fetchedUsersRef.current.add(id);
         batchGetUsers(toFetch)
-            .then(res => {
+            .then((res: ApiUserSearchResult) => {
                 setUserMap(prev => {
                     const next = new Map(prev);
                     for (const user of res.items) {
@@ -99,7 +99,7 @@ export default function RelayInstancePlayersPage() {
         if (data.relay_id !== relayId || data.player.internal_id !== iid) return;
         const p = data.player;
         setAllPlayers(prev => [
-            { id: p.player_id, client_id: p.client_id, display: p.display, flags: p.flags, joined_at: p.joined_at },
+            { id: p.player_id, client_id: p.client_id, display: p.display, flags: p.flags, joined_at: p.joined_at, user: null, custom_tps: 0, custom_threshold: 0 },
             ...prev.filter(x => x.id !== p.player_id),
         ]);
     });
