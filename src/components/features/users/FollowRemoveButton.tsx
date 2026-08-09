@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { unfollowUser, getAlias } from '@/lib/api';
 import { notify } from '@/components/ui/notify';
 import type { ApiUser } from '@/types/api';
+import { _setConfirmedOut } from './UserContext';
 
 interface Props {
   user: ApiUser;
@@ -23,7 +24,17 @@ export function FollowRemoveButton({ user, type, setUser }: Props) {
     try {
       const identifier = getAlias(user.alias, 'iid') ?? String(user.id);
       await unfollowUser(identifier);
-      setUser((u) => u ? { ...u, relations: { ...u.relations, out: null, in: u.relations?.in ?? null } } : u);
+      _setConfirmedOut(null);
+      setUser((u) => {
+        if (!u) return u;
+        // WS event may have already updated the state — skip to avoid double-count
+        if (u.relations?.out === null) return u;
+        return {
+          ...u,
+          relations: { ...u.relations, out: null, in: u.relations?.in ?? null },
+          followers: type === 'follow' ? u.followers - 1 : u.followers,
+        };
+      });
     } catch (err: any) {
       notify(err?.message ?? t('user.unfollow_error'), { type: 'danger' });
     } finally {

@@ -9,6 +9,7 @@ import { notify } from '@/components/ui/notify';
 import type { ApiUser } from '@/types/api';
 
 import { getAlias } from '@/lib/api';
+import { _setConfirmedOut } from './UserContext';
 
 interface Props {
   user: ApiUser;
@@ -24,7 +25,17 @@ export function FollowAddButton({ user, setUser }: Props) {
     try {
       const identifier = getAlias(user.alias, 'iid') ?? String(user.id);
       const res = await followUser(identifier);
-      setUser((u) => u ? { ...u, relations: { ...u.relations, out: res.type, in: u.relations?.in ?? null } } : u);
+      _setConfirmedOut(res.type);
+      setUser((u) => {
+        if (!u) return u;
+        // WS event may have already updated the state — skip to avoid double-count
+        if (u.relations?.out === res.type) return u;
+        return {
+          ...u,
+          relations: { ...u.relations, out: res.type, in: u.relations?.in ?? null },
+          followers: u.followers + 1,
+        };
+      });
     } catch (err: any) {
       notify(err?.message ?? t('user.follow_error'), { type: 'danger' });
     } finally {
