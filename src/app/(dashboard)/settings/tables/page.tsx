@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { PageTitle } from '@/components/shared/PageTitle';
@@ -172,6 +172,14 @@ function TableCard({ table, onDelete, t }: TableCardProps) {
 }
 
 export default function TablesPage() {
+    return (
+        <Suspense fallback={<div className="p-4 md:p-6"><Skeleton className="h-64 w-full" /></div>}>
+            <TablesPageInner />
+        </Suspense>
+    );
+}
+
+function TablesPageInner() {
     const { t } = useTranslation();
     const { wellKnown } = useApi();
     const router = useRouter();

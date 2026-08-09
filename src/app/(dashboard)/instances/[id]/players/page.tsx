@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from 'react';
 import { getInstance } from '@/lib/api/instances';
 import { batchGetUsers } from '@/lib/api/users';
 import type { ApiInstance, ApiUser } from '@/types/api';
@@ -14,6 +14,14 @@ import { SiteHeader } from '@/components/site-header';
 import { usePagination } from '@/hooks/usePagination';
 
 export default function InstancePlayersPage() {
+    return (
+        <Suspense fallback={<div className="p-4 md:p-6"><Skeleton className="h-64 w-full" /></div>}>
+            <InstancePlayersInner />
+        </Suspense>
+    );
+}
+
+function InstancePlayersInner() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
     const { t } = useTranslation();

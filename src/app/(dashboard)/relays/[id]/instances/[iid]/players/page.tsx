@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import { getRelayInstancePlayers } from '@/lib/api/relays';
 import { batchGetUsers } from '@/lib/api';
@@ -22,6 +22,14 @@ import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow, format } from 'date-fns';
 
 export default function RelayInstancePlayersPage() {
+    return (
+        <Suspense fallback={<div className="p-4 md:p-6"><Skeleton className="h-64 w-full" /></div>}>
+            <RelayInstancePlayersInner />
+        </Suspense>
+    );
+}
+
+function RelayInstancePlayersInner() {
     const params = useParams<{ id: string; iid: string }>();
     const relayId = parseInt(params.id, 10);
     const iid = parseInt(params.iid, 10);

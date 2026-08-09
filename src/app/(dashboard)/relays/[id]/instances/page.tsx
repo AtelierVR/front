@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef, Suspense } from 'react';
 import { getRelayInstances } from '@/lib/api';
 import { batchGetUsers } from '@/lib/api/users';
 import { getWorld } from '@/lib/api/worlds';
@@ -22,6 +22,14 @@ import {
 import { formatDistanceToNow, format } from 'date-fns';
 
 export default function RelayInstancesPage() {
+    return (
+        <Suspense fallback={<div className="p-4 md:p-6"><Skeleton className="h-64 w-full" /></div>}>
+            <RelayInstancesInner />
+        </Suspense>
+    );
+}
+
+function RelayInstancesInner() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
     const relayId = parseInt(params.id, 10);

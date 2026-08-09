@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo, Suspense } from 'react';
 import { getRelayClients, batchGetUsers } from '@/lib/api';
 import type { ApiRelayClient, ApiUser, ApiUserSearchResult } from '@/types/api';
 import { ApiError } from '@/types/envelope';
@@ -21,6 +21,14 @@ import {
 import { formatDistanceToNow, format } from 'date-fns';
 
 export default function RelayClientsPage() {
+    return (
+        <Suspense fallback={<div className="p-4 md:p-6"><Skeleton className="h-64 w-full" /></div>}>
+            <RelayClientsInner />
+        </Suspense>
+    );
+}
+
+function RelayClientsInner() {
     const params = useParams<{ id: string }>();
     const relayId = parseInt(params.id, 10);
     const { t } = useTranslation();
