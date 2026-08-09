@@ -73,13 +73,13 @@ export function UserFollowStats() {
                     {user.followers > -1 && <StatItem
                         count={user.followers}
                         label={t('user.followers')}
-                        href={isSame ? '/settings/relations/followers' : undefined}
+                        href={isSame ? '/settings/relations?tab=followers' : undefined}
                         onClick={isSame ? undefined : () => openModal('followers')}
                     />}
                     {user.following > -1 && <StatItem
                         count={user.following}
                         label={t('user.following')}
-                        href={isSame ? '/settings/relations/following' : undefined}
+                        href={isSame ? '/settings/relations?tab=following' : undefined}
                         onClick={isSame ? undefined : () => openModal('following')}
                     />}
                 </div>

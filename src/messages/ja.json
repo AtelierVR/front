@@ -693,5 +693,23 @@
     "write": "編集",
     "preview": "プレビュー",
     "nothing_to_preview": "プレビューするものはありません。"
+  },
+  "relations": {
+    "title": "関係",
+    "tab_followers": "フォロワー",
+    "tab_following": "フォロー中",
+    "tab_friends": "友達",
+    "tab_pending": "保留中",
+    "desc_followers": "あなたをフォローしている人。",
+    "desc_following": "あなたがフォローしている人。",
+    "desc_friends": "相互フォロー。",
+    "desc_pending": "保留中のフォローリクエスト。",
+    "search_placeholder": "名前で検索…",
+    "empty_followers": "まだフォロワーはいません。",
+    "empty_following": "まだ誰もフォローしていません。",
+    "empty_friends": "相互フォローはまだありません。",
+    "empty_pending": "保留中のリクエストはありません。",
+    "request_accepted": "リクエストを承認しました。",
+    "request_rejected": "リクエストを拒否しました。"
   }
 }

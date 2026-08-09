@@ -693,5 +693,23 @@
     "write": "编辑",
     "preview": "预览",
     "nothing_to_preview": "没有可预览的内容。"
+  },
+  "relations": {
+    "title": "关系",
+    "tab_followers": "粉丝",
+    "tab_following": "关注",
+    "tab_friends": "好友",
+    "tab_pending": "待处理",
+    "desc_followers": "关注你的人。",
+    "desc_following": "你关注的人。",
+    "desc_friends": "互相关注。",
+    "desc_pending": "待处理的关注请求。",
+    "search_placeholder": "按名称搜索…",
+    "empty_followers": "还没有人关注你。",
+    "empty_following": "你还没有关注任何人。",
+    "empty_friends": "还没有互相关注。",
+    "empty_pending": "没有待处理的请求。",
+    "request_accepted": "请求已接受。",
+    "request_rejected": "请求已拒绝。"
   }
 }

@@ -209,29 +209,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         icon: <Icon icon="material-symbols:devices-rounded" />,
                     },
                     {
-                        type: 'folder',
+                        type: 'page',
                         name: t('user.followers', 'Relations'),
+                        url: '/settings/relations',
                         icon: <Icon icon="material-symbols:group-rounded" />,
-                        index: {
-                            type: 'page',
-                            name: t('user.followers'),
-                            url: '/settings/relations/followers',
-                            icon: <Icon icon="material-symbols:person-add-rounded" />,
-                        },
-                        children: [
-                            {
-                                type: 'page',
-                                name: t('user.followers'),
-                                url: '/settings/relations/followers',
-                                icon: <Icon icon="material-symbols:person-add-rounded" />,
-                            },
-                            {
-                                type: 'page',
-                                name: t('user.following'),
-                                url: '/settings/relations/following',
-                                icon: <Icon icon="material-symbols:how-to-reg-rounded" />,
-                            },
-                        ],
                     },
                 ],
             },

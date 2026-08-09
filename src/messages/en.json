@@ -693,5 +693,27 @@
     "write": "Write",
     "preview": "Preview",
     "nothing_to_preview": "Nothing to preview."
+  },
+  "relations": {
+    "title": "Relations",
+    "tab_followers": "Followers",
+    "tab_following": "Following",
+    "tab_friends": "Friends",
+    "tab_pending": "Pending",
+    "desc_followers": "People who follow you.",
+    "desc_following": "People you follow.",
+    "desc_friends": "Mutual follows.",
+    "desc_pending": "Follow requests waiting for your response.",
+    "search_placeholder": "Search by name…",
+    "empty_followers": "No one follows you yet.",
+    "empty_followers_hint": "Share your profile to get your first follower.",
+    "empty_following": "You are not following anyone.",
+    "empty_following_hint": "Discover new people and follow them to see their content.",
+    "empty_friends": "No mutual follows yet.",
+    "empty_friends_hint": "When someone you follow also follows you back, they'll appear here.",
+    "empty_pending": "No pending requests.",
+    "empty_pending_hint": "When someone requests to follow you, it will appear here.",
+    "request_accepted": "Request accepted.",
+    "request_rejected": "Request rejected."
   }
 }

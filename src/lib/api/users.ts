@@ -36,6 +36,16 @@ export function getFollowing(userId: number, limit: number, offset: number): Pro
     return apiFetch<ApiRelationListResult>(`/users/${userId}/following?${params.toString()}`);
 }
 
+export function getFriends(userId: number, limit: number, offset: number): Promise<{ total: number; refs: string[] }> {
+    const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
+    return apiFetch<{ total: number; refs: string[] }>(`/users/@me/friends?${params.toString()}`);
+}
+
+export function respondToRequest(initiatorRef: string, accept: boolean): Promise<void> {
+    const params = new URLSearchParams({ accept: accept.toString() });
+    return apiFetch<void>(`/users/@me/follow/${initiatorRef}/respond?${params.toString()}`, { method: 'POST' });
+}
+
 export interface UpdateCurrentUserPayload {
     username?: string;
     display?: string;

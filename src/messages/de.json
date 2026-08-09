@@ -699,5 +699,23 @@
     "write": "Schreiben",
     "preview": "Vorschau",
     "nothing_to_preview": "Nichts zur Vorschau."
+  },
+  "relations": {
+    "title": "Beziehungen",
+    "tab_followers": "Follower",
+    "tab_following": "Folge ich",
+    "tab_friends": "Freunde",
+    "tab_pending": "Ausstehend",
+    "desc_followers": "Personen, die dir folgen.",
+    "desc_following": "Personen, denen du folgst.",
+    "desc_friends": "Gegenseitige Follows.",
+    "desc_pending": "Ausstehende Folgeanfragen.",
+    "search_placeholder": "Nach Name suchen…",
+    "empty_followers": "Niemand folgt dir noch.",
+    "empty_following": "Du folgst niemandem.",
+    "empty_friends": "Keine gegenseitigen Follows.",
+    "empty_pending": "Keine ausstehenden Anfragen.",
+    "request_accepted": "Anfrage akzeptiert.",
+    "request_rejected": "Anfrage abgelehnt."
   }
 }

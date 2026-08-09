@@ -96,12 +96,13 @@ export async function apiFetch<T>(
   const token = getToken();
   const headers = new Headers(options.headers ?? {});
 
-  if (token) {
+  // Save the original body before fetch() potentially consumes it
+  const body = options.body;
+
+  if (token)
     headers.set('Authorization', `Bearer ${token}`);
-  }
-  if (!headers.has('Content-Type') && options.body) {
+  if (!headers.has('Content-Type') && options.body)
     headers.set('Content-Type', 'application/json');
-  }
 
   const url = `${_gatewayUrl}${path}`;
   const res = await fetch(url, { ...options, headers });
@@ -132,8 +133,11 @@ export async function apiFetch<T>(
       if (methods?.length) {
         // Build a retry closure that the modal can call to verify codes
         const verifyCode = async (code: string): Promise<{ success: boolean; error?: string }> => {
-          const retryBody = options.body
-            ? JSON.stringify({ ...JSON.parse(options.body as string), factor_code: code })
+          const retryBody = body
+            ? JSON.stringify({ 
+              ...JSON.parse(body as string), 
+              factor_code: code 
+            })
             : JSON.stringify({ factor_code: code });
           const retryRes = await fetch(url, {
             ...options,

@@ -693,5 +693,23 @@
     "write": "Писать",
     "preview": "Просмотр",
     "nothing_to_preview": "Нечего просматривать."
+  },
+  "relations": {
+    "title": "Связи",
+    "tab_followers": "Подписчики",
+    "tab_following": "Подписки",
+    "tab_friends": "Друзья",
+    "tab_pending": "Ожидание",
+    "desc_followers": "Кто подписан на вас.",
+    "desc_following": "На кого вы подписаны.",
+    "desc_friends": "Взаимные подписки.",
+    "desc_pending": "Ожидающие запросы.",
+    "search_placeholder": "Поиск по имени…",
+    "empty_followers": "Никто не подписан на вас.",
+    "empty_following": "Вы ни на кого не подписаны.",
+    "empty_friends": "Нет взаимных подписок.",
+    "empty_pending": "Нет ожидающих запросов.",
+    "request_accepted": "Запрос принят.",
+    "request_rejected": "Запрос отклонён."
   }
 }

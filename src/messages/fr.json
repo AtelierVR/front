@@ -693,5 +693,27 @@
     "write": "Écrire",
     "preview": "Aperçu",
     "nothing_to_preview": "Rien à prévisualiser."
+  },
+  "relations": {
+    "title": "Relations",
+    "tab_followers": "Abonnés",
+    "tab_following": "Abonnements",
+    "tab_friends": "Amis",
+    "tab_pending": "En attente",
+    "desc_followers": "Personnes qui vous suivent.",
+    "desc_following": "Personnes que vous suivez.",
+    "desc_friends": "Abonnements mutuels.",
+    "desc_pending": "Demandes d'abonnement en attente.",
+    "search_placeholder": "Rechercher par nom…",
+    "empty_followers": "Personne ne vous suit encore.",
+    "empty_followers_hint": "Partagez votre profil pour attirer vos premiers abonnés.",
+    "empty_following": "Vous ne suivez personne.",
+    "empty_following_hint": "Découvrez de nouvelles personnes et suivez-les pour voir leur contenu.",
+    "empty_friends": "Aucun abonnement mutuel.",
+    "empty_friends_hint": "Lorsqu'une personne que vous suivez vous suit en retour, elle apparaîtra ici.",
+    "empty_pending": "Aucune demande en attente.",
+    "empty_pending_hint": "Quand quelqu'un demande à vous suivre, cela apparaîtra ici.",
+    "request_accepted": "Demande acceptée.",
+    "request_rejected": "Demande rejetée."
   }
 }

@@ -699,5 +699,23 @@
     "write": "Escribir",
     "preview": "Vista previa",
     "nothing_to_preview": "Nada que previsualizar."
+  },
+  "relations": {
+    "title": "Relaciones",
+    "tab_followers": "Seguidores",
+    "tab_following": "Siguiendo",
+    "tab_friends": "Amigos",
+    "tab_pending": "Pendientes",
+    "desc_followers": "Personas que te siguen.",
+    "desc_following": "Personas que sigues.",
+    "desc_friends": "Seguimientos mutuos.",
+    "desc_pending": "Solicitudes pendientes.",
+    "search_placeholder": "Buscar por nombre…",
+    "empty_followers": "Nadie te sigue aún.",
+    "empty_following": "No sigues a nadie.",
+    "empty_friends": "Sin seguimientos mutuos.",
+    "empty_pending": "Sin solicitudes pendientes.",
+    "request_accepted": "Solicitud aceptada.",
+    "request_rejected": "Solicitud rechazada."
   }
 }
