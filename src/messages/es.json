@@ -560,7 +560,9 @@
         "select_method": "Elige un método:",
         "title": "Verificación requerida",
         "verified": "¡Verificado!",
-        "verify": "Verificar"
+        "verify": "Verificar",
+        "verifying": "Verificando…",
+        "invalid_code": "Código de verificación inválido. Inténtelo de nuevo."
       }
     },
     "sessions": {

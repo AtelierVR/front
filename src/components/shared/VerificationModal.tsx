@@ -17,16 +17,19 @@ import { sendVerificationCode } from '@/lib/api/auth';
 interface VerificationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: (code: string) => void;
+    /** Called when user submits a code. Returns { success, error? }. */
+    onSubmit: (code: string) => Promise<{ success: boolean; error?: string }>;
+    /** Called after the "Verified" animation completes (800ms). */
+    onVerified: () => void;
     methods: VerificationMethod[];
     title?: string;
-    username?: string;
 }
 
 export function VerificationModal({
     isOpen,
     onClose,
-    onSuccess,
+    onSubmit,
+    onVerified,
     methods,
     title,
 }: VerificationModalProps) {
@@ -37,8 +40,8 @@ export function VerificationModal({
     const [resendCooldown, setResendCooldown] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
     const [success, setSuccess] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     // Resend cooldown timer
     useEffect(() => {
@@ -56,8 +59,18 @@ export function VerificationModal({
         setLoading(false);
         setError(null);
         setSuccess(false);
+        setSubmitting(false);
         setResendCooldown(0);
     }, [isOpen]);
+
+    // When success is shown, schedule the close
+    useEffect(() => {
+        if (!success) return;
+        const timer = setTimeout(() => {
+            onVerified();
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [success, onVerified]);
 
     // If only one method, auto-select and go to code step
     useEffect(() => {
@@ -100,13 +113,27 @@ export function VerificationModal({
         sendCode(selectedMethod);
     };
 
-    const handleComplete = (code: string) => {
-        if (!code) return;
+    const handleComplete = async (code: string) => {
+        if (!code || submitting) return;
         setVerificationCode(code);
-        setSuccess(true);
-        setTimeout(() => {
-            onSuccess(code);
-        }, 800);
+        setSubmitting(true);
+        setError(null);
+        try {
+            const result = await onSubmit(code);
+            if (result.success) {
+                setSubmitting(false);
+                setSuccess(true);
+                // onVerified will be called after 800ms via useEffect
+            } else {
+                setError(result.error || t('settings.security.verification.invalid_code'));
+                setSubmitting(false);
+                setVerificationCode('');
+            }
+        } catch {
+            setError(t('settings.security.verification.failed'));
+            setSubmitting(false);
+            setVerificationCode('');
+        }
     };
 
     const codeLength = selectedMethod?.details?.code?.length ?? 6;
@@ -188,7 +215,14 @@ export function VerificationModal({
                         )}
 
                         <div className="flex flex-col items-center gap-3">
-                            {success ? (
+                            {submitting ? (
+                                <div className="flex flex-col items-center gap-2 py-4">
+                                    <Icon icon="material-symbols:progress-activity" className="size-10 text-muted-foreground animate-spin" />
+                                    <span className="text-sm text-muted-foreground">
+                                        {t('settings.security.verification.verifying')}
+                                    </span>
+                                </div>
+                            ) : success ? (
                                 <div className="flex flex-col items-center gap-2 py-4">
                                     <Icon icon="material-symbols:check-circle-rounded" className="size-10 text-green-500" />
                                     <span className="text-sm font-medium text-green-600 dark:text-green-400">

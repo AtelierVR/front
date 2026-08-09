@@ -12,11 +12,18 @@ let _currentUserReplace: ((user: ApiCurrentUser) => void) | null = null;
 /** Registered by ApiProvider — called to shallowly merge ApiUser fields into currentUser. */
 let _currentUserMerge: ((user: ApiUser) => void) | null = null;
 
+/** Stash for the last successful verification result so apiFetch can return it. */
+let _lastVerifySuccess: { data: any } | null = null;
+
 /**
  * Called by apiFetch when a VERIFICATION_REQUIRED error is received.
- * Returns a promise that resolves with the verification code (or null if cancelled).
+ * Receives available methods and a verifyCode callback that retries the request.
+ * Returns the code on success, or null if cancelled.
  */
-type VerificationHandler = (methods: VerificationMethod[]) => Promise<string | null>;
+type VerificationHandler = (
+    methods: VerificationMethod[],
+    verifyCode: (code: string) => Promise<{ success: boolean; error?: string }>,
+) => Promise<string | null>;
 let _verificationHandler: VerificationHandler | null = null;
 
 export interface VerificationMethod {
@@ -123,9 +130,8 @@ export async function apiFetch<T>(
     if (apiErr.code === 'VERIFICATION_REQUIRED' && _verificationHandler) {
       const methods = (envelope.data as { methods?: VerificationMethod[] } | null)?.methods;
       if (methods?.length) {
-        const code = await _verificationHandler(methods);
-        if (code) {
-          // Retry with the verification code in the body
+        // Build a retry closure that the modal can call to verify codes
+        const verifyCode = async (code: string): Promise<{ success: boolean; error?: string }> => {
           const retryBody = options.body
             ? JSON.stringify({ ...JSON.parse(options.body as string), factor_code: code })
             : JSON.stringify({ factor_code: code });
@@ -135,8 +141,19 @@ export async function apiFetch<T>(
             body: retryBody,
           });
           const retryEnvelope: ApiResponse<T> = await retryRes.json();
-          if (retryEnvelope.error) throw new ApiError(retryEnvelope.error);
-          return (retryEnvelope as { data: T }).data;
+          if (retryEnvelope.error) {
+            return { success: false, error: retryEnvelope.error.message || 'Invalid verification code' };
+          }
+          // Stash the successful result so the caller can return it
+          _lastVerifySuccess = retryEnvelope as { data: T };
+          return { success: true };
+        };
+
+        const code = await _verificationHandler(methods, verifyCode);
+        if (code && _lastVerifySuccess) {
+          const result = _lastVerifySuccess;
+          _lastVerifySuccess = null;
+          return result.data;
         }
       }
     }

@@ -554,7 +554,9 @@
         "select_method": "確認方法を選択：",
         "title": "確認が必要です",
         "verified": "確認完了！",
-        "verify": "確認"
+        "verify": "確認",
+        "verifying": "確認中…",
+        "invalid_code": "確認コードが無効です。もう一度お試しください。"
       }
     },
     "sessions": {

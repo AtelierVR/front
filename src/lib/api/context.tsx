@@ -46,10 +46,15 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationMethods, setVerificationMethods] = useState<VerificationMethod[]>([]);
   const verificationResolveRef = useRef<((code: string | null) => void) | null>(null);
+  const verifyCodeRef = useRef<((code: string) => Promise<{ success: boolean; error?: string }>) | null>(null);
 
   const handleVerificationRequired = useCallback(
-    async (methods: VerificationMethod[]): Promise<string | null> => {
+    async (
+      methods: VerificationMethod[],
+      verifyCode: (code: string) => Promise<{ success: boolean; error?: string }>,
+    ): Promise<string | null> => {
       setVerificationMethods(methods);
+      verifyCodeRef.current = verifyCode;
       setShowVerificationModal(true);
       return new Promise((resolve) => {
         verificationResolveRef.current = resolve;
@@ -58,16 +63,30 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const handleVerificationSuccess = useCallback((code: string) => {
+  const handleVerificationSubmit = useCallback(async (code: string): Promise<{ success: boolean; error?: string }> => {
+    const verify = verifyCodeRef.current;
+    if (!verify) return { success: false, error: 'Verification unavailable' };
+    const result = await verify(code);
+    if (result.success) {
+      // Let the modal show "Verified" then close itself via the onVerified callback
+      return { success: true };
+    }
+    return result;
+  }, []);
+
+  const handleVerificationDone = useCallback(() => {
+    // Called by the modal after the "Verified" animation
     setShowVerificationModal(false);
-    verificationResolveRef.current?.(code);
+    verificationResolveRef.current?.('done');
     verificationResolveRef.current = null;
+    verifyCodeRef.current = null;
   }, []);
 
   const handleVerificationClose = useCallback(() => {
     setShowVerificationModal(false);
     verificationResolveRef.current?.(null);
     verificationResolveRef.current = null;
+    verifyCodeRef.current = null;
   }, []);
 
   // Register the global verification handler
@@ -222,7 +241,8 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       <VerificationModal
         isOpen={showVerificationModal}
         onClose={handleVerificationClose}
-        onSuccess={handleVerificationSuccess}
+        onSubmit={handleVerificationSubmit}
+        onVerified={handleVerificationDone}
         methods={verificationMethods}
       />
     </ApiContext.Provider>

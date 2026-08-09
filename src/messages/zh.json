@@ -554,7 +554,9 @@
         "select_method": "选择验证方式：",
         "title": "需要验证",
         "verified": "已验证！",
-        "verify": "验证"
+        "verify": "验证",
+        "verifying": "验证中…",
+        "invalid_code": "验证码无效，请重试。"
       }
     },
     "sessions": {

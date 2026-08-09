@@ -366,7 +366,9 @@
         "failed_send": "Failed to send verification code.",
         "resend": "Resend code",
         "resend_cooldown": "Resend in {{seconds}}s",
-        "verify": "Verify"
+        "verify": "Verify",
+        "verifying": "Verifying…",
+        "invalid_code": "Invalid verification code. Please try again."
       }
     },
     "sessions": {
