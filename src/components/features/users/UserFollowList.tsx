@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUser } from './UserContext';
-import { getFollowers, getFollowing, getUser } from '@/lib/api/users';
+import { getFollowers, getFollowing, batchGetUsers } from '@/lib/api/users';
 import { usePagination } from '@/hooks/usePagination';
 import type { ApiUser } from '@/types/api';
 import { SkeletonList, EmptyState, PageNav, ResultList } from '@/components/shared/ResultGrid';
@@ -67,22 +67,24 @@ export function UserFollowList({ mode }: Props) {
         setLoading(true);
         setError(null);
 
+        const userRef = getAlias(user.alias, 'uid') || getAlias(user.alias, 'iid') || `${user.id}@${user.server}`;
         const fetchFn = mode === 'followers'
-            ? getFollowers(user.id, limit, offset)
-            : getFollowing(user.id, limit, offset);
+            ? getFollowers(userRef, limit, offset)
+            : getFollowing(userRef, limit, offset);
 
         fetchFn
             .then(async (res) => {
                 if (cancelled) return;
                 // following: target is the other user; followers: initiator is the other user
                 const refs = res.items.map(r => mode === 'following' ? r.target : r.initiator);
-                const settled = await Promise.allSettled(refs.map(ref => getUser(ref)));
+                if (refs.length === 0) {
+                    setItems([]);
+                    setTotal(res.total);
+                    return;
+                }
+                const batch = await batchGetUsers(refs);
                 if (!cancelled) {
-                    setItems(
-                        settled
-                            .filter((r): r is PromiseFulfilledResult<ApiUser> => r.status === 'fulfilled')
-                            .map(r => r.value)
-                    );
+                    setItems(batch.items);
                     setTotal(res.total);
                 }
             })

@@ -1,5 +1,5 @@
 import { apiFetch, apiFetchRaw, dispatchCurrentUserReplace } from './client';
-import { getWellKnownAddress } from './wellknown';
+import { parseNoxId } from '@/types/nox-identifier';
 import type { ApiUser, ApiCurrentUser, ApiLink, ApiUserSearchResult, ApiPublicTableList, ApiRelationListResult } from '@/types/api';
 import type { ApiErrorDetails } from '@/types/envelope';
 import { ApiError } from '@/types/envelope';
@@ -26,12 +26,12 @@ export function unfollowUser(userId: number | string): Promise<void> {
     return apiFetch<void>(`/users/${id}/follow`, { method: 'DELETE' });
 }
 
-export function getFollowers(userId: number, limit: number, offset: number): Promise<ApiRelationListResult> {
+export function getFollowers(userId: string | number, limit: number, offset: number): Promise<ApiRelationListResult> {
     const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
     return apiFetch<ApiRelationListResult>(`/users/${userId}/followers?${params.toString()}`);
 }
 
-export function getFollowing(userId: number, limit: number, offset: number): Promise<ApiRelationListResult> {
+export function getFollowing(userId: string | number, limit: number, offset: number): Promise<ApiRelationListResult> {
     const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
     return apiFetch<ApiRelationListResult>(`/users/${userId}/following?${params.toString()}`);
 }
@@ -100,25 +100,19 @@ export async function uploadUserBanner(file: Blob): Promise<void> {
 
 /**
  * Batch-fetch users by NoxIdentifier strings (e.g. "1@example.com").
- * Deduplicates identifiers and strips the local server suffix so the API
- * receives compact IDs (e.g. "1" instead of "1@hactazia.fr").
- * Only local users are returned; external identifiers are passed as-is.
+ * Groups by the key part (before @) for deduplication.
+ * Sends compact IDs (key only) to the local API — the backend resolves
+ * local users regardless of which alias domain was used in the ref.
  */
 export function batchGetUsers(ids: string[]): Promise<ApiUserSearchResult> {
-    const localServer = getWellKnownAddress();
     const seen = new Set<string>();
     const params = new URLSearchParams();
     for (const raw of ids) {
         if (!raw) continue;
-        // Normalize: strip local server suffix to get compact ID
-        let key = raw;
-        if (localServer) {
-            const suffix = `@${localServer}`;
-            if (raw.endsWith(suffix)) key = raw.slice(0, raw.length - suffix.length);
-        }
-        if (seen.has(key)) continue;
-        seen.add(key);
-        params.append('id', key);
+        const parsed = parseNoxId(raw);
+        if (seen.has(parsed.id)) continue;
+        seen.add(parsed.id);
+        params.append('id', parsed.id);
     }
     params.set('limit', String(Math.min(seen.size, 100)));
     return apiFetch<ApiUserSearchResult>(`/users?${params.toString()}`);
