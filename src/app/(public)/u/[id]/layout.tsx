@@ -9,6 +9,7 @@ import { entityStore } from '@/lib/cache/store';
 import type { ApiUser } from '@/types/api';
 import { UserContext } from '@/components/features/users/UserContext';
 import { UserLayoutSkeleton } from '@/components/features/users/UserLayoutSkeleton';
+import { UserLayoutError } from '@/components/features/users/UserLayoutError';
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +28,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
     getUser(id)
       .then((u) => {
         if (!cancelled) {
-          entityStore.put(`user:${u.username}`, u);
+          entityStore.put(`user:${u.username}@${u.server}`, u);
           setUser(u);
         }
       })
@@ -40,17 +41,20 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   // Sync cache updates (e.g. from WS user:update) into local state
   useEffect(() => {
     if (!user) return;
-    const key = `user:${user.username}`;
+    const key = `user:${user.username}@${user.server}`;
     return entityStore.subscribe(key, () => {
       const cached = entityStore.get<ApiUser>(key);
       if (cached) setUser(cached);
     });
   }, [user?.username]);
 
-  const isSame = !!(currentUser && user && currentUser.id === user.id);
+  const isSame = !!(currentUser && user
+    && currentUser.id === user.id
+    && currentUser.server === user.server);
 
   if (loading) return <UserLayoutSkeleton />;
-  if (error || !user) notFound();
+  if (error) return <UserLayoutError message={error} />;
+  if (!user) notFound();
 
   return (
     <UserContext.Provider value={{ user, setUser, isSame }}>

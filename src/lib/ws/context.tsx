@@ -66,7 +66,7 @@ export function WsProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         return wsOn('connected', (hello: WsHelloPayload) => {
             if (hello.mode === 'user' && hello.user) {
-                entityStore.put(`user:${hello.user.username}`, hello.user);
+                entityStore.put(`user:${hello.user.username}@${hello.user.server}`, hello.user);
                 dispatchCurrentUserReplace(hello.user);
             }
         });
@@ -78,7 +78,7 @@ export function WsProvider({ children }: { children: React.ReactNode }) {
 
             if (name === 'user:update') {
                 const user = data as ApiUser;
-                entityStore.put(`user:${user.username}`, user);
+                entityStore.put(`user:${user.username}@${user.server}`, user);
                 dispatchCurrentUserMerge(user);
             } else if (name === 'world:update') {
                 const world = data as ApiWorld;

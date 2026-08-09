@@ -21,14 +21,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
-import { t } from 'i18next';
 export default function UserProfileLayout({ children }: { children: React.ReactNode }) {
   const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser } = useApi();
   const { user, setUser, isSame } = useUser();
-  const { t: tl } = useTranslation();
+  const { t } = useTranslation();
 
   const rel = user?.relations;
   const isMutual = rel?.out === 'follow' && rel?.in === 'follow';
@@ -59,19 +58,19 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
                     {currentUser && !isSame && isMutual && (
                       <Badge variant="secondary" className="gap-1">
                         <Icon icon="material-symbols:group-rounded" className="size-3" />
-                        {tl('user.friend')}
+                        {t('user.friend')}
                       </Badge>
                     )}
                     {currentUser && !isSame && followsYou && (
                       <Badge variant="secondary" className="gap-1">
                         <Icon icon="material-symbols:person-check-rounded" className="size-3" />
-                        {tl('user.follows_you')}
+                        {t('user.follows_you')}
                       </Badge>
                     )}
                     {currentUser && !isSame && pendingYou && (
                       <Badge variant="outline" className="gap-1">
                         <Icon icon="material-symbols:schedule-rounded" className="size-3" />
-                        {tl('user.pending_you')}
+                        {t('user.pending_you')}
                       </Badge>
                     )}
                   </div>
@@ -99,7 +98,7 @@ export default function UserProfileLayout({ children }: { children: React.ReactN
                 <TabsTrigger value="description">{t('users.description')}</TabsTrigger>
                 <TabsTrigger value="favorites">{t('users.favorites')}</TabsTrigger>
                 {isSame && (
-                  <Button variant="ghost" size="icon-sm" className="shrink-0 ml-auto" onClick={() => router.push('/settings/profile')} aria-label={tl('user.edit')}>
+                  <Button variant="ghost" size="icon-sm" className="shrink-0 ml-auto" onClick={() => router.push('/settings/profile')} aria-label={t('user.edit')}>
                     <Icon icon="material-symbols:edit-rounded" className="size-4" />
                   </Button>
                 )}
