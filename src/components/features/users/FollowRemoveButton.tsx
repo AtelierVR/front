@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { unfollowUser } from '@/lib/api/users';
+import { unfollowUser, getAlias } from '@/lib/api';
+import { notify } from '@/components/ui/notify';
 import type { ApiUser } from '@/types/api';
 
 interface Props {
@@ -20,10 +21,11 @@ export function FollowRemoveButton({ user, type, setUser }: Props) {
   async function send() {
     setLoading(true);
     try {
-      await unfollowUser(user.id);
+      const identifier = getAlias(user.alias, 'iid') ?? String(user.id);
+      await unfollowUser(identifier);
       setUser((u) => u ? { ...u, relations: { ...u.relations, out: null, in: u.relations?.in ?? null } } : u);
-    } catch {
-      // no-op
+    } catch (err: any) {
+      notify(err?.message ?? t('user.unfollow_error'), { type: 'danger' });
     } finally {
       setLoading(false);
     }

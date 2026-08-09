@@ -16,12 +16,14 @@ export function searchUsers(query: string, limit: number, offset: number): Promi
     return apiFetch<ApiUserSearchResult>(`/users?${params.toString()}`);
 }
 
-export function followUser(userId: number): Promise<{ type: string }> {
-    return apiFetch<{ type: string }>(`/users/${userId}/follow`, { method: 'POST' });
+export function followUser(userId: number | string): Promise<{ type: string }> {
+    const id = typeof userId === 'string' ? userId : userId;
+    return apiFetch<{ type: string }>(`/users/${id}/follow`, { method: 'POST' });
 }
 
-export function unfollowUser(userId: number): Promise<void> {
-    return apiFetch<void>(`/users/${userId}/follow`, { method: 'DELETE' });
+export function unfollowUser(userId: number | string): Promise<void> {
+    const id = typeof userId === 'string' ? userId : userId;
+    return apiFetch<void>(`/users/${id}/follow`, { method: 'DELETE' });
 }
 
 export function getFollowers(userId: number, limit: number, offset: number): Promise<ApiRelationListResult> {
