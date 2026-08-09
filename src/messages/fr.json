@@ -453,7 +453,7 @@
       },
       "pronoun": {
         "title": "Pronom",
-        "description": "Votre pronom préféré, ex. iel, elle/la, il/le."
+        "description": "Votre pronom préféré, ex. iel, elle/la, il/le, baguette."
       },
       "presence": {
         "title": "Présence",
@@ -688,5 +688,10 @@
       "label": "Règles",
       "description": "Pour une communauté sûre"
     }
+  },
+  "editor": {
+    "write": "Écrire",
+    "preview": "Aperçu",
+    "nothing_to_preview": "Rien à prévisualiser."
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
@@ -15,6 +16,7 @@ interface MarkdownAreaInputProps {
 
 export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, className }: MarkdownAreaInputProps) {
     const [tab, setTab] = useState<'write' | 'preview'>('write');
+    const { t } = useTranslation();
 
     return (
         <div className={cn(
@@ -35,7 +37,7 @@ export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, cla
                             : 'text-muted-foreground hover:text-foreground',
                     )}
                 >
-                    Write
+                    {t('editor.write')}
                 </button>
                 <button
                     type="button"
@@ -47,7 +49,7 @@ export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, cla
                             : 'text-muted-foreground hover:text-foreground',
                     )}
                 >
-                    Preview
+                    {t('editor.preview')}
                 </button>
             </div>
 
@@ -65,7 +67,7 @@ export function MarkdownAreaInput({ value, onChange, placeholder, rows = 16, cla
                 <div className="min-h-[8rem] p-4">
                     {value
                         ? <MarkdownRenderer content={value} />
-                        : <span className="text-sm text-muted-foreground italic">Nothing to preview.</span>
+                        : <span className="text-sm text-muted-foreground italic">{t('editor.nothing_to_preview')}</span>
                     }
                 </div>
             )}

@@ -470,7 +470,7 @@
         "title": "Presencia"
       },
       "pronoun": {
-        "description": "Tu pronombre preferido, ej. elle, ella/la, él/le.",
+        "description": "Tu pronombre preferido, ej. elle, ella/la, él/le, baguette.",
         "title": "Pronombre"
       },
       "save": "Guardar",
@@ -694,5 +694,10 @@
     "unfavorite": "Quitar de favoritos",
     "unlimited": "Ilimitado",
     "versions": "Versiones"
+  },
+  "editor": {
+    "write": "Escribir",
+    "preview": "Vista previa",
+    "nothing_to_preview": "Nada que previsualizar."
   }
 }

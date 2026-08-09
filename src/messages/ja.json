@@ -464,7 +464,7 @@
         "title": "プレゼンス"
       },
       "pronoun": {
-        "description": "希望する代名詞（例：they/them、she/her、he/him）。",
+        "description": "希望する代名詞（例：they/them、she/her、he/him、baguette）。",
         "title": "代名詞"
       },
       "save": "保存",
@@ -688,5 +688,10 @@
     "unfavorite": "お気に入りから削除",
     "unlimited": "無制限",
     "versions": "バージョン一覧"
+  },
+  "editor": {
+    "write": "編集",
+    "preview": "プレビュー",
+    "nothing_to_preview": "プレビューするものはありません。"
   }
 }

@@ -453,7 +453,7 @@
       },
       "pronoun": {
         "title": "Pronoun",
-        "description": "Your preferred pronoun, e.g. they/them, she/her, he/him."
+        "description": "Your preferred pronoun, e.g. they/them, she/her, he/him, baguette."
       },
       "presence": {
         "title": "Presence",
@@ -688,5 +688,10 @@
       "label": "Rules",
       "description": "Guidelines for a safe community"
     }
+  },
+  "editor": {
+    "write": "Write",
+    "preview": "Preview",
+    "nothing_to_preview": "Nothing to preview."
   }
 }

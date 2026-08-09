@@ -470,7 +470,7 @@
         "title": "Präsenz"
       },
       "pronoun": {
-        "description": "Ihr bevorzugtes Pronomen, z.B. they/them, sie/ihr, er/ihm.",
+        "description": "Ihr bevorzugtes Pronomen, z.B. they/them, sie/ihr, er/ihm, baguette.",
         "title": "Pronomen"
       },
       "save": "Speichern",
@@ -694,5 +694,10 @@
     "unfavorite": "Aus Favoriten entfernen",
     "unlimited": "Unbegrenzt",
     "versions": "Versionen"
+  },
+  "editor": {
+    "write": "Schreiben",
+    "preview": "Vorschau",
+    "nothing_to_preview": "Nichts zur Vorschau."
   }
 }

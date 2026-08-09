@@ -464,7 +464,7 @@
         "title": "在线状态"
       },
       "pronoun": {
-        "description": "你偏好的代词，例如 they/them、she/her、he/him。",
+        "description": "你偏好的代词，例如 they/them、she/her、he/him、baguette。",
         "title": "代词"
       },
       "save": "保存",
@@ -688,5 +688,10 @@
     "unfavorite": "取消收藏",
     "unlimited": "无限制",
     "versions": "版本"
+  },
+  "editor": {
+    "write": "编辑",
+    "preview": "预览",
+    "nothing_to_preview": "没有可预览的内容。"
   }
 }
