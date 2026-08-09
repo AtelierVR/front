@@ -11,7 +11,7 @@ import { searchWorlds } from '@/lib/api/worlds';
 import { searchAvatars } from '@/lib/api/avatars';
 import { searchInstances } from '@/lib/api/instances';
 import { searchServers } from '@/lib/api/servers';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { PageTitle } from '@/components/shared/PageTitle';
 import type { ApiSearchResult } from '@/types/api';
@@ -296,12 +296,9 @@ function SearchPageInner() {
             <PageTitle title={title} />
             <h1 className="font-heading text-3xl font-bold mb-6">{t('search.title')}</h1>
 
-            <Tabs
-                value={activeTab}
-                className={"flex flex-col lg:flex-row items-stretch justify-between gap-3 mb-8"}
-                onValueChange={handleTabChange}>
-                {/* Search bar + tab selector inline */}
-                <div className="flex flex-col gap-3 mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-start gap-6 mb-8">
+                {/* Search bar + tab selector — left sidebar on desktop */}
+                <div className="flex flex-col gap-3 lg:w-56 lg:shrink-0">
                     {/* Search input */}
                     <div className="relative min-w-0">
                         <Icon icon="material-symbols:search-rounded" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -324,30 +321,36 @@ function SearchPageInner() {
                         )}
                     </div>
 
-                    {/* Tab selector — right of search bar */}
-                    <TabsList className="w-full flex flex-col items-stretch" aria-label={t('search.tabs')}>
-                        {availableTabs.map((tab) => (
-                            <TabsTrigger key={tab.feature} value={tab.feature} className="flex-1 w-full justify-between px-4 py-2">
-                                <span>{t(tab.title!)}</span>
-                                {tab.icon && <Icon icon={tab.icon} className="h-4 w-4 ml-2" />}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
+                    {/* Tab selector — vertical on desktop */}
+                    <Tabs
+                        value={activeTab}
+                        onValueChange={handleTabChange}
+                        className="flex flex-col">
+                        <TabsList className="w-full flex flex-col items-stretch" aria-label={t('search.tabs')}>
+                            {availableTabs.map((tab) => (
+                                <TabsTrigger key={tab.feature} value={tab.feature} className="flex-1 w-full justify-between px-4 py-2">
+                                    <span>{t(tab.title!)}</span>
+                                    {tab.icon && <Icon icon={tab.icon} className="h-4 w-4 ml-2" />}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                    </Tabs>
                 </div>
 
-
-                {/* Results panels */}
-                {availableTabs.map((tab) => (
-                    <TabsContent key={tab.feature} value={tab.feature}>
-                        <ResultTabContent
-                            tab={tab}
-                            data={results[tab.feature]}
-                            loading={loading}
-                            onPage={handlePage}
-                        />
-                    </TabsContent>
-                ))}
-            </Tabs>
+                {/* Results panels — right side on desktop */}
+                <div className="flex-1 min-w-0">
+                    {availableTabs.map((tab) => (
+                        <div key={tab.feature} className={tab.feature === activeTab ? '' : 'hidden'}>
+                            <ResultTabContent
+                                tab={tab}
+                                data={results[tab.feature]}
+                                loading={loading}
+                                onPage={handlePage}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

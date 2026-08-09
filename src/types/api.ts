@@ -262,6 +262,16 @@ export interface ApiRelation {
 
 export interface ApiRelationListResult extends ApiSearchResult<ApiRelation> {}
 
+/** Two-way relation (mutual follow = friend). */
+export interface ApiBiRelation {
+    /** My follow of them (outgoing). */
+    out: ApiRelation;
+    /** Their follow of me (incoming). */
+    in: ApiRelation;
+}
+
+export interface ApiBiRelationListResult extends ApiSearchResult<ApiBiRelation> {}
+
 // ── Messaging (placeholder — API not yet available) ───────────────────────────
 
 export interface ApiConversation {

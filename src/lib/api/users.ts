@@ -1,6 +1,6 @@
 import { apiFetch, apiFetchRaw, dispatchCurrentUserReplace } from './client';
 import { parseNoxId } from '@/types/nox-identifier';
-import type { ApiUser, ApiCurrentUser, ApiLink, ApiUserSearchResult, ApiPublicTableList, ApiRelationListResult } from '@/types/api';
+import type { ApiUser, ApiCurrentUser, ApiLink, ApiUserSearchResult, ApiPublicTableList, ApiRelationListResult, ApiBiRelationListResult } from '@/types/api';
 import type { ApiErrorDetails } from '@/types/envelope';
 import { ApiError } from '@/types/envelope';
 
@@ -36,9 +36,9 @@ export function getFollowing(userId: string | number, limit: number, offset: num
     return apiFetch<ApiRelationListResult>(`/users/${userId}/following?${params.toString()}`);
 }
 
-export function getFriends(userId: number, limit: number, offset: number): Promise<{ total: number; refs: string[] }> {
+export function getFriends(userId: number, limit: number, offset: number): Promise<ApiBiRelationListResult> {
     const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
-    return apiFetch<{ total: number; refs: string[] }>(`/users/@me/friends?${params.toString()}`);
+    return apiFetch<ApiBiRelationListResult>(`/users/@me/friends?${params.toString()}`);
 }
 
 export function respondToRequest(initiatorRef: string, accept: boolean): Promise<void> {

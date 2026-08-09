@@ -139,7 +139,7 @@ export default function WorldLayout({ children }: { children: React.ReactNode })
                 </div>
             </div>
 
-            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('world.edit')}>
+            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('world.edit')} large>
                 <WorldEditForm />
             </ModalDrawer>
         </WorldContext.Provider>
