@@ -8,6 +8,7 @@ import { usePagination } from '@/hooks/usePagination';
 import type { ApiUser } from '@/types/api';
 import { SkeletonList, EmptyState, PageNav, ResultList } from '@/components/shared/ResultGrid';
 import { buttonVariants } from '@/components/ui/button';
+import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
 import { cn } from '@/lib/utils';
 import { getAlias } from '@/lib/api';
 import Link from 'next/link';
@@ -17,7 +18,6 @@ interface Props {
 }
 
 function UserRow({ u }: { u: ApiUser }) {
-    const [imgError, setImgError] = useState(false);
     const displayName = u.display || u.username || '?';
     const initial = displayName.charAt(0).toUpperCase();
 
@@ -29,20 +29,14 @@ function UserRow({ u }: { u: ApiUser }) {
                 'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
             )}
         >
-            <div className="h-12 w-12 rounded-full overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
-                {u.thumbnail && !imgError ? (
-                    <img
-                        src={u.thumbnail}
-                        alt={displayName}
-                        className="h-full w-full object-cover"
-                        onError={() => setImgError(true)}
-                    />
-                ) : (
-                    <span className="text-lg font-semibold text-muted-foreground select-none">
-                        {initial}
-                    </span>
-                )}
-            </div>
+            <AvatarWithPresence
+                presence={u.presence.status}
+                size="lg"
+                src={u.thumbnail}
+                alt={displayName}
+                fallback={<span className="text-lg font-semibold text-muted-foreground select-none">{initial}</span>}
+                avatarClassName="h-12 w-12"
+            />
             <div>
                 <p className="font-bold text-lg">{displayName}</p>
                 <p className="text-sm text-muted-foreground">{getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid')}</p>
