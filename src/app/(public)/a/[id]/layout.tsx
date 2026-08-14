@@ -137,7 +137,7 @@ export default function AvatarLayout({ children }: { children: React.ReactNode }
                 </div>
             </div>
 
-            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('avatar.edit')}>
+            <ModalDrawer open={editOpen} onOpenChange={setEditOpen} header={t('avatar.edit')} large>
                 <AvatarEditForm />
             </ModalDrawer>
         </AvatarContext.Provider>

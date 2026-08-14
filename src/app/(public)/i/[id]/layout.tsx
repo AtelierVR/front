@@ -169,7 +169,7 @@ export default function InstanceLayout({ children }: { children: React.ReactNode
                 </div>
             </div>
 
-            <ModalDrawer open={editOpen && !showDeleteConfirm} onOpenChange={setEditOpen} header={t('instance.tab_edit')}>
+            <ModalDrawer open={editOpen && !showDeleteConfirm} onOpenChange={setEditOpen} header={t('instance.tab_edit')} large>
                 <InstanceEditForm onDeleteRequest={() => setShowDeleteConfirm(true)} />
             </ModalDrawer>
 

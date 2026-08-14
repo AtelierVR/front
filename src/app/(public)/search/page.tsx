@@ -170,7 +170,7 @@ function buildTabs(localAddress: string): TabDef[] {
                     limit: data.limit,
                     offset: data.offset,
                     items: data.items.map((s) => {
-                        const wm = s.wellknown?.metadata;
+                        const wm = s.well_known?.metadata;
                         return {
                             id: s.address,
                             name: wm?.title ?? s.address,

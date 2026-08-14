@@ -1,5 +1,5 @@
 import { apiFetch } from './client';
-import type { ApiServer, ApiServerDetail } from '@/types/api';
+import type { ApiServer } from '@/types/api';
 
 export function listServers(limit?: number, offset?: number): Promise<ApiServer[]> {
     const params = new URLSearchParams();
@@ -11,7 +11,7 @@ export function listServers(limit?: number, offset?: number): Promise<ApiServer[
 
 function serverSearchText(s: ApiServer): string {
     const parts = [s.address];
-    const wm = s.wellknown?.metadata;
+    const wm = s.well_known?.metadata;
     if (wm) {
         const title = typeof wm.title === 'object' && wm.title !== null ? Object.values(wm.title).join(' ') : wm.title;
         if (title) parts.push(title);
@@ -35,8 +35,8 @@ export async function searchServers(query: string, limit: number, offset: number
     };
 }
 
-export function getServer(address: string): Promise<ApiServerDetail> {
-    return apiFetch<ApiServerDetail>(`/servers/${address}`);
+export function getServer(address: string): Promise<ApiServer> {
+    return apiFetch<ApiServer>(`/servers/${address}`);
 }
 
 export function getServerDetails(address: string): Promise<Record<string, boolean>> {

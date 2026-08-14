@@ -300,15 +300,14 @@ export interface ApiConversationList {
 
 // ── Server ────────────────────────────────────────────────────────────────────
 
-export interface ApiServer {
+export interface ApiServerBase {
     address: string;
     rank: number;
     last_seen: number;
     created_at: number;
-    wellknown: NoxWellKnown | null;
 }
 
-export interface ApiServerDetail extends ApiServer {
+export interface ApiServer extends ApiServerBase {
     well_known: NoxWellKnown | null;
 }
 

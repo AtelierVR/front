@@ -36,6 +36,15 @@ function formatBytes(bytes: number): string {
     return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
 }
 
+function formatBits(bytes: number): string {
+    if (!bytes || bytes <= 0) return '0 bit';
+    const bits = bytes * 8;
+    const k = 1000;
+    const sizes = ['bit', 'Kbit', 'Mbit', 'Gbit', 'Tbit'];
+    const i = Math.floor(Math.log(bits) / Math.log(k));
+    return (bits / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+}
+
 function formatPackets(n: number): string {
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M pkt/s`;
     if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k pkt/s`;
@@ -309,8 +318,8 @@ function SpecCards({ specs }: { specs: ApiRelaySpecs | null }) {
             icon="material-symbols:upload-rounded"
             iconColor="#f59e0b"
             chartColor="#f59e0b"
-            primary={display.upload !== null ? `${formatBytes(display.upload / 100 * display.uploadBw)}/s` : (() => { const v = lastValue(uploadHistory); return v !== null ? `${v.toFixed(1)}%` : null; })()}
-            secondary={display.uploadBw > 0 ? `/ ${formatBytes(display.uploadBw)}/s` : undefined}
+            primary={display.upload !== null ? `${formatBits(display.upload / 100 * display.uploadBw)}/s` : (() => { const v = lastValue(uploadHistory); return v !== null ? `${v.toFixed(1)}%` : null; })()}
+            secondary={display.uploadBw > 0 ? `/ ${formatBits(display.uploadBw)}/s` : undefined}
             pct={display.upload ?? lastValue(uploadHistory)}
             history={uploadHistory}
         />
@@ -319,8 +328,8 @@ function SpecCards({ specs }: { specs: ApiRelaySpecs | null }) {
             icon="material-symbols:download-rounded"
             iconColor="#a855f7"
             chartColor="#a855f7"
-            primary={display.download !== null ? `${formatBytes(display.download / 100 * display.downloadBw)}/s` : (() => { const v = lastValue(downloadHistory); return v !== null ? `${v.toFixed(1)}%` : null; })()}
-            secondary={display.downloadBw > 0 ? `/ ${formatBytes(display.downloadBw)}/s` : undefined}
+            primary={display.download !== null ? `${formatBits(display.download / 100 * display.downloadBw)}/s` : (() => { const v = lastValue(downloadHistory); return v !== null ? `${v.toFixed(1)}%` : null; })()}
+            secondary={display.downloadBw > 0 ? `/ ${formatBits(display.downloadBw)}/s` : undefined}
             pct={display.download ?? lastValue(downloadHistory)}
             history={downloadHistory}
         />
