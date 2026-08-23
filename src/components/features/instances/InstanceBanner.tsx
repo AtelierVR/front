@@ -8,7 +8,7 @@ import { localeFlagUrl } from '@/lib/languages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function InstanceBanner() {
-  const { instance } = useInstance();
+  const { instance, world } = useInstance();
   const [error, setError] = useState(false);
   const [flagUrl, setFlagUrl] = useState<string | null>(null);
 
@@ -22,19 +22,22 @@ export function InstanceBanner() {
     }
   }, [region]);
 
+  console.log(instance?.thumbnail,  world?.thumbnail);
+
+  const banner = instance?.thumbnail ?? world?.thumbnail;
+
   return (
     <div className="relative flex items-start bg-muted/50 border-b rounded-b-xl overflow-hidden">
-      {error || !instance?.thumbnail ? (
+      {error || !banner ? (
         <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5" />
       ) : (
         <Image
           className="object-cover w-full"
           style={{ aspectRatio: '128 / 45' }}
-          src={addUrlQuery(instance.thumbnail, 'size', '1024')}
-          alt={instance.title}
+          src={addUrlQuery(banner, 'size', '1024')}
+          alt={instance?.title ?? ""}
           width={1024}
           height={360}
-          priority
           onError={() => setError(true)}
         />
       )}

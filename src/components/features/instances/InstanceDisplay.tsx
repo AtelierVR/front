@@ -10,9 +10,12 @@ import { noxIdToPath, worldInfoToString } from '@/types/nox-identifier';
 import { useInstance } from './InstanceContext';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { getAlias } from '@/lib/api';
+import { Identifier } from '@/components/ui/identifier';
+import { UserReference } from '@/components/ui/user-reference';
 
 export function InstanceDisplay(props: { className?: string }) {
-  const { instance, world, worldAssets } = useInstance();
+  const { instance, world, worldAssets, owner } = useInstance();
   const { t } = useTranslation();
 
   const isFull = instance ? instance.capacity > 0 && instance.count >= instance.capacity : false;
@@ -26,6 +29,7 @@ export function InstanceDisplay(props: { className?: string }) {
     : null;
 
   const worldHref = instance ? noxIdToPath(worldInfoToString(instance.world), '/w') : null;
+  const ownerHref = instance ? noxIdToPath(worldInfoToString(instance.owner), '/u') : null;
 
   return (
     <div className={cn('px-6 flex flex-col gap-1', props.className)}>
@@ -37,14 +41,11 @@ export function InstanceDisplay(props: { className?: string }) {
 
       {instance ? (
         <div className="flex items-center flex-wrap divide-x divide-border text-muted-foreground font-medium gap-y-1">
-          {/* World link */}
-          {worldHref && (
-            <Link
-              href={worldHref}
-              className="hover:underline pe-2 text-foreground underline-offset-2"
-            >
-              {world?.title ?? worldInfoToString(instance.world)}
-            </Link>
+          
+          {getAlias(instance.alias, 'nid') && (
+            <span className="pr-2">
+              <Identifier value={getAlias(instance.alias, 'nid')!} />
+            </span>
           )}
 
           {/* Platform icons from world assets */}
@@ -80,6 +81,16 @@ export function InstanceDisplay(props: { className?: string }) {
               </Badge>
             )}
           </span>
+
+          {/* Owner link */}
+          {/* {owner 
+            ? <UserReference compact user={owner} className="ps-2" />
+            : ownerHref && <Link
+              href={ownerHref}
+              className="hover:underline pe-2 text-foreground underline-offset-2"
+            >
+              {worldInfoToString(instance.owner)}
+            </Link>} */}
         </div>
       ) : (
         <div className="animate-pulse rounded-md bg-muted h-4 w-2/3" />

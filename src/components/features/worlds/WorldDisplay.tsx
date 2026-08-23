@@ -10,11 +10,12 @@ import { getAlias, useApi } from '@/lib/api';
 import { getUser } from '@/lib/api/users';
 import { PLATFORMS, formatSize } from '@/lib/platform';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { formatNoxId } from '@/types/nox-identifier';
+import { formatNoxId, noxIdToPath, worldInfoToString } from '@/types/nox-identifier';
 import { useWorld } from './WorldContext';
 import type { ApiUser } from '@/types/api';
 import { releaseVersion } from '@/types/api';
 import { cn } from '@/lib/utils';
+import { UserReference } from '@/components/ui/user-reference';
 
 export function WorldDisplay(props: { className?: string }) {
   const { world, allAssets, isOwner } = useWorld();
@@ -42,11 +43,7 @@ export function WorldDisplay(props: { className?: string }) {
       }, null)
     : null;
 
-  const ownerLabel = owner
-    ? (owner.display || owner.username)
-    : world
-      ? formatNoxId(world.owner, wellKnown?.address ?? '::')
-      : null;
+  const ownerHref = world ? noxIdToPath(worldInfoToString(world.owner), '/u') : null;
 
   return (
     <div className={cn("flex flex-col gap-1", props.className)}>
@@ -65,13 +62,13 @@ export function WorldDisplay(props: { className?: string }) {
 
       {world ? (
         <div className="flex items-center flex-wrap divide-x divide-border text-muted-foreground font-medium gap-y-1">
-          <Link
-            href={`/u/${formatNoxId(world.owner, wellKnown?.address ?? '::')}`}
-            className="hover:underline pe-2 text-foreground underline-offset-2"
-          >
-            {ownerLabel ?? formatNoxId(world.owner, wellKnown?.address ?? '::')}
-          </Link>
-
+          
+          {getAlias(world.alias, 'nid') && (
+            <span className="pr-2">
+              <Identifier value={getAlias(world.alias, 'nid')!} />
+            </span>
+          )}
+          
           {platforms && platforms.length > 0 && (
             <span className="flex items-center gap-1 px-2">
               {platforms.map((p) => {
@@ -93,12 +90,6 @@ export function WorldDisplay(props: { className?: string }) {
 
           {maxSize !== null && (
             <span className="px-2 text-sm">{formatSize(maxSize)}</span>
-          )}
-
-          {getAlias(world.alias, 'nid') && (
-            <span className="pl-2">
-              <Identifier value={getAlias(world.alias, 'nid')!} />
-            </span>
           )}
         </div>
       ) : (
