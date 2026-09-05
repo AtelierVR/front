@@ -1,22 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { useSearch } from '@/hooks/useSearch';
 import { useApi } from '@/lib/api/context';
-import { searchUsers } from '@/lib/api/users';
-import { searchWorlds } from '@/lib/api/worlds';
-import { searchAvatars } from '@/lib/api/avatars';
-import { searchInstances } from '@/lib/api/instances';
-import { searchServers } from '@/lib/api/servers';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { PageTitle } from '@/components/shared/PageTitle';
 import type { ApiSearchResult } from '@/types/api';
-import { getAlias } from '@/lib/api';
-import { noxIdToSegment } from '@/types/nox-identifier';
 import {
     ResultItem,
     ResultGrid,
@@ -28,158 +21,15 @@ import {
     CardItem,
     ListItem,
 } from '@/components/shared/ResultGrid';
+import { DEFAULT_TAB, SEARCH_TABS, type TabDef } from '@/lib/search-tabs';
 
 const LIMIT = 20;
-
-// ── Tab definitions ──────────────────────────────────────────────────────────
-
-type TabKey = string;
-
-interface TabDef {
-    feature: string;
-    path: string;
-    title?: string;
-    icon: string;
-    layout: 'card' | 'list';
-    fetchResults: (query: string, limit: number, offset: number) => Promise<ApiSearchResult<ResultItem>>;
-}
 
 interface SearchResults {
     [key: string]: ApiSearchResult<ResultItem> | Error | undefined;
 }
 
-function buildTabs(localAddress: string): TabDef[] {
-    return [
-        {
-            feature: 'user',
-            path: '/users',
-            title: 'search.tab_users',
-            icon: 'material-symbols:person-rounded',
-            layout: 'list',
-            fetchResults: async (query, limit, offset) => {
-                const data = await searchUsers(query, limit, offset);
-                return {
-                    total: data.total,
-                    limit: data.limit,
-                    offset: data.offset,
-                    items: data.items.map((u) => {
-                        const id = getAlias(u.alias, 'uid') ?? getAlias(u.alias, 'iid') ?? `${u.id}@${u.server}`;
-                        return {
-                            id: u.id.toString(),
-                            redirect: `/u/${noxIdToSegment(id, localAddress)}`,
-                            name: u.display,
-                            thumbnail: u.thumbnail,
-                            description: getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid'),
-                        };
-                    }),
-                };
-            },
-        },
-        {
-            feature: 'world',
-            path: '/worlds',
-            title: 'search.tab_worlds',
-            icon: 'material-symbols:public',
-            layout: 'card',
-            fetchResults: async (query, limit, offset) => {
-                const data = await searchWorlds(query, limit, offset);
-                return {
-                    total: data.total,
-                    limit: data.limit,
-                    offset: data.offset,
-                    items: data.items.map((w) => {
-                        const id = getAlias(w.alias, 'nid') ?? getAlias(w.alias, 'iid') ?? `${w.id}@${w.server}`;
-                        return {
-                            id,
-                            name: w.title,
-                            thumbnail: w.thumbnail,
-                            description: id,
-                            redirect: `/w/${noxIdToSegment(id, localAddress)}`,
-                        };
-                    }),
-                };
-            },
-        },
-        {
-            feature: 'avatar',
-            path: '/avatars',
-            title: 'search.tab_avatars',
-            icon: 'material-symbols:person-rounded',
-            layout: 'card',
-            fetchResults: async (query, limit, offset) => {
-                const data = await searchAvatars(query, limit, offset);
-                return {
-                    total: data.total,
-                    limit: data.limit,
-                    offset: data.offset,
-                    items: data.items.map((a) => {
-                        const id = getAlias(a.alias, 'nid') ?? getAlias(a.alias, 'iid') ?? `${a.id}@${a.server}`;
-                        return {
-                            id,
-                            name: a.title,
-                            thumbnail: a.thumbnail,
-                            description: id,
-                            redirect: `/a/${noxIdToSegment(id, localAddress)}`,
-                        };
-                    }),
-                };
-            },
-        },
-        {
-            feature: 'instance',
-            path: '/instances',
-            title: 'search.tab_instances',
-            icon: 'material-symbols:location-on-rounded',
-            layout: 'card',
-            fetchResults: async (query, limit, offset) => {
-                const data = await searchInstances(query, limit, offset);
-                return {
-                    total: data.total,
-                    limit: data.limit,
-                    offset: data.offset,
-                    items: data.items.map((i) => {
-                        const id = getAlias(i.alias, 'nid') || getAlias(i.alias, 'iid') || `${i.id}@${i.server}`;
-                        return {
-                            id,
-                            name: i.title,
-                            thumbnail: i.thumbnail,
-                            description: id,
-                            redirect: `/i/${noxIdToSegment(id, localAddress)}`,
-                        };
-                    }),
-                };
-            },
-        },
-        {
-            feature: 'server',
-            path: '/servers',
-            title: 'search.tab_servers',
-            icon: 'material-symbols:dns',
-            layout: 'list',
-            fetchResults: async (query, limit, offset) => {
-                const data = await searchServers(query, limit, offset);
-                return {
-                    total: data.total,
-                    limit: data.limit,
-                    offset: data.offset,
-                    items: data.items.map((s) => {
-                        const wm = s.well_known?.metadata;
-                        return {
-                            id: s.address,
-                            name: wm?.title ?? s.address,
-                            thumbnail: wm?.icon ?? null,
-                            description: wm?.description ?? (wm?.title ? s.address : null),
-                            redirect: `/s/${s.address}`,
-                        };
-                    }),
-                };
-            },
-        },
-    ];
-}
-
 interface SearchPageClientProps {
-    /** Initial search query, read from URL params server-side. */
     initialQuery?: string;
 }
 
@@ -193,16 +43,15 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
     // ── Derive state from URL (single source of truth) ───────────────────────
 
     const localAddress = wellKnown?.address ?? '::';
-    const allTabs = buildTabs(localAddress);
     const availableTabs = wellKnown
-        ? allTabs.filter((tab) => wellKnown.features.includes(tab.feature))
-        : allTabs;
+        ? SEARCH_TABS.filter((tab) => wellKnown.features.includes(tab.feature))
+        : SEARCH_TABS;
 
     const urlQuery = searchParams.get('q') ?? initialQuery;
-    const urlTab = (searchParams.get('type') as TabKey) ?? availableTabs[0]?.feature ?? 'user';
+    const urlTab = searchParams.get('type') ?? availableTabs[0]?.feature ?? DEFAULT_TAB;
     const urlPage = Math.max(1, Number(searchParams.get('p') ?? 1));
 
-    const activeTab = availableTabs.some(t => t.feature === urlTab) ? urlTab : (availableTabs[0]?.feature ?? 'user');
+    const activeTab = availableTabs.some(t => t.feature === urlTab) ? urlTab : (availableTabs[0]?.feature ?? DEFAULT_TAB);
     const page = urlPage;
 
     const [query, setQuery] = useState(urlQuery);
@@ -237,7 +86,7 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
     useEffect(() => {
         if (!wellKnown) return;
 
-        const tabDef = allTabs.find(t => t.feature === activeTab);
+        const tabDef = SEARCH_TABS.find(t => t.feature === activeTab);
         if (!tabDef) return;
 
         abortRef.current?.abort();
@@ -248,7 +97,7 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
         const offset = (page - 1) * LIMIT;
         setLoading(true);
 
-        tabDef.fetchResults(debouncedQuery, LIMIT, offset)
+        tabDef.fetchResults(localAddress, debouncedQuery, LIMIT, offset)
             .then((data) => {
                 if (controller.signal.aborted || fetchId !== fetchIdRef.current) return;
                 setResults(r => ({ ...r, [activeTab]: data }));
