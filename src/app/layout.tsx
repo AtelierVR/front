@@ -4,7 +4,7 @@ import './globals.css'
 import { ApiProvider } from '@/lib/api/context'
 import { I18nProvider } from '@/lib/i18n/I18nProvider'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
-import { StatusBanner } from '@/components/layout/StatusBanner'
+import { StatusToast } from '@/components/layout/StatusToast'
 import { WsProvider } from '@/lib/ws/context'
 import { SITE_TITLE, SITE_TITLE_TEMPLATE } from '@/lib/site'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -50,7 +50,7 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <TooltipProvider>
-                  <StatusBanner />
+                  <StatusToast />
                   {children}
                   <Toaster />
                 </TooltipProvider>
