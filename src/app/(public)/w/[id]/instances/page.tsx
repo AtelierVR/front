@@ -66,7 +66,7 @@ export default function WorldInstancesPage() {
       ) : (
         <ResultGrid>
           {instances.map((instance) => (
-            <InstanceCard key={instance.id} instance={instance} />
+            <InstanceCard key={instance.id} instance={instance} world={world ?? undefined} />
           ))}
         </ResultGrid>
       )}

@@ -9,13 +9,15 @@ import { cn } from '@/lib/utils';
 import { getAlias, useApi } from '@/lib/api';
 import { noxIdToSegment } from '@/types/nox-identifier';
 import { localeFlagUrl } from '@/lib/languages';
-import type { ApiInstance } from '@/types/api';
+import type { ApiInstance, ApiWorld } from '@/types/api';
 
 interface InstanceCardProps {
   instance: ApiInstance;
+  /** World to use as a fallback source (thumbnail, title, etc.) when the instance lacks them. */
+  world?: ApiWorld;
 }
 
-export function InstanceCard({ instance }: InstanceCardProps) {
+export function InstanceCard({ instance, world }: InstanceCardProps) {
   const { t } = useTranslation();
   const [flagUrl, setFlagUrl] = useState<string | null>(null);
 
@@ -32,18 +34,22 @@ export function InstanceCard({ instance }: InstanceCardProps) {
   const unlimited = instance.capacity === 0;
   const isFull = !unlimited && instance.count >= instance.capacity;
   const statusVariant = isFull ? 'destructive' : 'secondary';
-  const statusLabel = isFull ? t('instance.full', 'Full') : t('instance.open', 'Open');
+  const statusLabel = isFull ? t('instance.full') : t('instance.open');
 
   const playerText = unlimited
     ? t('instance.players_count', { count: instance.count })
     : t('instance.players', { count: instance.count, capacity: instance.capacity });
 
+  // Fallback chain: instance → world → segment ID → 'Instance'
   const { wellKnown } = useApi();
   const localAddress = wellKnown?.address ?? '::';
   const rawId = getAlias(instance.alias, 'nid')
     ?? getAlias(instance.alias, 'iid')
     ?? `${instance.id}@${instance.server}`;
-  const href = `/i/${noxIdToSegment(rawId, localAddress)}`;
+  const segmentId = noxIdToSegment(rawId, localAddress);
+  const instanceName = instance.title ?? world?.title ?? instance.name ?? segmentId;
+
+  const href = `/i/${segmentId}`;
 
   return (
     <Link
@@ -54,14 +60,14 @@ export function InstanceCard({ instance }: InstanceCardProps) {
       )}
     >
       <Image
-        src={instance.thumbnail ?? ''}
-        alt={instance.title ?? instance.name ?? 'Instance'}
+        src={instance.thumbnail ?? world?.thumbnail ?? ''}
+        alt={instanceName}
         width={400}
         height={300}
         className="w-full object-cover h-full"
       />
       <div className="absolute inset-0 bg-gradient-to-t dark:from-black/80 from-white/20 to-transparent flex flex-col justify-end p-4">
-        <p className="font-bold text-lg truncate">{instance.title ?? instance.name}</p>
+        <p className="font-bold text-lg truncate">{instanceName}</p>
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Icon icon="material-symbols:group-rounded" className="h-4 w-4" />
