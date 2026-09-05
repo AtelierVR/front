@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { formatPageTitle } from '@/lib/site';
 
 interface PageTitleProps {
@@ -8,21 +8,24 @@ interface PageTitleProps {
 }
 
 /**
- * Sets document.title AND renders a <title> element so Next.js's
- * head manager (SideEffect) picks it up during client-side navigation.
- * Without the <title> tag, Next.js resets document.title to the root
- * layout's default metadata on every route change.
+ * Sets document.title synchronously before the first browser paint.
+ *
+ * `useLayoutEffect` runs after DOM mutations but BEFORE the browser paints,
+ * so `document.title` is set before Next.js head manager or any other
+ * mechanism can overwrite it. If `title` is `null` (e.g. still loading),
+ * this component does nothing — the parent or page component is responsible
+ * for setting the correct title in that case.
+ *
+ * We intentionally render nothing — no <title> tag — to avoid conflicts
+ * with Next.js's head management on subsequent navigations.
  */
 export function PageTitle({ title }: PageTitleProps) {
-  const formatted = formatPageTitle(title);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useLayoutEffect(() => {
+    if (title !== null) document.title = formatPageTitle(title);
+  }, [title]);
 
-  useEffect(() => {
-    document.title = formatted;
-  }, [formatted]);
-
-  // Render the <title> tag so Next.js's SideEffect/headManager
-  // collects it and doesn't overwrite with the root metadata default.
-  return <title>{formatted}</title>;
+  return null;
 }
 
 export function setTitle(title: string | null) {
