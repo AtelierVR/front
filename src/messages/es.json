@@ -586,7 +586,7 @@
       "no_idle_sessions": "No hay sesiones inactivas.",
       "no_other_sessions": "No hay otras sesiones.",
       "other_sessions": "Otras sesiones",
-      "public_key": "Clave pública",
+      "fingerprint": "Huella digital",
       "revoke": "Revocar",
       "revoke_all": "Revocar todas",
       "revoke_all_button": "Revocar todas las sesiones",

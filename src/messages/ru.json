@@ -580,7 +580,7 @@
       "no_idle_sessions": "Нет неактивных сессий.",
       "no_other_sessions": "Нет других сессий.",
       "other_sessions": "Другие сессии",
-      "public_key": "Публичный ключ",
+      "fingerprint": "Отпечаток",
       "revoke": "Отозвать",
       "revoke_all": "Отозвать все",
       "revoke_all_button": "Отозвать все сессии",

@@ -580,7 +580,7 @@
       "no_idle_sessions": "没有不活跃的会话。",
       "no_other_sessions": "没有其他会话。",
       "other_sessions": "其他会话",
-      "public_key": "公钥",
+      "fingerprint": "指纹",
       "revoke": "撤销",
       "revoke_all": "撤销全部",
       "revoke_all_button": "撤销所有会话",

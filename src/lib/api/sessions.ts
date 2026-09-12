@@ -6,7 +6,7 @@ export interface IRSession {
     id: string;
     current: boolean;
     active: boolean;
-    public_key: string | null;
+    fingerprint: string | null;
     expires_at: number;
     created_at: number;
     devices: IRDevice[];

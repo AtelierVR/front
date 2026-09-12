@@ -221,11 +221,11 @@ function SessionCard({ session, isCurrent, onDelete, t, countries }: SessionCard
                                         )}
                                     </span>
                                 </div>
-                                {session.public_key && (
+                                {session.fingerprint && (
                                     <div className="flex justify-between gap-4">
-                                        <span className="text-muted-foreground">{t('settings.sessions.public_key')}</span>
-                                        <span className="font-mono text-xs max-w-[60%] truncate text-right" title={session.public_key}>
-                                            {session.public_key.slice(0, 16)}…
+                                        <span className="text-muted-foreground">{t('settings.sessions.fingerprint')}</span>
+                                        <span className="font-mono text-xs max-w-[60%] truncate text-right" title={session.fingerprint}>
+                                            {session.fingerprint.slice(0, 16)}…
                                         </span>
                                     </div>
                                 )}

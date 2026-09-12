@@ -580,7 +580,7 @@
       "no_idle_sessions": "非アクティブなセッションはありません。",
       "no_other_sessions": "他のセッションはありません。",
       "other_sessions": "その他のセッション",
-      "public_key": "公開鍵",
+      "fingerprint": "フィンガープリント",
       "revoke": "無効化",
       "revoke_all": "すべて無効化",
       "revoke_all_button": "すべてのセッションを無効化",

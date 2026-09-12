@@ -586,7 +586,7 @@
       "no_idle_sessions": "Keine inaktiven Sitzungen.",
       "no_other_sessions": "Keine anderen Sitzungen.",
       "other_sessions": "Andere Sitzungen",
-      "public_key": "Öffentlicher Schlüssel",
+      "fingerprint": "Fingerabdruck",
       "revoke": "Widerrufen",
       "revoke_all": "Alle widerrufen",
       "revoke_all_button": "Alle Sitzungen widerrufen",

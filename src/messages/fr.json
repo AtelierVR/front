@@ -387,7 +387,7 @@
       "status": "Statut",
       "status_active": "Connectée",
       "status_idle": "Inactive",
-      "public_key": "Clé publique",
+      "fingerprint": "Empreinte",
       "last_seen": "Dernière activité",
       "devices": "{{count}} appareil",
       "devices_plural": "{{count}} appareils",
