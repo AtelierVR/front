@@ -14,6 +14,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuLabel,
     DropdownMenuSeparator,
+    DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 
 interface LogEntry {
@@ -237,27 +238,29 @@ export function LogsViewer({
                                     )}
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48">
-                                    <DropdownMenuLabel className="flex items-center justify-between">
-                                        <span>Tags</span>
-                                        {activeTags !== null && (
-                                            <button
-                                                onClick={clearTagFilter}
-                                                className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'h-5 px-2 text-xs')}
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuLabel className="flex items-center justify-between">
+                                            <span>Tags</span>
+                                            {activeTags !== null && (
+                                                <button
+                                                    onClick={clearTagFilter}
+                                                    className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'h-5 px-2 text-xs')}
+                                                >
+                                                    Clear
+                                                </button>
+                                            )}
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {availableTags.map(tag => (
+                                            <DropdownMenuCheckboxItem
+                                                key={tag}
+                                                checked={activeTags !== null && activeTags.has(tag)}
+                                                onCheckedChange={() => toggleTag(tag)}
                                             >
-                                                Clear
-                                            </button>
-                                        )}
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    {availableTags.map(tag => (
-                                        <DropdownMenuCheckboxItem
-                                            key={tag}
-                                            checked={activeTags !== null && activeTags.has(tag)}
-                                            onCheckedChange={() => toggleTag(tag)}
-                                        >
-                                            <span className="font-mono text-xs">{tag}</span>
-                                        </DropdownMenuCheckboxItem>
-                                    ))}
+                                                <span className="font-mono text-xs">{tag}</span>
+                                            </DropdownMenuCheckboxItem>
+                                        ))}
+                                    </DropdownMenuGroup>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
@@ -271,19 +274,21 @@ export function LogsViewer({
                                 Levels
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuLabel>Log Levels</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {ALL_LOG_LEVELS.map(level => (
-                                    <DropdownMenuCheckboxItem
-                                        key={level}
-                                        checked={activeLevels.has(level)}
-                                        onCheckedChange={() => toggleLevel(level)}
-                                    >
-                                        <span className={cn('font-semibold', getLevelColor(level))}>
-                                            {level.charAt(0).toUpperCase() + level.slice(1)}
-                                        </span>
-                                    </DropdownMenuCheckboxItem>
-                                ))}
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel>Log Levels</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    {ALL_LOG_LEVELS.map(level => (
+                                        <DropdownMenuCheckboxItem
+                                            key={level}
+                                            checked={activeLevels.has(level)}
+                                            onCheckedChange={() => toggleLevel(level)}
+                                        >
+                                            <span className={cn('font-semibold', getLevelColor(level))}>
+                                                {level.charAt(0).toUpperCase() + level.slice(1)}
+                                            </span>
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
+                                </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
 
