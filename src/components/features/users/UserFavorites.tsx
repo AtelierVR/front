@@ -33,6 +33,7 @@ interface ResolvedGroup {
 
 const FAVORITE_MIME = 'application/json+favorite';
 const KEY_PREFIXES = ['public.favorites.'];
+const FAVORITE_FILTER = 'public.favorites.*';
 
 function parseFavoriteKey(key: string): { type: string; entryKey: string; index: number } | null {
     const prefix = KEY_PREFIXES.find(p => key.startsWith(p));
@@ -85,7 +86,7 @@ export function UserFavorites() {
         let cancelled = false;
         setLoading(true);
 
-        listUserPublic(user.username)
+        listUserPublic(user.username, FAVORITE_FILTER)
             .then(async (list) => {
                 const entries = list.items
                     .filter((item) => item.mime === FAVORITE_MIME)
