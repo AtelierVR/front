@@ -43,8 +43,12 @@ export function StatusToast() {
   );
 
   // External store: flips once and stays true, so no setState call inside an effect.
+  // `getServerSnapshot` is required for SSR (otherwise Next throws
+  // "Missing getServerSnapshot ... Will revert to client rendering" and the page
+  // renders as a 404). The server never has a connection yet, so it returns false.
   const wasEverConnected = useSyncExternalStore(
     subscribeEverConnected,
+    getEverConnected,
     getEverConnected,
   );
 

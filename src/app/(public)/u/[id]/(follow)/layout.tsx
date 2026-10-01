@@ -14,12 +14,12 @@ const PAGE_LABEL: Record<string, string> = {
 };
 
 export default function UserFollowLayout({ children }: { children: React.ReactNode }) {
-  const { username } = useParams<{ username: string }>();
+  const { id } = useParams<{ id: string }>();
   const pathname = usePathname();
   const { user } = useUser();
   const { t } = useTranslation();
 
-  const baseHref = `/u/${username}`;
+  const baseHref = `/u/${id}`;
   const segment = pathname.split('/').at(-1) ?? '';
   const labelKey = PAGE_LABEL[segment] ?? 'user.followers';
 
