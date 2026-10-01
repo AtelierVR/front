@@ -117,12 +117,31 @@ export function batchGetUsers(ids: string[]): Promise<ApiUserSearchResult> {
     return apiFetch<ApiUserSearchResult>(`/users?${params.toString()}`);
 }
 
-export function listUserPublic(userId: string | number): Promise<ApiPublicTableList> {
-    return apiFetch<ApiPublicTableList>(`/users/${idParam(userId)}/public`);
+export function listUserPublic(userId: string | number, filter?: string): Promise<ApiPublicTableList> {
+    const qs = filter ? `?${new URLSearchParams({ filter }).toString()}` : '';
+    return apiFetch<ApiPublicTableList>(`/users/${idParam(userId)}/public${qs}`);
 }
 
-export async function getUserPublicEntry<T>(userId: string | number, entryKey: string): Promise<T> {
-    const res = await apiFetchRaw(`/users/${idParam(userId)}/public/${entryKey}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json() as Promise<T>;
+/**
+ * In-flight deduplication for public entries.
+ *
+ * `apiFetchRaw` responses can only be read once, so the parsed JSON is shared
+ * between concurrent callers instead of the raw Response.
+ */
+const _publicEntryInflight = new Map<string, Promise<unknown>>();
+
+export function getUserPublicEntry<T>(userId: string | number, entryKey: string): Promise<T> {
+    const id = idParam(userId);
+    const key = `${id}/${entryKey}`;
+    const inflight = _publicEntryInflight.get(key) as Promise<T> | undefined;
+    if (inflight) return inflight;
+
+    const promise = (async (): Promise<T> => {
+        const res = await apiFetchRaw(`/users/${id}/public/${entryKey}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<T>;
+    })().finally(() => { _publicEntryInflight.delete(key); });
+
+    _publicEntryInflight.set(key, promise);
+    return promise;
 }
