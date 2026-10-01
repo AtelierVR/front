@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
                 <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between">
                         <h2 className="text-sm font-semibold">{t('admin.relays')}</h2>
-                        <Link href="/relays" className="text-xs text-primary hover:underline">
+                        <Link href="/admin/relays" className="text-xs text-primary hover:underline">
                             {t('admin.view_all')} →
                         </Link>
                     </div>
@@ -121,7 +121,7 @@ export default function AdminDashboardPage() {
                     ) : (
                         <div className="flex flex-col gap-2">
                             {relays.map(relay => (
-                                <Link key={relay.id} href={`/relays/${relay.id}`}>
+                                <Link key={relay.id} href={`/admin/relays/${relay.id}`}>
                                     <div className="px-4 py-3 flex items-center gap-3 hover:bg-accent/50 transition-colors cursor-pointer rounded-lg border border-border bg-accent/10">
                                         <span className={cn('size-2.5 rounded-full shrink-0', relayDot(relay), relay.connected && relay.runner?.status === 'running' && 'animate-pulse')} />
                                         <span className="flex-1 text-sm font-medium truncate">{resolveLabel(relay)}</span>

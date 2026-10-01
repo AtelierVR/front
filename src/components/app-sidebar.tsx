@@ -36,22 +36,22 @@ function source(admin: boolean = false) {
       ...(admin ? [
         {
           title: t('admin.relays'),
-          url: "/relays",
+          url: "/admin/relays",
           icon: <Icon icon="material-symbols:cell-tower-rounded" />
         },
         {
           title: t('admin.activity'),
-          url: "/activity",
+          url: "/admin/activity",
           icon: <Icon icon="material-symbols:history-rounded" />
         },
         {
           title: t('admin.logs'),
-          url: "/logs",
+          url: "/admin/logs",
           icon: <Icon icon="material-symbols:terminal-rounded" />
         },
         {
           title: t('admin.environment'),
-          url: "/environment",
+          url: "/admin/environment",
           icon: <Icon icon="material-symbols:tune-rounded" />
         },
       ] : [])

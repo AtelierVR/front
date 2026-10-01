@@ -144,7 +144,7 @@ export const TAG_HANDLERS: Array<{ regex: RegExp; handler: TagHandler }> = [
     { regex: /^sys:password$/, handler: simpleTagHandler('material-symbols:lock-rounded', 'tags.password', 'bg-orange-500/10 text-orange-700 dark:text-orange-400') },
     // `persistent` is resolved with `Tags.MODERATION` (`adm:`/`sys:`/`dft:`), but only
     // `sys:` survives `isHiddenTag`.
-    { regex: /^sys:persistent$/, handler: simpleTagHandler('material-symbols:push-pin-rounded', 'tags.persistent', 'bg-purple-500/10 text-purple-700 dark:text-purple-400') },
+    { regex: /^sys:persistent$/, handler: simpleTagHandler('material-symbols:keep-rounded', 'tags.persistent', 'bg-purple-500/10 text-purple-700 dark:text-purple-400') },
 
     // Advanced mode — purely a frontend preference, always written as `usr:developer`
     // (see `useDeveloperMode`). Deliberately `usr:`-only so a stray `sys:developer`

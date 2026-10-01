@@ -138,25 +138,25 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 {
                     type: 'page',
                     name: t('admin.relays'),
-                    url: '/relays',
+                    url: '/admin/relays',
                     icon: <Icon icon="material-symbols:cell-tower-rounded" />,
                 },
                 {
                     type: 'page',
                     name: t('admin.activity'),
-                    url: '/activity',
+                    url: '/admin/activity',
                     icon: <Icon icon="material-symbols:history-rounded" />,
                 },
                 {
                     type: 'page',
                     name: t('admin.logs'),
-                    url: '/logs',
+                    url: '/admin/logs',
                     icon: <Icon icon="material-symbols:terminal-rounded" />,
                 },
                 {
                     type: 'page',
                     name: t('admin.environment'),
-                    url: '/environment',
+                    url: '/admin/environment',
                     icon: <Icon icon="material-symbols:tune-rounded" />,
                 },
             ]

@@ -169,3 +169,42 @@ export function useWsEvent(event: string, handler: WsEventHandler): void {
         };
     }, [on, subscribeEvent, unsubscribeEvent, event]);
 }
+
+/**
+ * Run `handler` whenever the WebSocket **re**connects, so the data on screen can be resynced.
+ *
+ * Only a `disconnected → connected` transition counts, and only once the socket has been seen
+ * open at least once by this component:
+ *  - mounting while the socket is already up (client-side navigation) never fires;
+ *  - connecting for the first time after a page load never fires — the page already fetched over
+ *    HTTP, and the socket being late has nothing to do with that data;
+ *  - a drop (server restart, network blip, account switch) followed by a reconnect fires.
+ *
+ * @example
+ * useWsReconnect(() => void refetch());
+ */
+export function useWsReconnect(handler: () => void): void {
+    const { connected } = useWs();
+
+    // Latest handler, refreshed in an effect (writing a ref during render is not allowed).
+    const handlerRef = useRef(handler);
+    React.useEffect(() => { handlerRef.current = handler; }, [handler]);
+
+    /** True once this component has seen the socket open. */
+    const wasUpRef = useRef(connected);
+    /** True once the socket was seen closed *after* it had been open. */
+    const wentDownRef = useRef(false);
+
+    React.useEffect(() => {
+        if (!connected) {
+            if (wasUpRef.current) wentDownRef.current = true;
+            return;
+        }
+        if (wasUpRef.current && wentDownRef.current) {
+            wentDownRef.current = false;
+            handlerRef.current();
+        }
+        wasUpRef.current = true;
+    }, [connected]);
+}
+

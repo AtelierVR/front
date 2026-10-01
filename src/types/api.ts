@@ -226,6 +226,17 @@ export interface ApiInstancePlayer {
     display: string;
 }
 
+/**
+ * Cleanup state of an instance, or null when there is nothing to report (automatic cleanup disabled,
+ * or the instance cannot be evaluated — e.g. its relay is offline).
+ */
+export type ApiInstanceLifecycle =
+    | { type: 'persistent' }
+    /** `key` is the grace reason (label under `admin.instance_grace_<key>`), `expires` the deadline. */
+    | { type: 'grace'; key: 'created' | 'assigned' | 'startup'; expires: number }
+    /** Scheduled removal at `at` (epoch ms). */
+    | { type: 'removal'; at: number };
+
 export interface ApiInstance {
     id: number;
     name: string | null;
@@ -241,6 +252,7 @@ export interface ApiInstance {
     count: number;
     players: ApiInstancePlayer[];
     alias: ApiAlias[];
+    lifecycle: ApiInstanceLifecycle | null;
 }
 
 export interface ApiInstanceList extends ApiSearchResult<ApiInstance> {
@@ -377,6 +389,17 @@ export interface ApiRelayRunnerInfo {
     ports: ApiRelayRunnerPort[];
 }
 
+/**
+ * Cleanup state of a relay, or null when there is nothing to report (provider not managed by the
+ * node, auto-management disabled, or the relay hosting instances — a busy relay is never removed).
+ */
+export type ApiRelayLifecycle =
+    | { type: 'persistent' }
+    /** `key` is the grace reason (label under `admin.relay_grace_<key>`), `expires` the deadline. */
+    | { type: 'grace'; key: 'startup' | 'disconnect'; expires: number }
+    /** Scheduled removal at `at` (epoch ms). */
+    | { type: 'removal'; at: number };
+
 export interface ApiRelay {
     id: number;
     label: string | null;
@@ -388,6 +411,7 @@ export interface ApiRelay {
     runner: ApiRelayRunnerInfo | null;
     created_at: string;
     status: ApiRelayStatus | null;
+    lifecycle: ApiRelayLifecycle | null;
 }
 
 export interface ApiRelayLog {
@@ -456,6 +480,8 @@ export interface ApiRelayAssignedInstance {
     effective_tps: number | null;
     /** Effective threshold after load balancing, null when relay is offline. */
     effective_threshold: number | null;
+    /** Cleanup state from the instance reaper, or null when there is nothing to report. */
+    lifecycle: ApiInstanceLifecycle | null;
 }
 
 // ── Environment config ────────────────────────────────────────────────────────
