@@ -1,14 +1,22 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { EmptyBox } from '@/components/shared/ResultGrid';
 
-const TAG_EDIT_REGEX = /^usr:([a-z_]+)?$/;
-export const TAG_VALID_REGEX = /^usr:([a-z_])([a-z_]+)?$/;
+/**
+ * Backend tag shape (`NOX_TAG_RE` in `node/src/common/validation/nox-tag.decorator.ts`):
+ * `<namespace>:<value>` with a lowercase value starting with a letter, then letters,
+ * digits or underscores. Only the `usr:` namespace is editable here.
+ *
+ * `TAG_EDIT_REGEX` also accepts the bare `usr:` prefix so the value can be typed in.
+ */
+const TAG_EDIT_REGEX = /^usr:([a-z][a-z0-9_]*)?$/;
+/** A tag that is complete enough to be sent to the API. */
+export const TAG_VALID_REGEX = /^usr:[a-z][a-z0-9_]*$/;
 
 interface TagListInputProps {
     tags: string[];

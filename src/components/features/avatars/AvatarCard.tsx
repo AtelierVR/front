@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { TagBadges } from '@/components/shared/TagBadges';
 import type { ApiAvatar } from '@/types/api';
 
 interface AvatarCardProps {
@@ -34,13 +34,7 @@ export function AvatarCard({ avatar }: AvatarCardProps) {
           {avatar.description && (
             <p className="text-xs text-muted-foreground truncate mt-0.5">{avatar.description}</p>
           )}
-          <div className="flex gap-1 flex-wrap mt-2">
-            {avatar.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          <TagBadges tags={avatar.tags} limit={3} className="mt-2" />
         </CardContent>
       </Card>
     </Link>

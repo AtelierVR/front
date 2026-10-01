@@ -318,6 +318,18 @@
   "meta": {
     "title_suffix": " · Nox"
   },
+  "tags": {
+    "auto_reject_follow": "Отклоняет подписки",
+    "developer": "Разработчик",
+    "hide_followers": "Подписчики скрыты",
+    "hide_following": "Подписки скрыты",
+    "manual_follow": "Ручная подписка",
+    "no_discover": "Недоступен для поиска",
+    "password": "Пароль",
+    "persistent": "Постоянный",
+    "unlimited": "Без ограничений",
+    "whitelist": "Белый список"
+  },
   "nav": {
     "admin": "Администрирование",
     "dashboard": "Панель",
@@ -414,6 +426,10 @@
       "email": {
         "description": "Ваш email для восстановления и уведомлений.",
         "title": "Email"
+      },
+      "developer": {
+        "title": "Режим разработчика",
+        "description": "Показывает обычно скрытые теги и информацию."
       },
       "tags": {
         "description": "Теги предпочтений и видимости, начинающиеся с usr:.",

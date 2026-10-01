@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -9,19 +9,21 @@ import { useUser } from './UserContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { resolveTagDisplay } from '@/components/tags';
+import { useDeveloperMode } from '@/lib/hooks/useDeveloperMode';
 
 const MAX_VISIBLE = 12;
 
 export function UserTagBox() {
   const { user, isSame } = useUser();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const advanced = useDeveloperMode();
   const [showAll, setShowAll] = useState(false);
 
   if (!user) return null;
 
   // Resolve each tag to its display descriptor (null = hidden)
   const resolved = (user.tags ?? [])
-    .map(tag => ({ tag, display: resolveTagDisplay(tag) }))
+    .map(tag => ({ tag, display: resolveTagDisplay(tag, { advanced }) }))
     .filter((d): d is { tag: string; display: NonNullable<ReturnType<typeof resolveTagDisplay>> } => d.display !== null);
 
   if (!isSame && resolved.length === 0) return null;

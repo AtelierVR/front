@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Icon } from '@iconify/react';
+import { TagBadges } from '@/components/shared/TagBadges';
 import type { ApiWorld } from '@/types/api';
-import { parseNoxId } from '@/types/nox-identifier';
 
 interface WorldCardProps {
   world: ApiWorld;
@@ -12,7 +11,6 @@ interface WorldCardProps {
 
 export function WorldCard({ world }: WorldCardProps) {
   const { t } = useTranslation();
-  const parsed = parseNoxId(String(world.id));
   const href = `/w/${world.server ? `${world.id}@${world.server}` : world.id}`;
 
   return (
@@ -44,13 +42,7 @@ export function WorldCard({ world }: WorldCardProps) {
               <Icon icon="material-symbols:group-rounded" className="h-3 w-3" />
               {world.capacity}
             </div>
-            <div className="flex gap-1 flex-wrap justify-end">
-              {world.tags.slice(0, 2).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            <TagBadges tags={world.tags} limit={2} className="justify-end" />
           </div>
         </CardContent>
       </Card>

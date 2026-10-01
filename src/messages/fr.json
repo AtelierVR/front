@@ -287,6 +287,10 @@
         "title": "Email",
         "description": "Votre adresse email pour la récupération et les notifications."
       },
+      "developer": {
+        "title": "Mode développeur",
+        "description": "Affiche les tags et informations normalement masqués."
+      },
       "twofa": {
         "title": "Authentification à deux facteurs",
         "description": "Protégez votre compte avec une couche de sécurité supplémentaire."
@@ -595,6 +599,18 @@
   },
   "meta": {
     "title_suffix": " · Nox"
+  },
+  "tags": {
+    "developer": "Développeur",
+    "manual_follow": "Suivi manuel",
+    "auto_reject_follow": "Refuse les suivis",
+    "hide_followers": "Abonnés masqués",
+    "hide_following": "Abonnements masqués",
+    "no_discover": "Non découvrable",
+    "unlimited": "Illimité",
+    "whitelist": "Liste blanche",
+    "password": "Mot de passe",
+    "persistent": "Persistant"
   },
   "users": {
     "description": "Description",

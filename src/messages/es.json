@@ -324,6 +324,18 @@
   "meta": {
     "title_suffix": " · Nox"
   },
+  "tags": {
+    "auto_reject_follow": "Rechaza seguimientos",
+    "developer": "Desarrollador",
+    "hide_followers": "Seguidores ocultos",
+    "hide_following": "Seguidos ocultos",
+    "manual_follow": "Seguimiento manual",
+    "no_discover": "No descubrible",
+    "password": "Contraseña",
+    "persistent": "Persistente",
+    "unlimited": "Ilimitado",
+    "whitelist": "Lista blanca"
+  },
   "nav": {
     "admin": "Administración",
     "dashboard": "Panel",
@@ -420,6 +432,10 @@
       "email": {
         "description": "Tu correo para recuperación y notificaciones.",
         "title": "Correo"
+      },
+      "developer": {
+        "title": "Modo desarrollador",
+        "description": "Muestra etiquetas e información normalmente ocultos."
       },
       "tags": {
         "description": "Etiquetas de preferencias y visibilidad con usr:.",

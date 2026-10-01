@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -8,13 +7,15 @@ import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useInstance } from './InstanceContext';
 import { useTranslation } from 'react-i18next';
 import { resolveTagDisplay } from '@/components/tags';
+import { useDeveloperMode } from '@/lib/hooks/useDeveloperMode';
 
 export function InstanceTagBox() {
   const { instance } = useInstance();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const advanced = useDeveloperMode();
 
   const resolved = (instance?.tags ?? [])
-    .map(tag => ({ tag, display: resolveTagDisplay(tag) }))
+    .map(tag => ({ tag, display: resolveTagDisplay(tag, { advanced }) }))
     .filter((d): d is { tag: string; display: NonNullable<ReturnType<typeof resolveTagDisplay>> } => d.display !== null);
 
   if (instance && resolved.length === 0) return null;

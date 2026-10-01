@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -8,13 +7,15 @@ import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useAvatar } from './AvatarContext';
 import { useTranslation } from 'react-i18next';
 import { resolveTagDisplay } from '@/components/tags';
+import { useDeveloperMode } from '@/lib/hooks/useDeveloperMode';
 
 export function AvatarTagBox() {
   const { avatar, isOwner, isContributor } = useAvatar();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const advanced = useDeveloperMode();
 
   const resolved = (avatar?.tags ?? [])
-    .map(tag => ({ tag, display: resolveTagDisplay(tag) }))
+    .map(tag => ({ tag, display: resolveTagDisplay(tag, { advanced }) }))
     .filter((d): d is { tag: string; display: NonNullable<ReturnType<typeof resolveTagDisplay>> } => d.display !== null);
 
   if (!isOwner && !isContributor && resolved.length === 0) return null;

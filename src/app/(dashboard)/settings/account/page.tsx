@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
 import { UsernamePart } from './UsernamePart';
 import { TagsPart } from './TagsPart';
+import { DeveloperPart } from './DeveloperPart';
 import { EmailPart } from './EmailPart';
 import { TwoFAPart } from './TwoFAPart';
 import { PasskeysPart } from './PasskeysPart';
@@ -38,6 +39,15 @@ export default function AccountPage() {
     const dirty =
         (username !== undefined && username !== (currentUser?.username ?? '')) ||
         (tags !== undefined && !sameValues(tags, originalUsrTags));
+
+    // Advanced mode: `usr:developer` is edited like any other tag.
+    const currentUsrTags = tags ?? originalUsrTags;
+    const developer = currentUsrTags.includes('usr:developer');
+    const setDeveloper = (enabled: boolean) => {
+        setTags(enabled
+            ? [...new Set([...currentUsrTags, 'usr:developer'])]
+            : currentUsrTags.filter(tag => tag !== 'usr:developer'));
+    };
 
     const handleSave = async () => {
         if (!dirty || saving) return;
@@ -94,6 +104,8 @@ export default function AccountPage() {
                         tags={getTags()}
                         onChange={setTags}
                     />
+
+                    <DeveloperPart enabled={developer} onChange={setDeveloper} />
 
                     <EmailPart />
 

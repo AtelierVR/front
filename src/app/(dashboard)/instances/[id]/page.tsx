@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SiteHeader } from '@/components/site-header';
+import { TagBadges } from '@/components/shared/TagBadges';
 
 export default function InstanceDetailPage() {
     const params = useParams<{ id: string }>();
@@ -113,11 +114,7 @@ export default function InstanceDetailPage() {
                                 <Skeleton className="h-5 w-12 rounded-full" />
                             </div>
                         ) : (
-                            <div className="flex flex-wrap gap-2">
-                                {instance!.tags.map(tag => (
-                                    <Badge key={tag} variant="outline">{tag}</Badge>
-                                ))}
-                            </div>
+                            <TagBadges tags={instance!.tags} className="gap-2" />
                         )}
                     </div>
                 )}

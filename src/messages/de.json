@@ -324,6 +324,18 @@
   "meta": {
     "title_suffix": " · Nox"
   },
+  "tags": {
+    "auto_reject_follow": "Lehnt Folgen ab",
+    "developer": "Entwickler",
+    "hide_followers": "Follower verborgen",
+    "hide_following": "Gefolgte verborgen",
+    "manual_follow": "Manuelles Folgen",
+    "no_discover": "Nicht auffindbar",
+    "password": "Passwort",
+    "persistent": "Dauerhaft",
+    "unlimited": "Unbegrenzt",
+    "whitelist": "Whitelist"
+  },
   "nav": {
     "admin": "Administration",
     "dashboard": "Dashboard",
@@ -420,6 +432,10 @@
       "email": {
         "description": "Ihre E-Mail-Adresse für Wiederherstellung und Benachrichtigungen.",
         "title": "E-Mail"
+      },
+      "developer": {
+        "title": "Entwicklermodus",
+        "description": "Zeigt normalerweise verborgene Tags und Informationen."
       },
       "tags": {
         "description": "Präferenz- und Sichtbarkeits-Tags mit usr:.",

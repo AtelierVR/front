@@ -318,6 +318,18 @@
   "meta": {
     "title_suffix": " · Nox"
   },
+  "tags": {
+    "auto_reject_follow": "拒绝关注",
+    "developer": "开发者",
+    "hide_followers": "隐藏粉丝",
+    "hide_following": "隐藏关注",
+    "manual_follow": "手动关注",
+    "no_discover": "不可发现",
+    "password": "密码",
+    "persistent": "持久",
+    "unlimited": "无限制",
+    "whitelist": "白名单"
+  },
   "nav": {
     "admin": "管理",
     "dashboard": "仪表盘",
@@ -414,6 +426,10 @@
       "email": {
         "description": "用于账户恢复和通知的邮箱地址。",
         "title": "邮箱"
+      },
+      "developer": {
+        "title": "开发者模式",
+        "description": "显示通常隐藏的标签和信息。"
       },
       "tags": {
         "description": "以 usr: 开头的偏好和可见性标签。",

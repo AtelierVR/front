@@ -318,6 +318,18 @@
   "meta": {
     "title_suffix": " · Nox"
   },
+  "tags": {
+    "auto_reject_follow": "フォロー拒否",
+    "developer": "開発者",
+    "hide_followers": "フォロワー非表示",
+    "hide_following": "フォロー非表示",
+    "manual_follow": "手動フォロー",
+    "no_discover": "非公開",
+    "password": "パスワード",
+    "persistent": "永続",
+    "unlimited": "無制限",
+    "whitelist": "ホワイトリスト"
+  },
   "nav": {
     "admin": "管理",
     "dashboard": "ダッシュボード",
@@ -414,6 +426,10 @@
       "email": {
         "description": "アカウント復旧と通知用のメールアドレス。",
         "title": "メール"
+      },
+      "developer": {
+        "title": "開発者モード",
+        "description": "通常は非表示のタグや情報を表示します。"
       },
       "tags": {
         "description": "usr: で始まる設定・表示タグ。",
