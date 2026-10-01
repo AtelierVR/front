@@ -19,7 +19,6 @@ interface Props {
 
 function UserRow({ u }: { u: ApiUser }) {
     const displayName = u.display || u.username || '?';
-    const initial = displayName.charAt(0).toUpperCase();
 
     return (
         <Link
@@ -34,7 +33,8 @@ function UserRow({ u }: { u: ApiUser }) {
                 size="lg"
                 src={u.thumbnail}
                 alt={displayName}
-                fallback={<span className="text-lg font-semibold text-muted-foreground select-none">{initial}</span>}
+                name={displayName}
+                letterClassName="text-lg"
                 avatarClassName="h-12 w-12"
             />
             <div>

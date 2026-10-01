@@ -3,9 +3,9 @@
 import Link from "next/link"
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { AvatarLetterFallback } from "@/components/ui/avatar-letter-fallback"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +33,6 @@ export function NavUser() {
 
   const name = currentUser?.display ?? currentUser?.username ?? "Admin"
   const username = currentUser?.username ?? ""
-  const initials = name.slice(0, 2).toUpperCase()
   const thumbnail = currentUser?.thumbnail ?? undefined
 
   return (
@@ -53,7 +52,7 @@ export function NavUser() {
             >
               <Avatar className="size-8 rounded-lg">
                 <AvatarImage src={thumbnail} alt={name} />
-                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                <AvatarLetterFallback className="rounded-lg" name={name} length={2} />
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{name}</span>
@@ -72,7 +71,7 @@ export function NavUser() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="size-8">
                       <AvatarImage src={thumbnail} alt={name} />
-                      <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                      <AvatarLetterFallback className="rounded-lg" name={name} length={2} />
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-medium">{name}</span>

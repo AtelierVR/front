@@ -5,7 +5,8 @@ import { searchInstances } from '@/lib/api/instances';
 import { searchServers } from '@/lib/api/servers';
 import { getAlias } from '@/lib/api';
 import { noxIdToSegment } from '@/types/nox-identifier';
-import type { ApiSearchResult, ResultItem } from '@/types/api';
+import type { ApiSearchResult } from '@/types/api';
+import type { ResultItem } from '@/components/shared/ResultGrid';
 
 export const DEFAULT_TAB = 'user';
 

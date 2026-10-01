@@ -13,8 +13,6 @@ interface UserCardProps {
 export function UserCard({ user }: UserCardProps) {
   const { t } = useTranslation();
 
-  const initials = (user.display ?? user.username).slice(0, 2).toUpperCase();
-
   return (
     <Link href={`/u/${user.username}`} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg">
       <Card className="hover:border-primary/50 transition-colors">
@@ -24,7 +22,8 @@ export function UserCard({ user }: UserCardProps) {
             size="lg"
             src={user.thumbnail}
             alt={user.display}
-            fallback={initials}
+            name={user.display ?? user.username}
+            length={2}
           />
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold text-sm leading-tight">{user.display}</p>

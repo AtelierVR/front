@@ -32,7 +32,6 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
     const userItem = user?.items.find((i): i is Extract<UserNavItem, { type: 'user' }> => i.type === 'user');
     const name = userItem?.display ?? '';
     const username = userItem?.username ?? '';
-    const initials = name.slice(0, 2).toUpperCase();
     const thumbnail = userItem?.thumbnail ?? undefined;
     const banner = userItem?.banner ?? undefined;
     const presenceStatus = userItem?.presenceStatus;
@@ -42,7 +41,8 @@ function DashboardSidebarFooter({ user }: SidebarFooterProps) {
         size: 'default' as const,
         src: thumbnail,
         alt: name,
-        fallback: initials,
+        name,
+        length: 2,
     };
 
     return (

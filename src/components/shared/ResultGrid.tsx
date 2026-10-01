@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
 import Image from '@/components/NoxImage';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -162,13 +164,10 @@ export function ListItem(result: ResultItem) {
                 buttonVariants({ variant: 'outline', size: 'default' }),
                 'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
             )}>
-            <Image
-                src={thumbnail ?? ''}
-                alt={name}
-                width={48}
-                height={48}
-                className="h-12 w-12 rounded-full object-cover"
-            />
+            <Avatar className="h-12 w-12 shrink-0">
+                {thumbnail && <AvatarImage src={thumbnail} alt={name} />}
+                <AvatarLetterFallback name={name} letterClassName="text-lg" />
+            </Avatar>
             <div>
                 <p className="font-bold text-lg">{name}</p>
                 {desc && <p className="text-sm text-muted-foreground">{desc}</p>}

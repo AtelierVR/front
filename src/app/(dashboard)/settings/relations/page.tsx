@@ -41,7 +41,6 @@ interface TabDef {
 function UserRow({ user: u, localAddress }: { user: ApiUser; localAddress: string }) {
     const displayName = u.display || u.username || '?';
     const identifier = getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid') || '';
-    const initial = displayName.charAt(0).toUpperCase();
     const rawId = getAlias(u.alias, 'uid') ?? getAlias(u.alias, 'iid') ?? `${u.id}@${u.server}`;
     const href = `/u/${noxIdToSegment(rawId, localAddress)}`;
 
@@ -58,7 +57,8 @@ function UserRow({ user: u, localAddress }: { user: ApiUser; localAddress: strin
                 size="lg"
                 src={u.thumbnail}
                 alt={displayName}
-                fallback={<span className="text-lg font-semibold">{initial}</span>}
+                name={displayName}
+                letterClassName="text-lg"
                 avatarClassName="h-12 w-12"
             />
             <div className="min-w-0">
@@ -80,7 +80,6 @@ function PendingRow({ user: u, onAccept, onReject }: {
 }) {
     const displayName = u.display || u.username || '?';
     const identifier = getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid') || '';
-    const initial = displayName.charAt(0).toUpperCase();
 
     return (
         <div
@@ -94,7 +93,8 @@ function PendingRow({ user: u, onAccept, onReject }: {
                 size="lg"
                 src={u.thumbnail}
                 alt={displayName}
-                fallback={<span className="text-lg font-semibold">{initial}</span>}
+                name={displayName}
+                letterClassName="text-lg"
                 avatarClassName="h-12 w-12"
             />
             <div className="min-w-0 flex-1">

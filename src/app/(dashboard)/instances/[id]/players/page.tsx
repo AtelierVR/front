@@ -7,7 +7,8 @@ import { batchGetUsers } from '@/lib/api/users';
 import type { ApiInstance, ApiUser } from '@/types/api';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SiteHeader } from '@/components/site-header';
@@ -190,12 +191,11 @@ function UserCell({ identifier, userMap }: { identifier: string | null; userMap:
         return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
     }
     const display = user.display || user.username;
-    const initials = display?.slice(0, 2).toUpperCase() ?? '??';
     return (
         <div className="flex items-center gap-2">
             <Avatar className="size-6">
                 {user.thumbnail && <AvatarImage src={user.thumbnail} alt={display} />}
-                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                <AvatarLetterFallback className="text-[10px]" name={display} length={2} />
             </Avatar>
             <span className="text-sm">{display}</span>
         </div>

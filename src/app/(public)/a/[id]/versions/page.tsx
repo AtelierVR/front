@@ -14,6 +14,7 @@ import { PLATFORMS, ENGINES, formatSize } from '@/lib/platform';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetter } from '@/components/ui/avatar-letter-fallback';
 import { getUser } from '@/lib/api/users';
 import { formatNoxId } from '@/types/nox-identifier';
 import { useApi } from '@/lib/api';
@@ -35,7 +36,7 @@ function UploaderChip({ noxRef }: { noxRef: string }) {
                 {user?.thumbnail && <AvatarImage src={user.thumbnail} alt={displayName ?? formatNoxId(noxRef, wellKnown?.address ?? '::')} />}
                 <AvatarFallback className="bg-primary/10 text-[10px]">
                     {user === undefined ? null : displayName ? (
-                        displayName.charAt(0).toUpperCase()
+                        <AvatarLetter name={displayName} />
                     ) : (
                         <Icon icon="material-symbols:person-rounded" className="size-3 text-muted-foreground" />
                     )}

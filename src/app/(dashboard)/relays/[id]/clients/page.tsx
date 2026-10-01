@@ -10,7 +10,8 @@ import { useWsEvent } from '@/lib/ws/context';
 import { useTranslation } from 'react-i18next';
 import { usePagination } from '@/hooks/usePagination';
 import { Icon } from '@iconify/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -260,12 +261,11 @@ function UserCell({ identifier, userMap }: { identifier: string | null; userMap:
     if (!identifier) return <span className="text-xs text-muted-foreground">—</span>;
     const user = userMap.get(identifier);
     if (!user) return <span className="font-mono text-xs text-muted-foreground">{identifier}</span>;
-    const initials = (user.display ?? user.username).slice(0, 2).toUpperCase();
     return (
         <Link href={`/u/${user.username}`} className="flex items-center gap-2 w-fit hover:underline underline-offset-2">
             <Avatar className="size-6 shrink-0">
                 <AvatarImage src={user.thumbnail ?? undefined} alt={user.display} />
-                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                <AvatarLetterFallback className="text-[10px]" name={user.display ?? user.username} length={2} />
             </Avatar>
             <span className="text-sm font-medium">{user.display}</span>
         </Link>

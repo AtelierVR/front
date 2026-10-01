@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { usePagination } from '@/hooks/usePagination';
 import { Icon } from '@iconify/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -251,12 +252,11 @@ function UserCell({ identifier, userMap }: { identifier: string | null; userMap:
     const user = userMap.get(identifier);
     if (!user) return <span className="font-mono text-xs text-muted-foreground truncate block max-w-[8rem]">{identifier}</span>;
     const display = user.display || user.username;
-    const initials = display?.slice(0, 2).toUpperCase() ?? '??';
     return (
         <div className="flex items-center gap-2 min-w-0">
             <Avatar className="size-6 shrink-0">
                 {user.thumbnail && <AvatarImage src={user.thumbnail} alt={display} />}
-                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                <AvatarLetterFallback className="text-[10px]" name={display} length={2} />
             </Avatar>
             <span className="text-sm truncate">{display}</span>
         </div>
@@ -267,7 +267,6 @@ function WorldCell({ identifier, worldMap }: { identifier: string | null; worldM
     if (!identifier) return <span className="text-xs text-muted-foreground">\u2014</span>;
     const world = worldMap.get(identifier);
     if (!world) return <span className="font-mono text-xs text-muted-foreground truncate block max-w-[10rem]">{identifier}</span>;
-    const initials = (world.title || world.name || '?').slice(0, 2).toUpperCase();
     return (
         <div className="flex items-center gap-2 min-w-0">
             <Avatar className="size-6 rounded-md shrink-0">

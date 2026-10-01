@@ -101,7 +101,8 @@ function UserMenuContent({ userNav }: { userNav: UserNav }) {
                                 size="default"
                                 src={item.thumbnail}
                                 alt={item.display ?? ''}
-                                fallback={item.display?.slice(0, 2).toUpperCase() ?? '?'}
+                                name={item.display ?? ''}
+                                length={2}
                                 avatarClassName="border-2 border-white/30"
                             />
                             <div className="flex flex-col leading-tight">
@@ -140,7 +141,6 @@ function transformUser(
     const display = userItem?.display ?? null;
     const thumbnail = userItem?.thumbnail ?? null;
     const presenceStatus = userItem?.presenceStatus;
-    const initials = display ? display.slice(0, 2).toUpperCase() : '?';
     return {
         type: 'menu',
         on: item.on,
@@ -151,7 +151,8 @@ function transformUser(
                 size="sm"
                 src={thumbnail}
                 alt={display ?? ''}
-                fallback={initials}
+                name={display}
+                length={2}
             />
         ),
         items: [{

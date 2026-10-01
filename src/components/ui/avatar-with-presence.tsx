@@ -2,6 +2,7 @@
 
 import { type ComponentProps } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetter } from '@/components/ui/avatar-letter-fallback';
 import { PresenceIcon } from '@/lib/presences';
 import { cn } from '@/lib/utils';
 import type { ApiUserPresence } from '@/types/api';
@@ -39,6 +40,12 @@ export interface AvatarWithPresenceProps {
   fallback?: React.ReactNode;
   /** Children rendered inside AvatarFallback (shorthand). */
   children?: React.ReactNode;
+  /** Name used to render the letter fallback when neither `fallback` nor `children` is provided. */
+  name?: string | null;
+  /** Number of leading characters to keep for the letter fallback. Defaults to 1. */
+  length?: number;
+  /** Extra classes for the letter `<span>`. */
+  letterClassName?: string;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -62,6 +69,9 @@ export function AvatarWithPresence({
   alt,
   fallback,
   children,
+  name,
+  length,
+  letterClassName,
 }: AvatarWithPresenceProps) {
   const { avatar, dot, dotSize } = AVATAR_SIZES[size];
 
@@ -72,7 +82,11 @@ export function AvatarWithPresence({
     <div className={cn('relative shrink-0', className)}>
       <Avatar size={avatarSize} className={cn(avatar, avatarClassName)}>
         {src && <AvatarImage src={src} alt={alt ?? ''} />}
-        <AvatarFallback>{fallback ?? children}</AvatarFallback>
+        <AvatarFallback>
+          {fallback ?? children ?? (name !== undefined ? (
+            <AvatarLetter name={name} length={length} className={letterClassName} />
+          ) : null)}
+        </AvatarFallback>
       </Avatar>
       {presence && (
         <PresenceIcon

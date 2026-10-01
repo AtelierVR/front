@@ -10,7 +10,8 @@ import { ApiError } from '@/types/envelope';
 import { useWsEvent } from '@/lib/ws/context';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePagination } from '@/hooks/usePagination';
@@ -256,14 +257,13 @@ function UserCell({ identifier, display, userMap }: { identifier: string | null;
         );
     }
 
-    const initials = (user.display ?? user.username).slice(0, 2).toUpperCase();
     const shownName = customDisplay ?? user.display;
 
     return (
         <Link href={`/u/${user.username}`} className="flex items-center gap-1.5 w-fit hover:underline underline-offset-2">
             <Avatar className="size-6 shrink-0">
                 <AvatarImage src={user.thumbnail ?? undefined} alt={user.display} />
-                <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                <AvatarLetterFallback className="text-[10px]" name={user.display ?? user.username} length={2} />
             </Avatar>
             <span className="text-sm font-medium">{shownName}</span>
             {customDisplay && (

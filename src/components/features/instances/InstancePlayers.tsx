@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useInstance } from './InstanceContext';
@@ -31,12 +32,11 @@ export function InstancePlayers() {
         <div className="flex flex-col gap-3">
           {instance.players.map((player, idx) => {
             const href = player.user ? `/u/${formatNoxId(player.user, wellKnown?.address ?? '::')}` : null;
-            const initial = player.display.charAt(0).toUpperCase();
 
             const inner = (
               <div className="flex items-center gap-3 text-sm group">
                 <Avatar className="size-8 flex-shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-xs">{initial}</AvatarFallback>
+                  <AvatarLetterFallback className="bg-primary/10 text-xs" name={player.display} />
                 </Avatar>
                 <span className="truncate font-medium group-hover:underline underline-offset-2">
                   {player.display}

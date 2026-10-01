@@ -9,7 +9,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { UserNavMenu } from '@/components/layout/user-nav-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Separator } from '@/components/ui/separator';
 import {
   NavigationMenu,
@@ -134,9 +135,7 @@ export function Header() {
                 <div className="flex items-center gap-3 px-2 py-2 mb-1">
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={currentUser.thumbnail ?? undefined} alt={currentUser.display} />
-                    <AvatarFallback className="text-xs">
-                      {(currentUser.display ?? currentUser.username).slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
+                    <AvatarLetterFallback className="text-xs" name={currentUser.display ?? currentUser.username} length={2} />
                   </Avatar>
                   <div className="min-w-0">
                     <p className="font-semibold text-sm truncate">{currentUser.display}</p>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetter } from '@/components/ui/avatar-letter-fallback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,14 +31,17 @@ function UserRow({ noxRef, onRemove, localAddress }: UserRowProps) {
 
     const displayName = user ? (user.display || user.username) : null;
     const fallback = formatNoxId(noxRef, localAddress);
-    const initials = displayName ? displayName.charAt(0).toUpperCase() : null;
 
     return (
         <div className="flex items-center gap-2 px-3 py-1.5 bg-card hover:bg-muted/50 transition-colors">
             <Avatar className="size-7 flex-shrink-0">
                 {user?.thumbnail && <AvatarImage src={user.thumbnail} alt={displayName ?? fallback} />}
                 <AvatarFallback className="bg-primary/10 text-xs">
-                    {user === undefined ? null : initials ?? <Icon icon="material-symbols:person-rounded" className="size-3.5 text-muted-foreground" />}
+                    {user === undefined
+                        ? null
+                        : displayName
+                            ? <AvatarLetter name={displayName} />
+                            : <Icon icon="material-symbols:person-rounded" className="size-3.5 text-muted-foreground" />}
                 </AvatarFallback>
             </Avatar>
 

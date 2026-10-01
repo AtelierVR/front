@@ -8,14 +8,11 @@ import {
     NavigationMenuLink,
     NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils';
 import type { ApiCurrentUser } from '@/types/api';
-
-function initials(user: ApiCurrentUser) {
-    return (user.display || user.username).replace(/[^a-zA-Z ]/g, '').split(' ').map(n => n[0]).join('').toUpperCase();
-}
 
 interface UserNavMenuProps {
     user: ApiCurrentUser;
@@ -33,7 +30,7 @@ export function UserNavMenu({ user, onLogout }: UserNavMenuProps) {
             )}>
                 <Avatar>
                     <AvatarImage src={user.thumbnail ?? undefined} alt={user.display || user.username} />
-                    <AvatarFallback className="bg-accent text-accent-foreground font-semibold text-sm">{initials(user)}</AvatarFallback>
+                    <AvatarLetterFallback className="bg-accent text-accent-foreground font-semibold text-sm" name={user.display || user.username} />
                 </Avatar>
             </NavigationMenuTrigger>
 
@@ -54,7 +51,7 @@ export function UserNavMenu({ user, onLogout }: UserNavMenuProps) {
                         >
                             <Avatar className="size-10">
                                 <AvatarImage src={user.thumbnail ?? undefined} alt={user.display || user.username} />
-                                <AvatarFallback className="bg-accent text-accent-foreground font-semibold text-sm">{initials(user)}</AvatarFallback>
+                                <AvatarLetterFallback className="bg-accent text-accent-foreground font-semibold text-sm" name={user.display || user.username} />
                             </Avatar>
                             <div className="min-w-0 w-full">
                                 <p className="text-sm font-semibold truncate">{user.display || user.username}</p>

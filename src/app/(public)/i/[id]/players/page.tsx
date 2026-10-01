@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
 import { ResultList } from '@/components/shared/ResultGrid';
 import { useInstance } from '@/components/features/instances/InstanceContext';
 import { useApi } from '@/lib/api/context';
@@ -76,7 +77,6 @@ export default function InstancePlayersPage() {
                     ? `/u/${formatNoxId(player.user, localAddress)}`
                     : null;
                 const fetchedUser = player.user ? userMap[player.user] : undefined;
-                const initial = player.display.charAt(0).toUpperCase();
                 const fullId = fetchedUser
                     ? `${fetchedUser.username}@${fetchedUser.server}`
                     : player.user ?? undefined;
@@ -85,7 +85,7 @@ export default function InstancePlayersPage() {
                     <>
                         <Avatar className="h-12 w-12 shrink-0">
                             <AvatarImage src={fetchedUser?.thumbnail ?? undefined} alt={player.display} className="object-cover" />
-                            <AvatarFallback>{initial}</AvatarFallback>
+                            <AvatarLetterFallback name={player.display} />
                         </Avatar>
                         <div>
                             <p className="font-bold text-lg">{player.display}</p>

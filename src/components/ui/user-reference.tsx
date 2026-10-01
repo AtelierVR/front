@@ -85,8 +85,6 @@ function UserReferenceCompact({
   const fallbackId = noxId ? formatNoxId(noxId, localAddress) : (user ? `${user.username}@${user.server}` : 'unknown');
   const href = user ? (noxId ? `/u/${formatNoxId(noxId, localAddress)}` : `/u/${user.username}`) : '#';
 
-  const initials = displayName ? displayName.slice(0, 2).toUpperCase() : '?';
-
   return (
     <Link
       href={href}
@@ -100,7 +98,8 @@ function UserReferenceCompact({
         size="sm"
         src={user?.thumbnail}
         alt={displayName ?? fallbackId}
-        fallback={initials}
+        name={displayName}
+        length={2}
       />
       <div className={cn('flex flex-col', !showIdentifier && 'flex-row items-center gap-1.5')}>
         <span className="text-sm font-medium group-hover:text-primary transition-colors">
@@ -186,13 +185,10 @@ function UserReferenceNormal({
         size="default"
         src={user?.thumbnail}
         alt={displayName ?? fallbackId}
-        fallback={
-          displayName ? (
-            displayName.charAt(0).toUpperCase()
-          ) : (
-            <Icon icon="material-symbols:person-rounded" className="size-4 text-muted-foreground" />
-          )
-        }
+        name={displayName}
+        fallback={displayName ? undefined : (
+          <Icon icon="material-symbols:person-rounded" className="size-4 text-muted-foreground" />
+        )}
       />
       <div className="flex-1 min-w-0">
         {displayName ? (
