@@ -88,7 +88,11 @@
     "totp_code": "Authentifizierungscode",
     "totp_description": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
     "totp_required": "Zwei-Faktor-Authentifizierung erforderlich",
-    "username": "Benutzername"
+    "username": "Benutzername",
+    "or_continue_with": "Oder fortfahren mit",
+    "passkey_login": "Mit einem Passkey anmelden",
+    "passkey_use": "Stattdessen einen Passkey verwenden",
+    "passkey_waiting": "Warten auf deinen Passkey…"
   },
   "avatar": {
     "contributors": "Mitwirkende",
@@ -562,7 +566,30 @@
         "verified": "Verifiziert!",
         "verify": "Verifizieren",
         "verifying": "Wird verifiziert…",
-        "invalid_code": "Ungültiger Verifizierungscode. Bitte versuchen Sie es erneut."
+        "invalid_code": "Ungültiger Verifizierungscode. Bitte versuchen Sie es erneut.",
+        "passkey_hint": "Bestätigen Sie mit dem auf diesem Gerät registrierten Passkey.",
+        "use_passkey": "Passkey verwenden"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "description": "Melden Sie sich ohne Passwort mit Ihrem Fingerabdruck, Gesicht, einem Sicherheitsschlüssel oder Ihrem Telefon an.",
+        "empty": "Noch kein Passkey registriert.",
+        "unsupported": "Dieser Browser unterstützt keine Passkeys.",
+        "add": "Passkey hinzufügen",
+        "create": "Erstellen",
+        "waiting": "Warten…",
+        "added": "Passkey registriert.",
+        "removed": "Passkey entfernt.",
+        "failed_add": "Der Passkey konnte nicht registriert werden.",
+        "failed_remove": "Der Passkey konnte nicht entfernt werden.",
+        "remove": "Diesen Passkey entfernen",
+        "unnamed": "Unbenannter Passkey",
+        "added_on": "Hinzugefügt am {{date}}",
+        "last_used": "Zuletzt verwendet am {{date}}",
+        "synced": "Synchronisiert",
+        "add_hint": "Ihr Browser fordert Sie auf, mit Ihrem Gerät oder Sicherheitsschlüssel zu bestätigen.",
+        "name_label": "Name (optional)",
+        "name_placeholder": "Mein Laptop"
       }
     },
     "sessions": {
@@ -712,9 +739,13 @@
     "desc_pending": "Ausstehende Folgeanfragen.",
     "search_placeholder": "Nach Name suchen…",
     "empty_followers": "Niemand folgt dir noch.",
+    "empty_followers_hint": "Teile dein Profil, um deinen ersten Follower zu bekommen.",
     "empty_following": "Du folgst niemandem.",
+    "empty_following_hint": "Entdecke neue Leute und folge ihnen, um ihre Inhalte zu sehen.",
     "empty_friends": "Keine gegenseitigen Follows.",
+    "empty_friends_hint": "Wenn jemand, dem du folgst, dir zurückfolgt, erscheint er hier.",
     "empty_pending": "Keine ausstehenden Anfragen.",
+    "empty_pending_hint": "Wenn jemand dir folgen möchte, erscheint die Anfrage hier.",
     "request_accepted": "Anfrage akzeptiert.",
     "request_rejected": "Anfrage abgelehnt."
   }

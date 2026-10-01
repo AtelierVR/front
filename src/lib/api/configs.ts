@@ -10,6 +10,7 @@ export interface InstanceConfig {
   allow_avatar_creation_by_external: boolean;
   regions: string[];
   allowed_image_widths: number[];
+  support_passkey: boolean;
 }
 
 export async function fetchConfigs(): Promise<InstanceConfig | null> {

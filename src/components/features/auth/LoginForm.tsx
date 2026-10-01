@@ -1,18 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '@/lib/api/context';
 import { login as apiLogin } from '@/lib/api/auth';
+import { isPasskeyCancelled, loginWithPasskey, passkeysSupported } from '@/lib/api/passkeys';
 import { ApiError } from '@/types/envelope';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { FormCard } from '@/components/ui/form-card';
 import { PasswordInput } from '@/components/ui/password-input';
+import { FieldSeparator } from '@/components/ui/field-separator';
 import { PageTitle } from '@/components/shared/PageTitle';
+import { Icon } from '@iconify/react';
 
 function isTotpError(err: unknown): boolean {
     if (err instanceof ApiError) {
@@ -28,7 +31,7 @@ export function LoginForm() {
     const { t } = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { login } = useApi();
+    const { login, config } = useApi();
 
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
@@ -36,8 +39,36 @@ export function LoginForm() {
     const [step, setStep] = useState<'credentials' | 'totp'>('credentials');
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [passkeyBusy, setPasskeyBusy] = useState(false);
+    // Both the instance and the browser must support passkeys. Detected after
+    // mount so the server and the client render the same markup first.
+    const [passkeyEnabled, setPasskeyEnabled] = useState(false);
+
+    useEffect(() => {
+        setPasskeyEnabled(config?.support_passkey === true && passkeysSupported());
+    }, [config?.support_passkey]);
 
     const redirect = searchParams.get('redirect') ?? '/';
+
+    /**
+     * Passkey sign-in. On the credentials step it is passwordless (usernameless
+     * when no identifier is typed); on the 2FA step it completes the login started
+     * with the password.
+     */
+    async function handlePasskeyLogin() {
+        setError(null);
+        setPasskeyBusy(true);
+        try {
+            const session = await loginWithPasskey(step === 'totp' ? identifier : (identifier || undefined));
+            login(session.token, session.expires, session.user);
+            router.replace(redirect);
+        } catch (err: unknown) {
+            if (!isPasskeyCancelled(err))
+                setError((err as Error)?.message ?? t('errors.500'));
+        } finally {
+            setPasskeyBusy(false);
+        }
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -71,6 +102,24 @@ export function LoginForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {error && (
                     <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
+                )}
+
+                {passkeyEnabled && (
+                    <div className="space-y-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={submitting || passkeyBusy}
+                            className="w-full"
+                            onClick={handlePasskeyLogin}
+                        >
+                            <Icon icon="material-symbols:passkey-rounded" className="size-4 mr-2" />
+                            {passkeyBusy
+                                ? t('auth.passkey_waiting')
+                                : step === 'totp' ? t('auth.passkey_use') : t('auth.passkey_login')}
+                        </Button>
+                        <FieldSeparator>{t('auth.or_continue_with')}</FieldSeparator>
+                    </div>
                 )}
 
                 {step === 'credentials' ? (
@@ -132,7 +181,7 @@ export function LoginForm() {
                 )}
 
                 <div className="mt-8 flex flex-col gap-3">
-                    <Button type="submit" disabled={submitting} className="w-full">
+                    <Button type="submit" disabled={submitting || passkeyBusy} className="w-full">
                         {submitting ? t('auth.signing_in') : t('auth.login')}
                     </Button>
                     <p className="text-center text-sm text-muted-foreground">

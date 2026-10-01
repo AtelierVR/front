@@ -66,21 +66,8 @@ export async function updateCurrentUser(data: UpdateCurrentUserPayload): Promise
     return user;
 }
 
-export interface VerificationMethod {
-    type: string;
-    name: string;
-    description: string;
-    enabled: boolean;
-    details: {
-        sendable: boolean;
-        data: Record<string, unknown>;
-        code: {
-            length: number;
-            type: 'numeric' | 'alphanumeric' | 'hex';
-        } | null;
-        cooldown: number | null;
-    } | null;
-}
+// Canonical definition lives in `@/types/verification`; re-exported for compatibility.
+export type { VerificationMethod } from '@/types/verification';
 
 export async function uploadUserThumbnail(file: Blob): Promise<void> {
     const form = new FormData();

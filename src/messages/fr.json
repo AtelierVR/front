@@ -61,7 +61,11 @@
     "register_description": "Remplissez le formulaire pour commencer.",
     "terms_text": "En cliquant sur continuer, vous acceptez nos",
     "terms_of_service": "Conditions d'utilisation",
-    "privacy_policy": "Politique de confidentialité"
+    "privacy_policy": "Politique de confidentialité",
+    "passkey_login": "Se connecter avec une passkey",
+    "passkey_use": "Utiliser une passkey",
+    "passkey_waiting": "En attente de votre passkey…",
+    "or_continue_with": "Ou continuer avec"
   },
   "confirmation": {
     "verifying": "Vérification...",
@@ -368,7 +372,30 @@
         "resend_cooldown": "Renvoyer dans {{seconds}}s",
         "verify": "Vérifier",
         "verifying": "Vérification…",
-        "invalid_code": "Code de vérification invalide. Veuillez réessayer."
+        "invalid_code": "Code de vérification invalide. Veuillez réessayer.",
+        "passkey_hint": "Confirmez avec la passkey enregistrée sur cet appareil.",
+        "use_passkey": "Utiliser une passkey"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "description": "Connectez-vous sans mot de passe avec votre empreinte, votre visage, une clé de sécurité ou votre téléphone.",
+        "empty": "Aucune passkey enregistrée pour l'instant.",
+        "unsupported": "Ce navigateur ne prend pas en charge les passkeys.",
+        "add": "Ajouter une passkey",
+        "create": "Créer",
+        "waiting": "En attente…",
+        "added": "Passkey enregistrée.",
+        "removed": "Passkey supprimée.",
+        "failed_add": "Impossible d'enregistrer la passkey.",
+        "failed_remove": "Impossible de supprimer la passkey.",
+        "remove": "Supprimer cette passkey",
+        "unnamed": "Passkey sans nom",
+        "added_on": "Ajoutée le {{date}}",
+        "last_used": "Dernière utilisation le {{date}}",
+        "synced": "Synchronisée",
+        "add_hint": "Votre navigateur va vous demander de confirmer avec votre appareil ou votre clé de sécurité.",
+        "name_label": "Nom (optionnel)",
+        "name_placeholder": "Mon ordinateur portable"
       }
     },
     "sessions": {

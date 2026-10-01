@@ -82,7 +82,11 @@
     "totp_code": "認証コード",
     "totp_description": "認証アプリの6桁のコードを入力してください。",
     "totp_required": "二要素認証が必要です",
-    "username": "ユーザー名"
+    "username": "ユーザー名",
+    "or_continue_with": "または次で続行",
+    "passkey_login": "パスキーでサインイン",
+    "passkey_use": "代わりにパスキーを使用",
+    "passkey_waiting": "パスキーを待機しています…"
   },
   "avatar": {
     "contributors": "コントリビューター",
@@ -556,7 +560,30 @@
         "verified": "確認完了！",
         "verify": "確認",
         "verifying": "確認中…",
-        "invalid_code": "確認コードが無効です。もう一度お試しください。"
+        "invalid_code": "確認コードが無効です。もう一度お試しください。",
+        "passkey_hint": "このデバイスに登録されたパスキーで確認してください。",
+        "use_passkey": "パスキーを使用"
+      },
+      "passkeys": {
+        "title": "パスキー",
+        "description": "指紋、顔、セキュリティキー、またはスマートフォンを使ってパスワードなしでサインインできます。",
+        "empty": "登録されたパスキーはまだありません。",
+        "unsupported": "このブラウザーはパスキーに対応していません。",
+        "add": "パスキーを追加",
+        "create": "作成",
+        "waiting": "待機中…",
+        "added": "パスキーを登録しました。",
+        "removed": "パスキーを削除しました。",
+        "failed_add": "パスキーを登録できませんでした。",
+        "failed_remove": "パスキーを削除できませんでした。",
+        "remove": "このパスキーを削除",
+        "unnamed": "名前のないパスキー",
+        "added_on": "{{date}} に追加",
+        "last_used": "最終使用: {{date}}",
+        "synced": "同期済み",
+        "add_hint": "ブラウザーがデバイスまたはセキュリティキーでの確認を求めます。",
+        "name_label": "名前（任意）",
+        "name_placeholder": "マイノートPC"
       }
     },
     "sessions": {
@@ -706,9 +733,13 @@
     "desc_pending": "保留中のフォローリクエスト。",
     "search_placeholder": "名前で検索…",
     "empty_followers": "まだフォロワーはいません。",
+    "empty_followers_hint": "プロフィールを共有して最初のフォロワーを獲得しましょう。",
     "empty_following": "まだ誰もフォローしていません。",
+    "empty_following_hint": "新しい人を見つけてフォローすると、その投稿が表示されます。",
     "empty_friends": "相互フォローはまだありません。",
+    "empty_friends_hint": "あなたがフォローしている人がフォローし返すと、ここに表示されます。",
     "empty_pending": "保留中のリクエストはありません。",
+    "empty_pending_hint": "誰かがフォローをリクエストすると、ここに表示されます。",
     "request_accepted": "リクエストを承認しました。",
     "request_rejected": "リクエストを拒否しました。"
   }

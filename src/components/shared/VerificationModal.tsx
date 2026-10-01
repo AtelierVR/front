@@ -19,16 +19,29 @@ interface VerificationModalProps {
     onClose: () => void;
     /** Called when user submits a code. Returns { success, error? }. */
     onSubmit: (code: string) => Promise<{ success: boolean; error?: string }>;
+    /**
+     * Called when the user picks a method that has no code to type (passkey).
+     * When omitted, such methods are not offered — the caller is expected to
+     * run the WebAuthn ceremony itself (e.g. the login page).
+     */
+    onPasskeySubmit?: () => Promise<{ success: boolean; error?: string }>;
     /** Called after the "Verified" animation completes (800ms). */
     onVerified: () => void;
     methods: VerificationMethod[];
     title?: string;
 }
 
+const METHOD_ICONS: Record<string, string> = {
+    totp: 'material-symbols:phonelink-lock-rounded',
+    email: 'material-symbols:mail-rounded',
+    passkey: 'material-symbols:passkey-rounded',
+};
+
 export function VerificationModal({
     isOpen,
     onClose,
     onSubmit,
+    onPasskeySubmit,
     onVerified,
     methods,
     title,
@@ -113,6 +126,21 @@ export function VerificationModal({
         sendCode(selectedMethod);
     };
 
+    const handlePasskey = async () => {
+        if (!onPasskeySubmit || submitting) return;
+        setSubmitting(true);
+        setError(null);
+        try {
+            const result = await onPasskeySubmit();
+            setSubmitting(false);
+            if (result.success) setSuccess(true);
+            else if (result.error) setError(result.error);
+        } catch (err: unknown) {
+            setError((err as Error)?.message ?? t('settings.security.verification.failed'));
+            setSubmitting(false);
+        }
+    };
+
     const handleComplete = async (code: string) => {
         if (!code || submitting) return;
         setVerificationCode(code);
@@ -136,10 +164,15 @@ export function VerificationModal({
         }
     };
 
-    const codeLength = selectedMethod?.details?.code?.length ?? 6;
+    const input = selectedMethod?.details?.input;
+    const codeInput = input?.type === 'code' ? input : null;
+    const passkeyInput = input?.type === 'passkey' ? input : null;
+    const codeLength = codeInput?.length ?? 6;
 
     // Can resend: only if selected method supports sending
     const canResend = selectedMethod?.details?.sendable ?? false;
+
+    const isCeremonyMethod = !!passkeyInput;
 
     return (
         <ModalDrawer
@@ -194,7 +227,7 @@ export function VerificationModal({
                                     className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
                                 >
                                     <Icon
-                                        icon={method.type === 'totp' ? 'material-symbols:phonelink-lock-rounded' : 'material-symbols:mail-rounded'}
+                                        icon={METHOD_ICONS[method.type] ?? 'material-symbols:shield-rounded'}
                                         className="size-5 text-muted-foreground shrink-0"
                                     />
                                     <div>
@@ -228,6 +261,17 @@ export function VerificationModal({
                                     <span className="text-sm font-medium text-green-600 dark:text-green-400">
                                         {t('settings.security.verification.verified')}
                                     </span>
+                                </div>
+                            ) : isCeremonyMethod ? (
+                                <div className="flex flex-col items-center gap-3 py-2 w-full">
+                                    <Icon icon="material-symbols:passkey-rounded" className="size-10 text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground text-center">
+                                        {t('settings.security.verification.passkey_hint')}
+                                    </p>
+                                    <Button onClick={handlePasskey} disabled={!onPasskeySubmit} className="w-full">
+                                        <Icon icon="material-symbols:passkey-rounded" className="size-4 mr-2" />
+                                        {t('settings.security.verification.use_passkey')}
+                                    </Button>
                                 </div>
                             ) : (
                                 <>

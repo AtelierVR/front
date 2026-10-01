@@ -91,21 +91,8 @@ export interface MethodAction {
 
 // ── Verification (2FA challenge) ─────────────────────────────────────────────
 
-export interface VerificationMethod {
-    type: string;
-    name: string;
-    description: string;
-    enabled: boolean;
-    details: {
-        sendable: boolean;
-        data: Record<string, unknown>;
-        code: {
-            length: number;
-            type: 'numeric' | 'alphanumeric' | 'hex';
-        } | null;
-        cooldown: number | null;
-    } | null;
-}
+// Canonical definition lives in `@/types/verification`; re-exported for compatibility.
+export type { VerificationMethod } from '@/types/verification';
 
 export async function sendVerificationCode(type: string, data: Record<string, unknown>): Promise<{ success: boolean }> {
     return apiFetch<{ success: boolean }>(`/auth/methods/${encodeURIComponent(type)}/send`, {

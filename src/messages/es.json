@@ -88,7 +88,11 @@
     "totp_code": "Código de autenticación",
     "totp_description": "Introduce el código de 6 dígitos de tu aplicación de autenticación.",
     "totp_required": "Se requiere autenticación de dos factores",
-    "username": "Nombre de usuario"
+    "username": "Nombre de usuario",
+    "or_continue_with": "O continúa con",
+    "passkey_login": "Iniciar sesión con una passkey",
+    "passkey_use": "Usar una passkey en su lugar",
+    "passkey_waiting": "Esperando tu passkey…"
   },
   "avatar": {
     "contributors": "Contribuidores",
@@ -562,7 +566,30 @@
         "verified": "¡Verificado!",
         "verify": "Verificar",
         "verifying": "Verificando…",
-        "invalid_code": "Código de verificación inválido. Inténtelo de nuevo."
+        "invalid_code": "Código de verificación inválido. Inténtelo de nuevo.",
+        "passkey_hint": "Confirma con la passkey registrada en este dispositivo.",
+        "use_passkey": "Usar una passkey"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "description": "Inicia sesión sin contraseña con tu huella, rostro, una llave de seguridad o tu teléfono.",
+        "empty": "Aún no hay ninguna passkey registrada.",
+        "unsupported": "Este navegador no admite passkeys.",
+        "add": "Añadir una passkey",
+        "create": "Crear",
+        "waiting": "Esperando…",
+        "added": "Passkey registrada.",
+        "removed": "Passkey eliminada.",
+        "failed_add": "No se pudo registrar la passkey.",
+        "failed_remove": "No se pudo eliminar la passkey.",
+        "remove": "Eliminar esta passkey",
+        "unnamed": "Passkey sin nombre",
+        "added_on": "Añadida el {{date}}",
+        "last_used": "Último uso el {{date}}",
+        "synced": "Sincronizada",
+        "add_hint": "Tu navegador te pedirá que confirmes con tu dispositivo o llave de seguridad.",
+        "name_label": "Nombre (opcional)",
+        "name_placeholder": "Mi portátil"
       }
     },
     "sessions": {
@@ -712,9 +739,13 @@
     "desc_pending": "Solicitudes pendientes.",
     "search_placeholder": "Buscar por nombre…",
     "empty_followers": "Nadie te sigue aún.",
+    "empty_followers_hint": "Comparte tu perfil para conseguir tu primer seguidor.",
     "empty_following": "No sigues a nadie.",
+    "empty_following_hint": "Descubre a nuevas personas y síguelas para ver su contenido.",
     "empty_friends": "Sin seguimientos mutuos.",
+    "empty_friends_hint": "Cuando alguien a quien sigues también te siga, aparecerá aquí.",
     "empty_pending": "Sin solicitudes pendientes.",
+    "empty_pending_hint": "Cuando alguien solicite seguirte, aparecerá aquí.",
     "request_accepted": "Solicitud aceptada.",
     "request_rejected": "Solicitud rechazada."
   }

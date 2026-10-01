@@ -26,21 +26,9 @@ type VerificationHandler = (
 ) => Promise<string | null>;
 let _verificationHandler: VerificationHandler | null = null;
 
-export interface VerificationMethod {
-    type: string;
-    name: string;
-    description: string;
-    enabled: boolean;
-    details: {
-        sendable: boolean;
-        data: Record<string, unknown>;
-        code: {
-            length: number;
-            type: 'numeric' | 'alphanumeric' | 'hex';
-        } | null;
-        cooldown: number | null;
-    } | null;
-}
+// Canonical definition lives in `@/types/verification`; re-exported for compatibility.
+import type { VerificationMethod } from '@/types/verification';
+export type { VerificationMethod };
 
 /** Register the verification handler so apiFetch can trigger the 2FA modal. */
 export function registerVerificationHandler(handler: VerificationHandler): void {

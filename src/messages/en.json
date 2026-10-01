@@ -61,7 +61,11 @@
     "register_description": "Fill in the form to get started.",
     "terms_text": "By clicking continue, you agree to our",
     "terms_of_service": "Terms of Service",
-    "privacy_policy": "Privacy Policy"
+    "privacy_policy": "Privacy Policy",
+    "passkey_login": "Sign in with a passkey",
+    "passkey_use": "Use a passkey instead",
+    "passkey_waiting": "Waiting for your passkey…",
+    "or_continue_with": "Or continue with"
   },
   "confirmation": {
     "verifying": "Verifying...",
@@ -368,7 +372,30 @@
         "resend_cooldown": "Resend in {{seconds}}s",
         "verify": "Verify",
         "verifying": "Verifying…",
-        "invalid_code": "Invalid verification code. Please try again."
+        "invalid_code": "Invalid verification code. Please try again.",
+        "passkey_hint": "Confirm with the passkey registered on this device.",
+        "use_passkey": "Use a passkey"
+      },
+      "passkeys": {
+        "title": "Passkeys",
+        "description": "Sign in without a password using your fingerprint, face, a security key or your phone.",
+        "empty": "No passkey registered yet.",
+        "unsupported": "This browser does not support passkeys.",
+        "add": "Add a passkey",
+        "create": "Create",
+        "waiting": "Waiting…",
+        "added": "Passkey registered.",
+        "removed": "Passkey removed.",
+        "failed_add": "Could not register the passkey.",
+        "failed_remove": "Could not remove the passkey.",
+        "remove": "Remove this passkey",
+        "unnamed": "Unnamed passkey",
+        "added_on": "Added {{date}}",
+        "last_used": "Last used {{date}}",
+        "synced": "Synced",
+        "add_hint": "Your browser will ask you to confirm with your device or security key.",
+        "name_label": "Name (optional)",
+        "name_placeholder": "My laptop"
       }
     },
     "sessions": {

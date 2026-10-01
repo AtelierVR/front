@@ -15,6 +15,7 @@ import { fetchWellKnown } from './wellknown';
 import { apiFetch, registerLogoutDispatch, registerGatewayUrl, registerCurrentUserReplace, registerCurrentUserMerge, registerVerificationHandler, type VerificationMethod } from './client';
 import { getToken, setToken, clearToken } from '@/lib/auth/storage';
 import { fetchConfigs, type InstanceConfig } from './configs';
+import { requestPasskeyFactorCode, isPasskeyCancelled } from './passkeys';
 import { VerificationModal } from '@/components/shared/VerificationModal';
 
 // ── Context shape ───────────────────────────────────────────────────────────
@@ -53,14 +54,17 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       methods: VerificationMethod[],
       verifyCode: (code: string) => Promise<{ success: boolean; error?: string }>,
     ): Promise<string | null> => {
-      setVerificationMethods(methods);
+      const offered = currentUser
+        ? methods
+        : methods.filter((m) => m.details?.input?.type !== 'passkey');
+      setVerificationMethods(offered);
       verifyCodeRef.current = verifyCode;
       setShowVerificationModal(true);
       return new Promise((resolve) => {
         verificationResolveRef.current = resolve;
       });
     },
-    [],
+    [currentUser],
   );
 
   const handleVerificationSubmit = useCallback(async (code: string): Promise<{ success: boolean; error?: string }> => {
@@ -73,6 +77,22 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
     return result;
   }, []);
+
+  /**
+   * Passkey factor: run the ceremony, exchange the assertion for a single-use
+   * code, then replay the original request with it as `factor_code`.
+   */
+  const handlePasskeySubmit = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+    const verify = verifyCodeRef.current;
+    if (!verify) return { success: false, error: 'Verification unavailable' };
+    try {
+      const code = await requestPasskeyFactorCode(currentUser?.username);
+      return await verify(code);
+    } catch (err) {
+      if (isPasskeyCancelled(err)) return { success: false };
+      return { success: false, error: (err as Error)?.message };
+    }
+  }, [currentUser?.username]);
 
   const handleVerificationDone = useCallback(() => {
     // Called by the modal after the "Verified" animation
@@ -242,6 +262,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         isOpen={showVerificationModal}
         onClose={handleVerificationClose}
         onSubmit={handleVerificationSubmit}
+        onPasskeySubmit={handlePasskeySubmit}
         onVerified={handleVerificationDone}
         methods={verificationMethods}
       />

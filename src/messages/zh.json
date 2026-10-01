@@ -82,7 +82,11 @@
     "totp_code": "验证码",
     "totp_description": "请输入验证器应用中的 6 位数字代码。",
     "totp_required": "需要双重认证",
-    "username": "用户名"
+    "username": "用户名",
+    "or_continue_with": "或继续使用",
+    "passkey_login": "使用通行密钥登录",
+    "passkey_use": "改用通行密钥",
+    "passkey_waiting": "正在等待通行密钥…"
   },
   "avatar": {
     "contributors": "贡献者",
@@ -556,7 +560,30 @@
         "verified": "已验证！",
         "verify": "验证",
         "verifying": "验证中…",
-        "invalid_code": "验证码无效，请重试。"
+        "invalid_code": "验证码无效，请重试。",
+        "passkey_hint": "请使用此设备上注册的通行密钥进行确认。",
+        "use_passkey": "使用通行密钥"
+      },
+      "passkeys": {
+        "title": "通行密钥",
+        "description": "使用指纹、面容、安全密钥或手机免密码登录。",
+        "empty": "尚未注册通行密钥。",
+        "unsupported": "此浏览器不支持通行密钥。",
+        "add": "添加通行密钥",
+        "create": "创建",
+        "waiting": "请稍候…",
+        "added": "通行密钥已注册。",
+        "removed": "通行密钥已删除。",
+        "failed_add": "无法注册通行密钥。",
+        "failed_remove": "无法删除通行密钥。",
+        "remove": "移除此通行密钥",
+        "unnamed": "未命名通行密钥",
+        "added_on": "添加于 {{date}}",
+        "last_used": "上次使用于 {{date}}",
+        "synced": "已同步",
+        "add_hint": "浏览器将要求你使用设备或安全密钥进行确认。",
+        "name_label": "名称（可选）",
+        "name_placeholder": "我的笔记本电脑"
       }
     },
     "sessions": {
@@ -706,9 +733,13 @@
     "desc_pending": "待处理的关注请求。",
     "search_placeholder": "按名称搜索…",
     "empty_followers": "还没有人关注你。",
+    "empty_followers_hint": "分享你的个人资料以获得第一个关注者。",
     "empty_following": "你还没有关注任何人。",
+    "empty_following_hint": "发现新用户并关注他们，即可查看他们的内容。",
     "empty_friends": "还没有互相关注。",
+    "empty_friends_hint": "当你关注的人也回关你时，他们会显示在这里。",
     "empty_pending": "没有待处理的请求。",
+    "empty_pending_hint": "当有人请求关注你时，请求会显示在这里。",
     "request_accepted": "请求已接受。",
     "request_rejected": "请求已拒绝。"
   }
