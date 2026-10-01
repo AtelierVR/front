@@ -210,7 +210,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     },
                     {
                         type: 'page',
-                        name: t('user.followers', 'Relations'),
+                        name: t('relations.title'),
                         url: '/settings/relations',
                         icon: <Icon icon="material-symbols:group-rounded" />,
                     },
