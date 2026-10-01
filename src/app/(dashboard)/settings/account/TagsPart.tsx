@@ -6,10 +6,9 @@ import { useTranslation } from 'react-i18next';
 interface TagsPartProps {
     tags: string[];
     onChange: (tags: string[]) => void;
-    onDirty: () => void;
 }
 
-export function TagsPart({ tags, onChange, onDirty }: TagsPartProps) {
+export function TagsPart({ tags, onChange }: TagsPartProps) {
     const { t } = useTranslation();
 
     return (
@@ -18,7 +17,7 @@ export function TagsPart({ tags, onChange, onDirty }: TagsPartProps) {
             <p className="text-sm text-muted-foreground">{t('settings.account.tags.description')}</p>
             <TagListInput
                 tags={tags}
-                onChange={next => { onChange(next); onDirty(); }}
+                onChange={onChange}
             />
             <p className="text-xs text-muted-foreground">{t('settings.profile.tags.hint')}</p>
         </section>

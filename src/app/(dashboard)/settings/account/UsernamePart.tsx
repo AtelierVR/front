@@ -7,10 +7,9 @@ import { useTranslation } from 'react-i18next';
 interface UsernamePartProps {
     username: string | undefined;
     onChange: (value: string) => void;
-    onDirty: () => void;
 }
 
-export function UsernamePart({ username, onChange, onDirty }: UsernamePartProps) {
+export function UsernamePart({ username, onChange }: UsernamePartProps) {
     const { t } = useTranslation();
     const { currentUser } = useApi();
     const server = currentUser?.server || '';
@@ -22,7 +21,7 @@ export function UsernamePart({ username, onChange, onDirty }: UsernamePartProps)
             <InputGroup>
                 <InputGroupInput
                     value={username ?? currentUser?.username ?? ''}
-                    onChange={e => { onChange(e.target.value); onDirty(); }}
+                    onChange={e => onChange(e.target.value)}
                     placeholder={currentUser?.username}
                     maxLength={32}
                 />

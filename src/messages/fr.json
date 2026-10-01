@@ -753,6 +753,30 @@
     "empty_pending": "Aucune demande en attente.",
     "empty_pending_hint": "Quand quelqu'un demande à vous suivre, cela apparaîtra ici.",
     "request_accepted": "Demande acceptée.",
-    "request_rejected": "Demande rejetée."
+    "request_rejected": "Demande rejetée.",
+    "description": "Gérez qui vous suit, qui vous suivez, et vos options de confidentialité.",
+    "quick_title": "Accès rapide",
+    "settings_title": "Paramètres",
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "back": "Retour",
+    "settings": {
+      "hide_followers_title": "Masquer mes abonnés",
+      "hide_followers_desc": "Vous seul pouvez voir la liste des personnes qui vous suivent.",
+      "hide_following_title": "Masquer mes abonnements",
+      "hide_following_desc": "Vous seul pouvez voir la liste des personnes que vous suivez.",
+      "policy_title": "Demandes d'abonnement",
+      "policy_auto_accept": "Acceptation automatique",
+      "policy_auto_accept_desc": "Tout le monde peut vous suivre immédiatement.",
+      "policy_manual_accept": "Acceptation manuelle",
+      "policy_manual_accept_desc": "Les demandes d'abonnement doivent être approuvées par vous.",
+      "policy_auto_reject": "Refus automatique",
+      "policy_auto_reject_desc": "Les demandes d'abonnement sont refusées automatiquement.",
+      "policy_confirm_title": "Demandes d'abonnement en attente",
+      "policy_confirm_auto_accept": "{{pending}} demande(s) d'abonnement en attente seront acceptées.",
+      "policy_confirm_auto_reject": "{{pending}} demande(s) d'abonnement en attente seront refusées.",
+      "discoverable_title": "Visible dans les recherches",
+      "discoverable_desc": "Permettez aux autres de vous trouver dans la recherche et les suggestions."
+    }
   }
 }

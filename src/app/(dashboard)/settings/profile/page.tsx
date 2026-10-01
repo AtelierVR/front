@@ -12,7 +12,7 @@ import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { ImageInput } from '@/components/ui/image-input';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
-import { cn } from '@/lib/utils';
+import { cn, sameValues } from '@/lib/utils';
 import { PresenceIcon, PRESENCE_OPTIONS } from '@/lib/presences';
 import { useCountries } from '@/lib/hooks/useCountries';
 import { useLanguages } from '@/lib/hooks/useLanguages';
@@ -51,7 +51,6 @@ export default function ProfilePage() {
     const [selectedLng, setSelectedLng] = useState<string[] | undefined>();
 
     const [saving, setSaving] = useState(false);
-    const [dirty, setDirty] = useState(false);
     const [presenceOpen, setPresenceOpen] = useState(false);
 
     const { countries, loading: ctyLoading } = useCountries();
@@ -66,10 +65,7 @@ export default function ProfilePage() {
         setPresenceStatus(undefined);
         setThumbnail(undefined);
         setBanner(undefined);
-        setDirty(false);
     }, [currentUser?.id]);
-
-    const markDirty = () => setDirty(true);
 
     const getDisplay = () => display ?? currentUser?.display ?? '';
     const getBio = () => bio ?? currentUser?.bio ?? '';
@@ -78,6 +74,24 @@ export default function ProfilePage() {
     const getPresenceStatus = () => presenceStatus ?? currentUser?.presence?.text ?? '';
     const getThumbnail = () => thumbnail !== undefined ? thumbnail : cleanImageUrl(currentUser?.thumbnail);
     const getBanner = () => banner !== undefined ? banner : cleanImageUrl(currentUser?.banner);
+
+    // Save is enabled only while a field actually differs from the stored value —
+    // reverting a change disables it again.
+    const currentCty = (currentUser?.tags ?? []).filter(t => t.startsWith(CTY_TAG)).map(t => t.slice(CTY_TAG.length));
+    const currentLng = (currentUser?.tags ?? []).filter(t => t.startsWith(LNG_TAG)).map(t => t.slice(LNG_TAG.length));
+    const sameCodes = (a: readonly string[], b: readonly string[]) =>
+        sameValues(a.map(c => c.toLowerCase()), b.map(c => c.toLowerCase()));
+
+    const dirty =
+        (display !== undefined && display !== (currentUser?.display ?? '')) ||
+        (bio !== undefined && bio !== (currentUser?.bio ?? '')) ||
+        (pronoun !== undefined && pronoun !== (currentUser?.pronoun ?? '')) ||
+        (presence !== undefined && presence !== (currentUser?.presence?.status ?? 'offline')) ||
+        (presenceStatus !== undefined && presenceStatus !== (currentUser?.presence?.text ?? '')) ||
+        (thumbnail !== undefined && thumbnail !== cleanImageUrl(currentUser?.thumbnail)) ||
+        (banner !== undefined && banner !== cleanImageUrl(currentUser?.banner)) ||
+        (selectedCty !== undefined && !sameCodes(selectedCty, currentCty)) ||
+        (selectedLng !== undefined && !sameCodes(selectedLng, currentLng));
 
     const handleSave = async () => {
         if (!dirty || saving) return;
@@ -126,7 +140,6 @@ export default function ProfilePage() {
             setPresenceStatus(undefined);
             setThumbnail(undefined);
             setBanner(undefined);
-            setDirty(false);
             notify(t('settings.profile.saved'), { type: 'success' });
         } catch (e: any) {
             notify(e?.message ?? t('common.error'), { type: 'danger' });
@@ -168,7 +181,7 @@ export default function ProfilePage() {
                             <h2 className="text-base font-semibold">{t('settings.profile.display.title')}</h2>
                             <TextInput
                                 value={getDisplay()}
-                                onChange={v => { setDisplay(v); markDirty(); }}
+                                onChange={setDisplay}
                                 placeholder={currentUser.display || currentUser.username}
                                 maxLength={50}
                             />
@@ -179,7 +192,7 @@ export default function ProfilePage() {
                             <h2 className="text-base font-semibold">{t('settings.profile.bio.title')}</h2>
                             <MarkdownAreaInput
                                 value={getBio()}
-                                onChange={v => { setBio(v); markDirty(); }}
+                                onChange={setBio}
                                 placeholder={t('settings.profile.bio.placeholder')}
                                 rows={8}
                             />
@@ -190,7 +203,7 @@ export default function ProfilePage() {
                             <h2 className="text-base font-semibold">{t('settings.profile.pronoun.title')}</h2>
                             <TextInput
                                 value={getPronoun()}
-                                onChange={v => { setPronoun(v); markDirty(); }}
+                                onChange={setPronoun}
                                 placeholder="they/them"
                                 maxLength={20}
                             />
@@ -216,12 +229,12 @@ export default function ProfilePage() {
                                         label: t(opt.label_key),
                                         icon: <span className="mr-2">{opt.icon}</span>,
                                         active: getPresence() === opt.id,
-                                        onClick: () => { setPresence(opt.id); markDirty(); },
+                                        onClick: () => setPresence(opt.id),
                                     }))}
                                 />
                                 <InputGroupInput
                                     value={getPresenceStatus()}
-                                    onChange={e => { setPresenceStatus(e.target.value); markDirty(); }}
+                                    onChange={e => setPresenceStatus(e.target.value)}
                                     placeholder={t('settings.profile.presence.placeholder')}
                                 />
                             </InputGroup>
@@ -237,7 +250,7 @@ export default function ProfilePage() {
                                     countries={countries}
                                     loading={ctyLoading}
                                     selected={selectedCty ?? currentUser.tags.filter(t => t.startsWith(CTY_TAG)).map(t => t.slice(CTY_TAG.length))}
-                                    onChange={codes => { setSelectedCty(codes); markDirty(); }}
+                                    onChange={setSelectedCty}
                                 />
                             </section>
                             <section className="space-y-2">
@@ -247,7 +260,7 @@ export default function ProfilePage() {
                                     languages={languages}
                                     loading={lngLoading}
                                     selected={selectedLng ?? currentUser.tags.filter(t => t.startsWith(LNG_TAG)).map(t => t.slice(LNG_TAG.length))}
-                                    onChange={codes => { setSelectedLng(codes); markDirty(); }}
+                                    onChange={setSelectedLng}
                                 />
                             </section>
                         </div>
@@ -261,7 +274,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-muted-foreground">{t('settings.profile.images.thumbnail_desc')}</p>
                             <ImageInput
                                 value={getThumbnail()}
-                                onChange={dataUrl => { setThumbnail(dataUrl); markDirty(); }}
+                                onChange={setThumbnail}
                                 alt={currentUser.display ?? currentUser.username}
                                 aspectRatio="1/1"
                                 className="w-full"
@@ -274,7 +287,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-muted-foreground">{t('settings.profile.images.banner_desc')}</p>
                             <ImageInput
                                 value={getBanner()}
-                                onChange={dataUrl => { setBanner(dataUrl); markDirty(); }}
+                                onChange={setBanner}
                                 alt={currentUser.display ?? currentUser.username}
                                 aspectRatio="4/3"
                                 className="w-full"

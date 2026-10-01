@@ -759,6 +759,30 @@
     "empty_pending": "Sin solicitudes pendientes.",
     "empty_pending_hint": "Cuando alguien solicite seguirte, aparecerá aquí.",
     "request_accepted": "Solicitud aceptada.",
-    "request_rejected": "Solicitud rechazada."
+    "request_rejected": "Solicitud rechazada.",
+    "description": "Gestiona quién te sigue, a quién sigues y tus opciones de privacidad.",
+    "quick_title": "Acceso rápido",
+    "settings_title": "Ajustes",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "back": "Atrás",
+    "settings": {
+      "hide_followers_title": "Ocultar mis seguidores",
+      "hide_followers_desc": "Solo tú puedes ver la lista de personas que te siguen.",
+      "hide_following_title": "Ocultar a quién sigo",
+      "hide_following_desc": "Solo tú puedes ver la lista de personas que sigues.",
+      "policy_title": "Solicitudes de seguimiento",
+      "policy_auto_accept": "Aceptar automáticamente",
+      "policy_auto_accept_desc": "Cualquiera puede seguirte al instante.",
+      "policy_manual_accept": "Aceptar manualmente",
+      "policy_manual_accept_desc": "Las solicitudes deben ser aprobadas por ti.",
+      "policy_auto_reject": "Rechazar automáticamente",
+      "policy_auto_reject_desc": "Las solicitudes de seguimiento se rechazan automáticamente.",
+      "policy_confirm_title": "Solicitudes de seguimiento pendientes",
+      "policy_confirm_auto_accept": "Se aceptarán {{pending}} solicitud(es) de seguimiento pendientes.",
+      "policy_confirm_auto_reject": "Se rechazarán {{pending}} solicitud(es) de seguimiento pendientes.",
+      "discoverable_title": "Visible en búsquedas",
+      "discoverable_desc": "Permite que otros te encuentren en la búsqueda y las sugerencias."
+    }
   }
 }

@@ -753,6 +753,30 @@
     "empty_pending": "Нет ожидающих запросов.",
     "empty_pending_hint": "Когда кто-то запросит подписку, запрос появится здесь.",
     "request_accepted": "Запрос принят.",
-    "request_rejected": "Запрос отклонён."
+    "request_rejected": "Запрос отклонён.",
+    "description": "Управляйте тем, кто на вас подписан, на кого подписаны вы, и параметрами приватности.",
+    "quick_title": "Быстрый доступ",
+    "settings_title": "Настройки",
+    "accept": "Принять",
+    "reject": "Отклонить",
+    "back": "Назад",
+    "settings": {
+      "hide_followers_title": "Скрыть подписчиков",
+      "hide_followers_desc": "Только вы видите список тех, кто на вас подписан.",
+      "hide_following_title": "Скрыть подписки",
+      "hide_following_desc": "Только вы видите список тех, на кого вы подписаны.",
+      "policy_title": "Запросы на подписку",
+      "policy_auto_accept": "Автопринятие",
+      "policy_auto_accept_desc": "Любой может подписаться на вас сразу.",
+      "policy_manual_accept": "Ручное принятие",
+      "policy_manual_accept_desc": "Запросы должны быть одобрены вами.",
+      "policy_auto_reject": "Автоотклонение",
+      "policy_auto_reject_desc": "Запросы на подписку отклоняются автоматически.",
+      "policy_confirm_title": "Ожидающие запросы на подписку",
+      "policy_confirm_auto_accept": "{{pending}} ожидающих запросов на подписку будут приняты.",
+      "policy_confirm_auto_reject": "{{pending}} ожидающих запросов на подписку будут отклонены.",
+      "discoverable_title": "Виден в поиске",
+      "discoverable_desc": "Разрешите другим находить вас в поиске и рекомендациях."
+    }
   }
 }

@@ -1,299 +1,253 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
+import { Card, Cards } from 'fumadocs-ui/components/card';
 import { PageTitle } from '@/components/shared/PageTitle';
 import { SiteHeader } from '@/components/site-header';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApi } from '@/lib/api/context';
-import { getFollowers, getFollowing, getFriends, getUser, respondToRequest } from '@/lib/api/users';
-import type { ApiUser } from '@/types/api';
-import { getAlias } from '@/lib/api';
-import { noxIdToSegment } from '@/types/nox-identifier';
-import {
-    ResultList,
-    SkeletonList,
-    EmptyBox,
-    PageNav,
-} from '@/components/shared/ResultGrid';
-import { AvatarWithPresence } from '@/components/ui/avatar-with-presence';
+import { getFollowers, updateCurrentUser } from '@/lib/api/users';
+import { ModalDrawer } from '@/components/shared/ModalDrawer';
 import { notify } from '@/components/ui/notify';
-import { cn } from '@/lib/utils';
+import { sameValues } from '@/lib/utils';
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Quick access ─────────────────────────────────────────────────────────────
 
-type TabKey = 'followers' | 'following' | 'friends' | 'pending';
+const PAGES = [
+    { key: 'followers', href: '/settings/relations/followers', icon: 'material-symbols:group-remove-rounded' },
+    { key: 'following', href: '/settings/relations/following', icon: 'material-symbols:group-add-rounded' },
+    { key: 'friends', href: '/settings/relations/friends', icon: 'material-symbols:diversity-3-rounded' },
+    { key: 'pending', href: '/settings/relations/pending', icon: 'material-symbols:pending-actions-rounded' },
+] as const;
 
-interface TabDef {
-    key: TabKey;
+// ── Follow-request policy (mutually exclusive) ───────────────────────────────
+// `auto_accept` is the default and stores no tag.
+
+const POLICY_MODES = ['auto_accept', 'manual_accept', 'auto_reject'] as const;
+type PolicyMode = typeof POLICY_MODES[number];
+
+const POLICY_TAGS: Record<PolicyMode, string | null> = {
+    auto_accept: null,
+    manual_accept: 'usr:manual_follow',
+    auto_reject: 'usr:auto_reject_follow',
+};
+
+const ALL_POLICY_TAGS = Object.values(POLICY_TAGS).filter((t): t is string => t !== null);
+
+// ── Independent privacy switches ─────────────────────────────────────────────
+// Mirrors User.isHideFollowers / isHideFollowing / isDiscoverable in
+// node/src/users/user.model.ts (all backed by `usr:*` tags).
+
+interface PrivacyOption {
+    /** Tag value, stored as `usr:<tag>`. */
+    tag: string;
+    /** When true, the switch being ON means the tag is present. */
+    positive: boolean;
     title: string;
-    icon: string;
     description: string;
 }
 
-// ── User Row (list mode, matches /search style) ──────────────────────────────
-
-function UserRow({ user: u, localAddress }: { user: ApiUser; localAddress: string }) {
-    const displayName = u.display || u.username || '?';
-    const identifier = getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid') || '';
-    const rawId = getAlias(u.alias, 'uid') ?? getAlias(u.alias, 'iid') ?? `${u.id}@${u.server}`;
-    const href = `/u/${noxIdToSegment(rawId, localAddress)}`;
-
-    return (
-        <Link
-            href={href}
-            className={cn(
-                buttonVariants({ variant: 'outline', size: 'default' }),
-                'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
-            )}
-        >
-            <AvatarWithPresence
-                presence={u.presence.status}
-                size="lg"
-                src={u.thumbnail}
-                alt={displayName}
-                name={displayName}
-                letterClassName="text-lg"
-                avatarClassName="h-12 w-12"
-            />
-            <div className="min-w-0">
-                <p className="font-bold text-lg">{displayName}</p>
-                {identifier && (
-                    <p className="text-sm text-muted-foreground">{identifier}</p>
-                )}
-            </div>
-        </Link>
-    );
-}
-
-// ── Pending Row (list mode with accept/reject actions) ────────────────────────
-
-function PendingRow({ user: u, onAccept, onReject }: {
-    user: ApiUser;
-    onAccept: () => void;
-    onReject: () => void;
-}) {
-    const displayName = u.display || u.username || '?';
-    const identifier = getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid') || '';
-
-    return (
-        <div
-            className={cn(
-                buttonVariants({ variant: 'outline', size: 'default' }),
-                'w-full justify-start h-auto py-3 px-6 flex items-center gap-4 cursor-default hover:bg-background',
-            )}
-        >
-            <AvatarWithPresence
-                presence={u.presence.status}
-                size="lg"
-                src={u.thumbnail}
-                alt={displayName}
-                name={displayName}
-                letterClassName="text-lg"
-                avatarClassName="h-12 w-12"
-            />
-            <div className="min-w-0 flex-1">
-                <p className="font-bold text-lg">{displayName}</p>
-                {identifier && (
-                    <p className="text-sm text-muted-foreground">{identifier}</p>
-                )}
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-                <Button variant="outline" size="sm" onClick={onAccept}>
-                    <Icon icon="material-symbols:check-rounded" className="size-4 mr-1" />
-                    Accept
-                </Button>
-                <Button variant="outline" size="sm" onClick={onReject}
-                    className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                    <Icon icon="material-symbols:close-rounded" className="size-4 mr-1" />
-                    Reject
-                </Button>
-            </div>
-        </div>
-    );
-}
-
-// ── Tab Content ───────────────────────────────────────────────────────────────
-
-function RelationTab({ tab, query }: { tab: TabKey; query: string }) {
-    const { t } = useTranslation();
-    const { currentUser, wellKnown } = useApi();
-    const localAddress = wellKnown?.address ?? '::';
-
-    const [items, setItems] = useState<ApiUser[]>([]);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const limit = 20;
-
-    const load = useCallback(async () => {
-        if (!currentUser) return;
-        setLoading(true);
-        try {
-            const offset = (page - 1) * limit;
-
-            if (tab === 'followers') {
-                const res = await getFollowers(currentUser.id, limit, offset);
-                const refs = res.items.map(r => r.initiator);
-                const settled = await Promise.allSettled(refs.map(ref => getUser(ref)));
-                setItems(settled.filter((r): r is PromiseFulfilledResult<ApiUser> => r.status === 'fulfilled').map(r => r.value));
-                setTotal(res.total);
-            } else if (tab === 'following') {
-                const res = await getFollowing(currentUser.id, limit, offset);
-                const refs = res.items.map(r => r.target);
-                const settled = await Promise.allSettled(refs.map(ref => getUser(ref)));
-                setItems(settled.filter((r): r is PromiseFulfilledResult<ApiUser> => r.status === 'fulfilled').map(r => r.value));
-                setTotal(res.total);
-            } else if (tab === 'friends') {
-                const res = await getFriends(currentUser.id, limit, offset);
-                const refs = res.items.map(r => r.out.target);
-                const settled = await Promise.allSettled(refs.map(ref => getUser(ref)));
-                setItems(settled.filter((r): r is PromiseFulfilledResult<ApiUser> => r.status === 'fulfilled').map(r => r.value));
-                setTotal(res.total);
-            } else if (tab === 'pending') {
-                // Pending: followers with type=REQUEST
-                const res = await getFollowers(currentUser.id, 100, 0);
-                const pendingRefs = res.items
-                    .filter(r => r.type === 'request')
-                    .map(r => r.initiator);
-                setTotal(pendingRefs.length);
-                const settled = await Promise.allSettled(
-                    pendingRefs.slice(offset, offset + limit).map(ref => getUser(ref))
-                );
-                setItems(settled.filter((r): r is PromiseFulfilledResult<ApiUser> => r.status === 'fulfilled').map(r => r.value));
-            }
-        } catch {
-            setItems([]);
-            setTotal(0);
-        } finally {
-            setLoading(false);
-        }
-    }, [currentUser, tab, page]);
-
-    useEffect(() => { load(); }, [load]);
-
-    const handleAccept = async (initiatorRef: string) => {
-        try {
-            await respondToRequest(initiatorRef, true);
-            notify(t('relations.request_accepted'), { type: 'success' });
-            load();
-        } catch (e: any) {
-            notify(e?.message ?? t('common.error'), { type: 'danger' });
-        }
-    };
-
-    const handleReject = async (initiatorRef: string) => {
-        try {
-            await respondToRequest(initiatorRef, false);
-            notify(t('relations.request_rejected'), { type: 'success' });
-            load();
-        } catch (e: any) {
-            notify(e?.message ?? t('common.error'), { type: 'danger' });
-        }
-    };
-
-    if (loading) return <SkeletonList count={5} />;
-    if (items.length === 0) return <EmptyBox>{t(`relations.empty_${tab}`)}</EmptyBox>;
-
-    const filtered = query
-        ? items.filter(u =>
-            (u.display || u.username || '').toLowerCase().includes(query.toLowerCase())
-        )
-        : items;
-
-    if (filtered.length === 0) return <EmptyBox>{t('common.no_results')}</EmptyBox>;
-
-    return (
-        <div className="space-y-4">
-            <ResultList>
-                {filtered.map((u) => {
-                    if (tab === 'pending') {
-                        const ref = getAlias(u.alias, 'uid') || getAlias(u.alias, 'iid') || '';
-                        return (
-                            <PendingRow
-                                key={u.id}
-                                user={u}
-                                onAccept={() => handleAccept(ref)}
-                                onReject={() => handleReject(ref)}
-                            />
-                        );
-                    }
-                    return (
-                        <UserRow
-                            key={u.id}
-                            user={u}
-                            localAddress={localAddress}
-                        />
-                    );
-                })}
-            </ResultList>
-            <PageNav page={page} total={total} limit={limit} onPage={setPage} />
-        </div>
-    );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
-
-const TABS: TabDef[] = [
-    { key: 'followers', title: 'relations.tab_followers', icon: 'material-symbols:group-remove-rounded', description: 'relations.desc_followers' },
-    { key: 'following', title: 'relations.tab_following', icon: 'material-symbols:group-add-rounded', description: 'relations.desc_following' },
-    { key: 'friends', title: 'relations.tab_friends', icon: 'material-symbols:diversity-3-rounded', description: 'relations.desc_friends' },
-    { key: 'pending', title: 'relations.tab_pending', icon: 'material-symbols:pending-actions-rounded', description: 'relations.desc_pending' },
+const PRIVACY_OPTIONS: PrivacyOption[] = [
+    { tag: 'hide_followers', positive: true, title: 'relations.settings.hide_followers_title', description: 'relations.settings.hide_followers_desc' },
+    { tag: 'hide_following', positive: true, title: 'relations.settings.hide_following_title', description: 'relations.settings.hide_following_desc' },
+    { tag: 'no_discover', positive: false, title: 'relations.settings.discoverable_title', description: 'relations.settings.discoverable_desc' },
 ];
 
 export default function RelationsPage() {
     const { t } = useTranslation();
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const activeTab = (searchParams.get('tab') as TabKey) || 'followers';
-    const [query, setQuery] = useState('');
-    const activeDef = TABS.find(d => d.key === activeTab)!;
+    const { currentUser } = useApi();
+
+    const [tags, setTags] = useState<string[] | undefined>();
+    const [saving, setSaving] = useState(false);
+    const [pendingCount, setPendingCount] = useState(0);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
+    const currentUserId = currentUser?.id;
+
+    useEffect(() => {
+        setTags(undefined);
+    }, [currentUser?.id]);
+
+    // Pending requests are needed to warn before switching to an auto policy.
+    useEffect(() => {
+        if (currentUserId === undefined) return;
+        let cancelled = false;
+        getFollowers(currentUserId, 100, 0)
+            .then(res => {
+                if (!cancelled) setPendingCount(res.items.filter(r => r.type === 'request').length);
+            })
+            .catch(() => {
+                if (!cancelled) setPendingCount(0);
+            });
+        return () => { cancelled = true; };
+    }, [currentUserId]);
+
+    if (!currentUser) return null;
+
+    const originalTags = (currentUser.tags ?? []).filter(tag => tag.startsWith('usr:'));
+    const usrTags = tags ?? originalTags;
+    const has = (value: string) => usrTags.includes(`usr:${value}`);
+
+    // Save is enabled only while the edited tags actually differ from the stored ones —
+    // reverting a change disables it again.
+    const dirty = tags !== undefined && !sameValues(usrTags, originalTags);
+
+    const commit = (next: string[]) => setTags(next);
+
+    const setPrivacy = (option: PrivacyOption, checked: boolean) => {
+        const tag = `usr:${option.tag}`;
+        const shouldHave = option.positive ? checked : !checked;
+        commit(shouldHave
+            ? [...new Set([...usrTags, tag])]
+            : usrTags.filter(existing => existing !== tag));
+    };
+
+    const policyMode: PolicyMode = has('manual_follow')
+        ? 'manual_accept'
+        : has('auto_reject_follow')
+            ? 'auto_reject'
+            : 'auto_accept';
+
+    const setPolicyMode = (mode: string) => {
+        const withoutPolicy = usrTags.filter(existing => !ALL_POLICY_TAGS.includes(existing));
+        const tag = POLICY_TAGS[mode as PolicyMode];
+        commit(tag ? [...withoutPolicy, tag] : withoutPolicy);
+    };
+
+    const save = async () => {
+        if (saving) return;
+        setSaving(true);
+        try {
+            await updateCurrentUser({ tags: usrTags });
+            setTags(undefined);
+            setConfirmOpen(false);
+            notify(t('settings.profile.saved'), { type: 'success' });
+        } catch (err) {
+            notify((err as Error)?.message ?? t('common.error'), { type: 'danger' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSave = () => {
+        if (!dirty || saving) return;
+        // Switching to an auto policy resolves the pending requests — warn first.
+        if ((policyMode === 'auto_accept' || policyMode === 'auto_reject') && pendingCount > 0) {
+            setConfirmOpen(true);
+            return;
+        }
+        void save();
+    };
 
     return (
-        <Suspense fallback={<div className="p-4 md:p-6"><SkeletonList count={5} /></div>}>
+        <>
             <PageTitle title={t('relations.title')} />
             <SiteHeader
-                children={t('relations.title')}
-                subtitle={t(activeDef.description)}
+                subtitle={t('relations.description')}
                 after={
-                    <div className="relative">
-                        <Icon
-                            icon="material-symbols:search-rounded"
-                            className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
-                        />
-                        <Input
-                            value={query}
-                            onChange={e => setQuery(e.target.value)}
-                            placeholder={t('relations.search_placeholder')}
-                            className="pl-8 h-8 w-44 text-sm"
-                        />
+                    <Button onClick={handleSave} disabled={!dirty || saving} size="sm">
+                        {saving ? (
+                            <>
+                                <Icon icon="material-symbols:progress-activity" className="size-4 mr-1.5 animate-spin" />
+                                {t('settings.profile.saving')}
+                            </>
+                        ) : (
+                            <>
+                                <Icon icon="material-symbols:save-rounded" className="size-4 mr-1.5" />
+                                {t('settings.profile.save')}
+                            </>
+                        )}
+                    </Button>
+                }
+            >
+                {t('relations.title')}
+            </SiteHeader>
+
+            <div className="p-4 md:p-6 space-y-8">
+                {/* ── Quick ─────────────────────────────────────────────── */}
+                <section className="space-y-2">
+                    <h2 className="font-heading text-xl font-semibold">{t('relations.quick_title')}</h2>
+
+                    <Cards>
+                        {PAGES.map(page => (
+                            <Card
+                                key={page.key}
+                                href={page.href}
+                                icon={<Icon icon={page.icon} aria-hidden />}
+                                title={t(`relations.tab_${page.key}`)}
+                                description={t(`relations.desc_${page.key}`)}
+                            />
+                        ))}
+                    </Cards>
+                </section>
+
+                {/* ── Settings ──────────────────────────────────────────── */}
+                <section className="space-y-6">
+                    <h2 className="font-heading text-xl font-semibold">{t('relations.settings_title')}</h2>
+
+                    {/* Follow policy */}
+                    <div className="space-y-2">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <h3 className="text-base font-semibold">{t('relations.settings.policy_title')}</h3>
+                            <Tabs value={policyMode} onValueChange={setPolicyMode}>
+                                <TabsList>
+                                    {POLICY_MODES.map(mode => (
+                                        <TabsTrigger key={mode} value={mode}>
+                                            {t(`relations.settings.policy_${mode}`)}
+                                        </TabsTrigger>
+                                    ))}
+                                </TabsList>
+                            </Tabs>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                            {t(`relations.settings.policy_${policyMode}_desc`)}
+                        </p>
+                    </div>
+
+                    {/* Privacy switches */}
+                    {PRIVACY_OPTIONS.map(option => (
+                        <div key={option.tag} id={option.tag} className="space-y-2">
+                            <div className="flex items-center justify-between gap-4">
+                                <h3 className="text-base font-semibold">{t(option.title)}</h3>
+                                <Switch
+                                    checked={option.positive ? has(option.tag) : !has(option.tag)}
+                                    onCheckedChange={(next) => setPrivacy(option, next)}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <p className="text-sm text-muted-foreground">{t(option.description)}</p>
+                        </div>
+                    ))}
+                </section>
+            </div>
+
+            <ModalDrawer
+                open={confirmOpen}
+                onOpenChange={setConfirmOpen}
+                header={t('relations.settings.policy_confirm_title')}
+                footer={
+                    <div className="flex w-full justify-end gap-2">
+                        <Button variant="ghost" onClick={() => setConfirmOpen(false)} disabled={saving}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button
+                            onClick={() => void save()}
+                            disabled={saving}
+                            variant={policyMode === 'auto_reject' ? 'destructive' : 'default'}
+                        >
+                            {t('common.confirm')}
+                        </Button>
                     </div>
                 }
-            />
-
-            <div className="p-4 md:p-6">
-                <Tabs value={activeTab} onValueChange={(v) => router.replace(`${pathname}?tab=${v}`)}>
-                    <TabsList className="w-full justify-start">
-                        {TABS.map(tab => (
-                            <TabsTrigger key={tab.key} value={tab.key} className="gap-1.5">
-                                <Icon icon={tab.icon} className="size-4" />
-                                {t(tab.title)}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-
-                    {/* Only mount the active tab to avoid N parallel API calls on page load */}
-                    <TabsContent value={activeTab} className="mt-4">
-                        <RelationTab tab={activeTab} query={query} />
-                    </TabsContent>
-                </Tabs>
-            </div>
-        </Suspense>
+            >
+                <p className="text-sm text-muted-foreground">
+                    {t(`relations.settings.policy_confirm_${policyMode}`, { pending: pendingCount })}
+                </p>
+            </ModalDrawer>
+        </>
     );
 }

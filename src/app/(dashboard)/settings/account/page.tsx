@@ -15,6 +15,7 @@ import { TwoFAPart } from './TwoFAPart';
 import { PasskeysPart } from './PasskeysPart';
 import { DeleteAccountPart } from './DeleteAccountPart';
 import { notify } from '@/components/ui/notify';
+import { sameValues } from '@/lib/utils';
 
 export default function AccountPage() {
     const { t } = useTranslation();
@@ -24,17 +25,19 @@ export default function AccountPage() {
     const [tags, setTags] = useState<string[] | undefined>();
 
     const [saving, setSaving] = useState(false);
-    const [dirty, setDirty] = useState(false);
 
     useEffect(() => {
         setUsername(undefined);
         setTags(undefined);
-        setDirty(false);
     }, [currentUser?.id]);
 
-    const markDirty = () => setDirty(true);
-
     const getTags = () => tags ?? currentUser?.tags ?? [];
+
+    // Save is enabled only while a field actually differs from the stored value.
+    const originalUsrTags = (currentUser?.tags ?? []).filter(tag => tag.startsWith('usr:'));
+    const dirty =
+        (username !== undefined && username !== (currentUser?.username ?? '')) ||
+        (tags !== undefined && !sameValues(tags, originalUsrTags));
 
     const handleSave = async () => {
         if (!dirty || saving) return;
@@ -46,7 +49,6 @@ export default function AccountPage() {
             });
             setUsername(undefined);
             setTags(undefined);
-            setDirty(false);
             notify(t('settings.profile.saved'), { type: 'success' });
         } catch (e: any) {
             console.error('Error', e);
@@ -86,13 +88,11 @@ export default function AccountPage() {
                     <UsernamePart
                         username={username}
                         onChange={setUsername}
-                        onDirty={markDirty}
                     />
 
                     <TagsPart
                         tags={getTags()}
-                        onChange={next => { setTags(next); markDirty(); }}
-                        onDirty={markDirty}
+                        onChange={setTags}
                     />
 
                     <EmailPart />

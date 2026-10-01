@@ -759,6 +759,30 @@
     "empty_pending": "Keine ausstehenden Anfragen.",
     "empty_pending_hint": "Wenn jemand dir folgen möchte, erscheint die Anfrage hier.",
     "request_accepted": "Anfrage akzeptiert.",
-    "request_rejected": "Anfrage abgelehnt."
+    "request_rejected": "Anfrage abgelehnt.",
+    "description": "Verwalte, wer dir folgt, wem du folgst, und deine Privatsphäre-Optionen.",
+    "quick_title": "Schnellzugriff",
+    "settings_title": "Einstellungen",
+    "accept": "Annehmen",
+    "reject": "Ablehnen",
+    "back": "Zurück",
+    "settings": {
+      "hide_followers_title": "Meine Follower verbergen",
+      "hide_followers_desc": "Nur du kannst sehen, wer dir folgt.",
+      "hide_following_title": "Meine Abonnements verbergen",
+      "hide_following_desc": "Nur du kannst sehen, wem du folgst.",
+      "policy_title": "Folgeanfragen",
+      "policy_auto_accept": "Automatisch annehmen",
+      "policy_auto_accept_desc": "Jeder kann dir sofort folgen.",
+      "policy_manual_accept": "Manuell annehmen",
+      "policy_manual_accept_desc": "Folgeanfragen müssen von dir bestätigt werden.",
+      "policy_auto_reject": "Automatisch ablehnen",
+      "policy_auto_reject_desc": "Folgeanfragen werden automatisch abgelehnt.",
+      "policy_confirm_title": "Ausstehende Folgeanfragen",
+      "policy_confirm_auto_accept": "{{pending}} ausstehende Folgeanfrage(n) werden angenommen.",
+      "policy_confirm_auto_reject": "{{pending}} ausstehende Folgeanfrage(n) werden abgelehnt.",
+      "discoverable_title": "Auffindbar",
+      "discoverable_desc": "Andere können dich in Suche und Vorschlägen finden."
+    }
   }
 }

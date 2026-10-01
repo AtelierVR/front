@@ -753,6 +753,31 @@
     "empty_pending": "没有待处理的请求。",
     "empty_pending_hint": "当有人请求关注你时，请求会显示在这里。",
     "request_accepted": "请求已接受。",
-    "request_rejected": "请求已拒绝。"
+    "request_accepted": "请求已接受。",
+    "request_rejected": "请求已拒绝。",
+    "description": "管理谁关注你、你关注谁，以及你的隐私选项。",
+    "quick_title": "快捷",
+    "settings_title": "设置",
+    "accept": "接受",
+    "reject": "拒绝",
+    "back": "返回",
+    "settings": {
+      "hide_followers_title": "隐藏我的关注者",
+      "hide_followers_desc": "只有你能看到关注你的人。",
+      "hide_following_title": "隐藏我的关注",
+      "hide_following_desc": "只有你能看到你关注的人。",
+      "policy_title": "关注请求",
+      "policy_auto_accept": "自动接受",
+      "policy_auto_accept_desc": "任何人都可以立即关注你。",
+      "policy_manual_accept": "手动接受",
+      "policy_manual_accept_desc": "关注请求需经你批准。",
+      "policy_auto_reject": "自动拒绝",
+      "policy_auto_reject_desc": "关注请求会被自动拒绝。",
+      "policy_confirm_title": "待处理的关注请求",
+      "policy_confirm_auto_accept": "将接受 {{pending}} 个待处理的关注请求。",
+      "policy_confirm_auto_reject": "将拒绝 {{pending}} 个待处理的关注请求。",
+      "discoverable_title": "在搜索中可见",
+      "discoverable_desc": "允许他人在搜索和建议中找到你。"
+    }
   }
 }

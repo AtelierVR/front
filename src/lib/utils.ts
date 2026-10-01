@@ -14,3 +14,8 @@ export function isHiddenTag(tag: string): boolean {
   return HIDDEN_TAG_PREFIXES.some((p) => tag.startsWith(p));
 }
 
+/** Order-insensitive comparison of two unique string lists. */
+export function sameValues(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((value) => b.includes(value));
+}
+

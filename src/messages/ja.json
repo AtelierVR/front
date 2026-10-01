@@ -753,6 +753,30 @@
     "empty_pending": "保留中のリクエストはありません。",
     "empty_pending_hint": "誰かがフォローをリクエストすると、ここに表示されます。",
     "request_accepted": "リクエストを承認しました。",
-    "request_rejected": "リクエストを拒否しました。"
+    "request_rejected": "リクエストを拒否しました。",
+    "description": "フォローしている人・フォロワー・プライバシー設定を管理します。",
+    "quick_title": "クイック",
+    "settings_title": "設定",
+    "accept": "承認",
+    "reject": "拒否",
+    "back": "戻る",
+    "settings": {
+      "hide_followers_title": "フォロワーを非表示",
+      "hide_followers_desc": "フォロワーの一覧を表示できるのはあなただけです。",
+      "hide_following_title": "フォロー中を非表示",
+      "hide_following_desc": "フォロー中の一覧を表示できるのはあなただけです。",
+      "policy_title": "フォローリクエスト",
+      "policy_auto_accept": "自動承認",
+      "policy_auto_accept_desc": "誰でもすぐにフォローできます。",
+      "policy_manual_accept": "手動承認",
+      "policy_manual_accept_desc": "フォローリクエストはあなたの承認が必要です。",
+      "policy_auto_reject": "自動拒否",
+      "policy_auto_reject_desc": "フォローリクエストは自動的に拒否されます。",
+      "policy_confirm_title": "保留中のフォローリクエスト",
+      "policy_confirm_auto_accept": "保留中のフォローリクエスト {{pending}} 件を承認します。",
+      "policy_confirm_auto_reject": "保留中のフォローリクエスト {{pending}} 件を拒否します。",
+      "discoverable_title": "検索に表示",
+      "discoverable_desc": "検索やおすすめにあなたを表示します。"
+    }
   }
 }

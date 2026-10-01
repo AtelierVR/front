@@ -753,6 +753,30 @@
     "empty_pending": "No pending requests.",
     "empty_pending_hint": "When someone requests to follow you, it will appear here.",
     "request_accepted": "Request accepted.",
-    "request_rejected": "Request rejected."
+    "request_rejected": "Request rejected.",
+    "description": "Manage who follows you, who you follow, and your privacy options.",
+    "quick_title": "Quick",
+    "settings_title": "Settings",
+    "accept": "Accept",
+    "reject": "Reject",
+    "back": "Back",
+    "settings": {
+      "hide_followers_title": "Hide my followers",
+      "hide_followers_desc": "Only you can see the list of people who follow you.",
+      "hide_following_title": "Hide who I follow",
+      "hide_following_desc": "Only you can see the list of people you follow.",
+      "policy_title": "Follow requests",
+      "policy_auto_accept": "Auto accept",
+      "policy_auto_accept_desc": "Anyone can follow you instantly.",
+      "policy_manual_accept": "Manual accept",
+      "policy_manual_accept_desc": "Follow requests must be approved by you.",
+      "policy_auto_reject": "Auto refuse",
+      "policy_auto_reject_desc": "Follow requests are automatically refused.",
+      "policy_confirm_title": "Pending follow requests",
+      "policy_confirm_auto_accept": "{{pending}} pending follow request(s) will be accepted.",
+      "policy_confirm_auto_reject": "{{pending}} pending follow request(s) will be refused.",
+      "discoverable_title": "Discoverable",
+      "discoverable_desc": "Let others find you in search and suggestions."
+    }
   }
 }
