@@ -290,6 +290,18 @@
       "twofa": {
         "title": "Authentification à deux facteurs",
         "description": "Protégez votre compte avec une couche de sécurité supplémentaire."
+      },
+      "delete": {
+        "title": "Supprimer le compte",
+        "description": "Supprimez définitivement votre compte et toutes les données associées. Cette action est irréversible.",
+        "button": "Supprimer mon compte",
+        "confirm_title": "Supprimer votre compte ?",
+        "confirm_description": "Cela supprimera définitivement votre compte, vos sessions, vos passkeys et vos données. Saisissez votre nom d'utilisateur ({{username}}) pour confirmer.",
+        "confirm_placeholder": "Saisissez votre nom d'utilisateur",
+        "confirm_button": "Supprimer définitivement",
+        "deleting": "Suppression…",
+        "success": "Votre compte a été supprimé.",
+        "failed": "Impossible de supprimer le compte."
       }
     },
     "security": {

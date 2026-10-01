@@ -66,6 +66,17 @@ export async function updateCurrentUser(data: UpdateCurrentUserPayload): Promise
     return user;
 }
 
+/**
+ * DELETE /users/@me — permanently delete the authenticated account.
+ *
+ * Irreversible and security-sensitive, so the API answers `VERIFICATION_REQUIRED`;
+ * the global interceptor pops the verification modal and replays this request with
+ * a `factor_code`.
+ */
+export function deleteCurrentUser(): Promise<{ success: boolean }> {
+    return apiFetch<{ success: boolean }>('/users/@me', { method: 'DELETE' });
+}
+
 // Canonical definition lives in `@/types/verification`; re-exported for compatibility.
 export type { VerificationMethod } from '@/types/verification';
 

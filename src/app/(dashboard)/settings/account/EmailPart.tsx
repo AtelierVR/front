@@ -24,7 +24,7 @@ export function EmailPart(_props: EmailPartProps) {
     const [loading, setLoading] = useState(false);
 
     const hasEmail = !!currentUser?.email;
-    const isVerified = currentUser?.email_verified ?? false;
+    const isVerified = currentUser?.methods?.email === 'verified';
 
     // ── Handlers ──────────────────────────────────────────────────────────
 

@@ -404,6 +404,18 @@
   },
   "settings": {
     "account": {
+      "delete": {
+        "title": "Eliminar cuenta",
+        "description": "Elimina permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+        "button": "Eliminar mi cuenta",
+        "confirm_title": "¿Eliminar tu cuenta?",
+        "confirm_description": "Esto eliminará permanentemente tu cuenta, sesiones, passkeys y datos. Escribe tu nombre de usuario ({{username}}) para confirmar.",
+        "confirm_placeholder": "Escribe tu nombre de usuario",
+        "confirm_button": "Eliminar definitivamente",
+        "deleting": "Eliminando…",
+        "success": "Tu cuenta ha sido eliminada.",
+        "failed": "No se pudo eliminar la cuenta."
+      },
       "description": "Gestiona tu cuenta, nombre, etiquetas, correo y autenticación.",
       "email": {
         "description": "Tu correo para recuperación y notificaciones.",

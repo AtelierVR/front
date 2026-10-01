@@ -404,6 +404,18 @@
   },
   "settings": {
     "account": {
+      "delete": {
+        "title": "Konto löschen",
+        "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "button": "Mein Konto löschen",
+        "confirm_title": "Konto löschen?",
+        "confirm_description": "Dadurch werden Ihr Konto, Ihre Sitzungen, Passkeys und Daten dauerhaft gelöscht. Geben Sie Ihren Benutzernamen ({{username}}) zur Bestätigung ein.",
+        "confirm_placeholder": "Benutzernamen eingeben",
+        "confirm_button": "Endgültig löschen",
+        "deleting": "Wird gelöscht…",
+        "success": "Ihr Konto wurde gelöscht.",
+        "failed": "Das Konto konnte nicht gelöscht werden."
+      },
       "description": "Verwalten Sie Ihre Kontoeinstellungen, Benutzernamen, Tags, E-Mail und Zwei-Faktor-Authentifizierung.",
       "email": {
         "description": "Ihre E-Mail-Adresse für Wiederherstellung und Benachrichtigungen.",

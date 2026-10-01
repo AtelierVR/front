@@ -33,7 +33,7 @@ export function TwoFAPart(_props: TwoFAPartProps) {
 
     useEffect(() => {
         if (currentUser) {
-            setEnabled(currentUser.twofa_enabled || false);
+            setEnabled(currentUser.methods?.totp === 'enabled');
         }
     }, [currentUser]);
 

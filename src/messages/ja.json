@@ -398,6 +398,18 @@
   },
   "settings": {
     "account": {
+      "delete": {
+        "title": "アカウントを削除",
+        "description": "アカウントと関連するすべてのデータを完全に削除します。この操作は元に戻せません。",
+        "button": "アカウントを削除",
+        "confirm_title": "アカウントを削除しますか？",
+        "confirm_description": "アカウント、セッション、パスキー、データが完全に削除されます。確認するにはユーザー名（{{username}}）を入力してください。",
+        "confirm_placeholder": "ユーザー名を入力",
+        "confirm_button": "完全に削除",
+        "deleting": "削除中…",
+        "success": "アカウントを削除しました。",
+        "failed": "アカウントを削除できませんでした。"
+      },
       "description": "アカウント設定、ユーザー名、タグ、メール、二要素認証を管理します。",
       "email": {
         "description": "アカウント復旧と通知用のメールアドレス。",

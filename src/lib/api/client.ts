@@ -55,7 +55,7 @@ export function dispatchCurrentUserReplace(user: ApiCurrentUser): void {
 
 /**
  * Merge ApiUser fields into currentUser in ApiProvider.
- * Preserves ApiCurrentUser-only fields (email, twofa_enabled, etc.).
+ * Preserves ApiCurrentUser-only fields (email, methods, etc.).
  */
 export function registerCurrentUserMerge(fn: (user: ApiUser) => void): void {
   _currentUserMerge = fn;

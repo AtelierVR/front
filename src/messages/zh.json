@@ -398,6 +398,18 @@
   },
   "settings": {
     "account": {
+      "delete": {
+        "title": "删除账户",
+        "description": "永久删除你的账户及所有相关数据。此操作无法撤销。",
+        "button": "删除我的账户",
+        "confirm_title": "删除你的账户？",
+        "confirm_description": "这将永久删除你的账户、会话、通行密钥和数据。请输入你的用户名（{{username}}）以确认。",
+        "confirm_placeholder": "输入你的用户名",
+        "confirm_button": "永久删除",
+        "deleting": "删除中…",
+        "success": "你的账户已被删除。",
+        "failed": "无法删除账户。"
+      },
       "description": "管理你的账户设置、用户名、标签、邮箱和双重认证。",
       "email": {
         "description": "用于账户恢复和通知的邮箱地址。",

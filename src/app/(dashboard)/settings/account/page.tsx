@@ -13,6 +13,7 @@ import { TagsPart } from './TagsPart';
 import { EmailPart } from './EmailPart';
 import { TwoFAPart } from './TwoFAPart';
 import { PasskeysPart } from './PasskeysPart';
+import { DeleteAccountPart } from './DeleteAccountPart';
 import { notify } from '@/components/ui/notify';
 
 export default function AccountPage() {
@@ -99,6 +100,8 @@ export default function AccountPage() {
                     <TwoFAPart />
 
                     <PasskeysPart />
+
+                    <DeleteAccountPart />
                 </div>
             </div>
         </>
