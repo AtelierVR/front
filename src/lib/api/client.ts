@@ -77,6 +77,24 @@ export function dispatchCurrentUserMerge(user: ApiUser): void {
 }
 
 /**
+ * In-flight GET deduplication.
+ *
+ * React StrictMode re-runs mount effects in development, and several components
+ * can request the same resource on the same tick — without this the exact same
+ * GET is issued twice. Identical concurrent GETs share a single network request;
+ * the entry is dropped as soon as it settles, so later calls always hit the network.
+ */
+const _inflightGets = new Map<string, Promise<unknown>>();
+
+function dedupeGet<T>(key: string, run: () => Promise<T>): Promise<T> {
+  const inflight = _inflightGets.get(key) as Promise<T> | undefined;
+  if (inflight) return inflight;
+  const promise = run().finally(() => { _inflightGets.delete(key); });
+  _inflightGets.set(key, promise);
+  return promise;
+}
+
+/**
  * Typed fetch wrapper.
  * - Uses the gateway.api base URL registered via registerGatewayUrl()
  * - path should NOT include /api/ prefix (gateway.api already contains it)
@@ -84,8 +102,18 @@ export function dispatchCurrentUserMerge(user: ApiUser): void {
  * - Unwraps the ApiResponse<T> envelope
  * - Throws ApiError on non-2xx or envelope error
  * - Dispatches logout on 401
+ * - Concurrent identical GETs are coalesced (see `dedupeGet`)
  */
-export async function apiFetch<T>(
+export function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (method !== 'GET') return apiFetchRequest<T>(path, options);
+  return dedupeGet<T>(`GET ${path}`, () => apiFetchRequest<T>(path, options));
+}
+
+async function apiFetchRequest<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
