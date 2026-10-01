@@ -1,15 +1,16 @@
 import { apiFetch, apiFetchRaw, dispatchCurrentUserReplace } from './client';
+import { idParam } from './utils';
 import { parseNoxId } from '@/types/nox-identifier';
 import type { ApiUser, ApiCurrentUser, ApiLink, ApiUserSearchResult, ApiPublicTableList, ApiRelationListResult, ApiBiRelationListResult } from '@/types/api';
 import type { ApiErrorDetails } from '@/types/envelope';
 import { ApiError } from '@/types/envelope';
 
 export function getUser(username: string): Promise<ApiUser> {
-    return apiFetch<ApiUser>(`/users/${username}`);
+    return apiFetch<ApiUser>(`/users/${idParam(username)}`);
 }
 
 export function searchUsers(query: string, limit: number, offset: number): Promise<ApiUserSearchResult> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (query.trim()) params.set('q', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
@@ -17,23 +18,21 @@ export function searchUsers(query: string, limit: number, offset: number): Promi
 }
 
 export function followUser(userId: number | string): Promise<{ type: string }> {
-    const id = typeof userId === 'string' ? userId : userId;
-    return apiFetch<{ type: string }>(`/users/${id}/follow`, { method: 'POST' });
+    return apiFetch<{ type: string }>(`/users/${idParam(userId)}/follow`, { method: 'POST' });
 }
 
 export function unfollowUser(userId: number | string): Promise<void> {
-    const id = typeof userId === 'string' ? userId : userId;
-    return apiFetch<void>(`/users/${id}/follow`, { method: 'DELETE' });
+    return apiFetch<void>(`/users/${idParam(userId)}/follow`, { method: 'DELETE' });
 }
 
 export function getFollowers(userId: string | number, limit: number, offset: number): Promise<ApiRelationListResult> {
     const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
-    return apiFetch<ApiRelationListResult>(`/users/${userId}/followers?${params.toString()}`);
+    return apiFetch<ApiRelationListResult>(`/users/${idParam(userId)}/followers?${params.toString()}`);
 }
 
 export function getFollowing(userId: string | number, limit: number, offset: number): Promise<ApiRelationListResult> {
     const params = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
-    return apiFetch<ApiRelationListResult>(`/users/${userId}/following?${params.toString()}`);
+    return apiFetch<ApiRelationListResult>(`/users/${idParam(userId)}/following?${params.toString()}`);
 }
 
 export function getFriends(userId: number, limit: number, offset: number): Promise<ApiBiRelationListResult> {
@@ -43,7 +42,7 @@ export function getFriends(userId: number, limit: number, offset: number): Promi
 
 export function respondToRequest(initiatorRef: string, accept: boolean): Promise<void> {
     const params = new URLSearchParams({ accept: accept.toString() });
-    return apiFetch<void>(`/users/@me/follow/${initiatorRef}/respond?${params.toString()}`, { method: 'POST' });
+    return apiFetch<void>(`/users/@me/follow/${idParam(initiatorRef)}/respond?${params.toString()}`, { method: 'POST' });
 }
 
 export interface UpdateCurrentUserPayload {
@@ -119,11 +118,11 @@ export function batchGetUsers(ids: string[]): Promise<ApiUserSearchResult> {
 }
 
 export function listUserPublic(userId: string | number): Promise<ApiPublicTableList> {
-    return apiFetch<ApiPublicTableList>(`/users/${userId}/public`);
+    return apiFetch<ApiPublicTableList>(`/users/${idParam(userId)}/public`);
 }
 
 export async function getUserPublicEntry<T>(userId: string | number, entryKey: string): Promise<T> {
-    const res = await apiFetchRaw(`/users/${userId}/public/${entryKey}`);
+    const res = await apiFetchRaw(`/users/${idParam(userId)}/public/${entryKey}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json() as Promise<T>;
 }

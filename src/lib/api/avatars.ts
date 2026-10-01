@@ -1,12 +1,13 @@
 import { apiFetch, apiFetchRaw } from './client';
+import { idParam } from './utils';
 import type { ApiAvatar, ApiAvatarList, ApiAvatarAssetList } from '@/types/api';
 
 export function getAvatar(id: number | string): Promise<ApiAvatar> {
-    return apiFetch<ApiAvatar>(`/avatars/${id}`);
+    return apiFetch<ApiAvatar>(`/avatars/${idParam(id)}`);
 }
 
 export function searchAvatars(query: string, limit: number, offset: number): Promise<ApiAvatarList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (query.trim()) params.set('q', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
@@ -17,7 +18,7 @@ export function getAvatarAssets(id: number | string, version?: number): Promise<
     const params = new URLSearchParams();
     if (version !== undefined && version >= 0) params.set('version', String(version));
     const qs = params.toString();
-    return apiFetch<ApiAvatarAssetList>(`/avatars/${id}/assets${qs ? '?' + qs : ''}`);
+    return apiFetch<ApiAvatarAssetList>(`/avatars/${idParam(id)}/assets${qs ? '?' + qs : ''}`);
 }
 
 export interface UpdateAvatarPayload {
@@ -29,7 +30,7 @@ export interface UpdateAvatarPayload {
 }
 
 export function updateAvatar(id: number | string, payload: UpdateAvatarPayload): Promise<ApiAvatar> {
-    return apiFetch<ApiAvatar>(`/avatars/${id}`, {
+    return apiFetch<ApiAvatar>(`/avatars/${idParam(id)}`, {
         method: 'POST',
         body: JSON.stringify(payload),
     });
@@ -38,7 +39,7 @@ export function updateAvatar(id: number | string, payload: UpdateAvatarPayload):
 export async function uploadAvatarThumbnail(id: number | string, blob: Blob): Promise<void> {
     const formData = new FormData();
     formData.append('file', blob, 'thumbnail');
-    const res = await apiFetchRaw(`/avatars/${id}/thumbnail`, {
+    const res = await apiFetchRaw(`/avatars/${idParam(id)}/thumbnail`, {
         method: 'POST',
         body: formData,
     });

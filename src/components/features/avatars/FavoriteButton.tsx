@@ -32,7 +32,7 @@ export function FavoriteButton() {
 
   if (!currentUser || !avatar) return null;
 
-  const noxId = new NoxIdentifier('a', avatar.id.toString(), avatar.server);
+  const noxId = new NoxIdentifier(null, avatar.id.toString(), avatar.server);
   const noxIdStr = noxId.toString();
   const isFavorited = values.some((v) => noxId.match(v));
 

@@ -1,12 +1,13 @@
 import { apiFetch, apiFetchRaw } from './client';
+import { idParam } from './utils';
 import type { ApiWorld, ApiWorldList, ApiWorldAssetList } from '@/types/api';
 
 export function getWorld(id: number | string): Promise<ApiWorld> {
-    return apiFetch<ApiWorld>(`/worlds/${id}`);
+    return apiFetch<ApiWorld>(`/worlds/${idParam(id)}`);
 }
 
 export function searchWorlds(query: string, limit: number, offset: number): Promise<ApiWorldList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (query.trim()) params.set('q', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
@@ -17,7 +18,7 @@ export function getWorldAssets(id: number | string, version?: number): Promise<A
     const params = new URLSearchParams();
     if (version !== undefined && version >= 0) params.set('version', String(version));
     const qs = params.toString();
-    return apiFetch<ApiWorldAssetList>(`/worlds/${id}/assets${qs ? '?' + qs : ''}`);
+    return apiFetch<ApiWorldAssetList>(`/worlds/${idParam(id)}/assets${qs ? '?' + qs : ''}`);
 }
 
 export interface UpdateWorldPayload {
@@ -31,7 +32,7 @@ export interface UpdateWorldPayload {
 }
 
 export function updateWorld(id: number | string, payload: UpdateWorldPayload): Promise<ApiWorld> {
-    return apiFetch<ApiWorld>(`/worlds/${id}`, {
+    return apiFetch<ApiWorld>(`/worlds/${idParam(id)}`, {
         method: 'POST',
         body: JSON.stringify(payload),
     });
@@ -40,7 +41,7 @@ export function updateWorld(id: number | string, payload: UpdateWorldPayload): P
 export async function uploadWorldThumbnail(id: number | string, blob: Blob): Promise<void> {
     const formData = new FormData();
     formData.append('file', blob, 'thumbnail');
-    const res = await apiFetchRaw(`/worlds/${id}/thumbnail`, {
+    const res = await apiFetchRaw(`/worlds/${idParam(id)}/thumbnail`, {
         method: 'POST',
         body: formData,
     });

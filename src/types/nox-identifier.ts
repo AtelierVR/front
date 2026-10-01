@@ -155,9 +155,9 @@ export function parseNoxId(raw: string): ParsedNoxId {
 
 export function noxIdToPath(raw: string, routePrefix: string): string {
   const parsed = NoxIdentifier.parse(raw);
-  if (!parsed.type && (!parsed.server || parsed.server === NoxIdentifier.LOCALSERVER))
-    return `${routePrefix}/${parsed.id}`;
-  return `${routePrefix}/${encodeURIComponent(parsed.toString(null))}`;
+  if (!parsed.server || parsed.server === NoxIdentifier.LOCALSERVER)
+    return `${routePrefix}/${encodeURIComponent(parsed.id)}`;
+  return `${routePrefix}/${encodeURIComponent(`${parsed.id}@${parsed.server}`)}`;
 }
 
 export function formatNoxId(raw: string, localAddress: string): string {
@@ -170,6 +170,20 @@ export function noxIdToSegment(raw: string, localAddress: string): string {
   const parsed = NoxIdentifier.parse(raw);
   if (!parsed.server || parsed.server === '::' || parsed.server === localAddress) return parsed.id;
   return `${parsed.id}@${parsed.server}`;
+}
+
+/**
+ * Drop the `type:` prefix of an identifier string.
+ *
+ * `"a:42@host"` → `"42@host"`, `"u:hactazia"` → `"hactazia"`.
+ * Strings without a type prefix are returned unchanged.
+ */
+export function stripNoxType(raw: string): string {
+  const parsed = NoxIdentifier.parse(raw);
+  if (parsed.type === null) return raw;
+  // Re-serialise without the type, and without the `@::` local fallback so the
+  // value stays as close as possible to what was received.
+  return new NoxIdentifier(null, parsed.id, parsed.server, parsed.query).toString(null);
 }
 
 /**

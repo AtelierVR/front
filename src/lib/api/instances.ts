@@ -1,4 +1,5 @@
 import { apiFetch, apiFetchRaw } from './client';
+import { idParam } from './utils';
 import type { ApiInstance, ApiInstanceList } from '@/types/api';
 
 export interface CreateInstancePayload {
@@ -20,7 +21,7 @@ export function createInstance(payload: CreateInstancePayload): Promise<ApiInsta
 }
 
 export function getInstance(id: number | string): Promise<ApiInstance> {
-    return apiFetch<ApiInstance>(`/instances/${id}`);
+    return apiFetch<ApiInstance>(`/instances/${idParam(id)}`);
 }
 
 export interface UpdateInstancePayload {
@@ -31,14 +32,14 @@ export interface UpdateInstancePayload {
 }
 
 export function updateInstance(id: number | string, payload: UpdateInstancePayload): Promise<ApiInstance> {
-    return apiFetch<ApiInstance>(`/instances/${id}`, {
+    return apiFetch<ApiInstance>(`/instances/${idParam(id)}`, {
         method: 'PATCH',
         body: JSON.stringify(payload),
     });
 }
 
 export function searchInstances(query: string, limit: number, offset: number): Promise<ApiInstanceList> {
-    let params = new URLSearchParams();
+    const params = new URLSearchParams();
     if (query.trim()) params.set('q', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
@@ -48,7 +49,7 @@ export function searchInstances(query: string, limit: number, offset: number): P
 export async function uploadInstanceThumbnail(id: number | string, blob: Blob): Promise<void> {
     const formData = new FormData();
     formData.append('file', blob, 'thumbnail');
-    const res = await apiFetchRaw(`/instances/${id}/thumbnail`, {
+    const res = await apiFetchRaw(`/instances/${idParam(id)}/thumbnail`, {
         method: 'POST',
         body: formData,
     });
@@ -56,11 +57,11 @@ export async function uploadInstanceThumbnail(id: number | string, blob: Blob): 
 }
 
 export async function deleteInstance(id: number | string): Promise<void> {
-    const res = await apiFetchRaw(`/instances/${id}`, { method: 'DELETE' });
+    const res = await apiFetchRaw(`/instances/${idParam(id)}`, { method: 'DELETE' });
     if (!res.ok && res.status !== 204) throw new Error(`Delete failed: ${res.status}`);
 }
 
 export function getWorldInstances(worldId: number | string, limit = 20): Promise<ApiInstanceList> {
-    const params = new URLSearchParams({ world: String(worldId), limit: String(limit) });
+    const params = new URLSearchParams({ world: idParam(worldId), limit: String(limit) });
     return apiFetch<ApiInstanceList>(`/instances?${params.toString()}`);
 }
