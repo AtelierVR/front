@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
@@ -122,6 +123,11 @@ export function CardItem(result: ResultItem) {
     const name = resolveLocalized(result.name, i18n.language) || '';
     const thumbnail = resolveInstanceIcon(result.thumbnail, resolvedTheme);
     const desc = resolveLocalized(result.description, i18n.language) || null;
+    // The failure belongs to a URL: as soon as the thumbnail changes, the
+    // previous error no longer applies (same behaviour as `InstanceLogo`, but
+    // without a reset effect).
+    const [failedUrl, setFailedUrl] = useState<string | null>(null);
+    const failed = failedUrl !== null && failedUrl === thumbnail;
 
     return (
         <Link
@@ -131,13 +137,16 @@ export function CardItem(result: ResultItem) {
                 'block overflow-hidden relative hover:ring-3 hover:ring-primary/50 transition-all duration-200 aspect-[4/3] h-auto p-0',
             )}
         >
-            <Image
-                src={thumbnail ?? ''}
-                alt={name}
-                width={400}
-                height={300}
-                className="w-full object-cover h-full"
-            />
+            {thumbnail && !failed && (
+                <Image
+                    src={thumbnail}
+                    alt={name}
+                    width={400}
+                    height={300}
+                    className="w-full object-cover h-full"
+                    onError={() => setFailedUrl(thumbnail)}
+                />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t dark:from-black/80 from-white/20 to-transparent flex flex-col justify-end p-4">
                 <p className="font-bold text-lg">{name}</p>
                 {desc && (

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useApi } from '@/lib/api/context';
 import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
@@ -10,8 +11,18 @@ import Image from '@/components/NoxImage';
 export function InstanceLogo({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
     const { wellKnown } = useApi();
     const { i18n } = useTranslation();
-    const url = useInstanceIcon(wellKnown?.metadata?.icon) ?? '/icon.png';
+    const url = useInstanceIcon(wellKnown?.metadata?.icon);
+    const [failed, setFailed] = useState(false);
     const label = resolveLocalized(wellKnown?.metadata?.title, i18n.language) || 'Nox';
+
+    // Reset the error state whenever the icon URL changes.
+    useEffect(() => {
+        setFailed(false);
+    }, [url]);
+
+    // Hide the logo when the instance is unreachable (no metadata), when no
+    // logo is configured, or when the icon fails to load (site unavailable).
+    if (!url || failed) return null;
 
     return <div
         {...props}
@@ -23,6 +34,7 @@ export function InstanceLogo({ className, ...props }: React.HTMLAttributes<HTMLD
             sizes="32px"
             alt={label}
             className="rounded-sm object-contain"
+            onError={() => setFailed(true)}
         />
     </div>;
 }

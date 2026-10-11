@@ -40,7 +40,9 @@ interface ParsedDevice extends IRDevice {
 
 /** Lightweight UA parser — avoids pulling in ua-parser-js */
 function parseDevice(device: IRDevice): ParsedDevice {
-    const ua = device.user_agent;
+    // A client may send no User-Agent at all (or an empty one): the device is
+    // still listed, only the browser/OS cannot be derived from it.
+    const ua = device.user_agent ?? '';
     let browserName = '';
     let browserVersion = '';
     let osName = '';
@@ -283,10 +285,13 @@ function SessionCard({ session, isCurrent, onDelete, t, countries }: SessionCard
                                                         <span className="text-muted-foreground">{t('settings.sessions.last_seen')}</span>
                                                         <span className="text-xs">{new Date(d.last_seen).toLocaleString()}</span>
                                                     </div>
-                                                    <div className="flex justify-between gap-4">
-                                                        <span className="text-muted-foreground">{t('settings.sessions.user_agent')}</span>
-                                                        <span className="font-mono break-all text-xs max-w-[60%] text-right">{d.user_agent}</span>
-                                                    </div>
+                                                    {/* A client is allowed to send no User-Agent: the row is then omitted. */}
+                                                    {d.user_agent && (
+                                                        <div className="flex justify-between gap-4">
+                                                            <span className="text-muted-foreground">{t('settings.sessions.user_agent')}</span>
+                                                            <span className="font-mono break-all text-xs max-w-[60%] text-right">{d.user_agent}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         })}

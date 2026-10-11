@@ -13,7 +13,8 @@ export interface IRSession {
 }
 
 export interface IRDevice {
-    user_agent: string;
+    /** `null` when the client sent no User-Agent (or an empty one). */
+    user_agent: string | null;
     ip: string;
     last_seen: number;
 }
