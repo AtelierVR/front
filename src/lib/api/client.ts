@@ -13,7 +13,7 @@ let _currentUserReplace: ((user: ApiCurrentUser) => void) | null = null;
 let _currentUserMerge: ((user: ApiUser) => void) | null = null;
 
 /** Stash for the last successful verification result so apiFetch can return it. */
-let _lastVerifySuccess: { data: any } | null = null;
+let _lastVerifySuccess: { data: unknown } | null = null;
 
 /**
  * Called by apiFetch when a VERIFICATION_REQUIRED error is received.
@@ -83,6 +83,22 @@ function dedupeGet<T>(key: string, run: () => Promise<T>): Promise<T> {
 }
 
 /**
+ * Parse a JSON object body, returning null when the payload is not a JSON
+ * object (arrays, primitives, malformed input) so callers can fall back safely.
+ */
+function safeParseJsonObject(raw: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Typed fetch wrapper.
  * - Uses the gateway.api base URL registered via registerGatewayUrl()
  * - path should NOT include /api/ prefix (gateway.api already contains it)
@@ -112,8 +128,11 @@ async function apiFetchRequest<T>(
   const token = getToken();
   const headers = new Headers(options.headers ?? {});
 
-  // Save the original body before fetch() potentially consumes it
-  const body = options.body;
+  // Keep a parsed copy of the payload (captured before fetch() sends it) so a
+  // verification retry can merge `factor_code` into the original fields.
+  const parsedBody = typeof options.body === 'string'
+    ? safeParseJsonObject(options.body)
+    : null;
 
   if (token)
     headers.set('Authorization', `Bearer ${token}`);
@@ -149,15 +168,14 @@ async function apiFetchRequest<T>(
       if (methods?.length) {
         // Build a retry closure that the modal can call to verify codes
         const verifyCode = async (code: string): Promise<{ success: boolean; error?: string }> => {
-          const retryBody = body
-            ? JSON.stringify({ 
-              ...JSON.parse(body as string), 
-              factor_code: code 
-            })
+          const retryBody = parsedBody
+            ? JSON.stringify({ ...parsedBody, factor_code: code })
             : JSON.stringify({ factor_code: code });
+          const retryHeaders = new Headers(headers);
+          retryHeaders.set('Content-Type', 'application/json');
           const retryRes = await fetch(url, {
             ...options,
-            headers: { ...Object.fromEntries(headers.entries()), 'Content-Type': 'application/json' },
+            headers: retryHeaders,
             body: retryBody,
           });
           const retryEnvelope: ApiResponse<T> = await retryRes.json();
@@ -165,7 +183,7 @@ async function apiFetchRequest<T>(
             return { success: false, error: retryEnvelope.error.message || 'Invalid verification code' };
           }
           // Stash the successful result so the caller can return it
-          _lastVerifySuccess = retryEnvelope as { data: T };
+          _lastVerifySuccess = retryEnvelope as { data: unknown };
           return { success: true };
         };
 
@@ -173,7 +191,7 @@ async function apiFetchRequest<T>(
         if (code && _lastVerifySuccess) {
           const result = _lastVerifySuccess;
           _lastVerifySuccess = null;
-          return result.data;
+          return result.data as T;
         }
       }
     }
