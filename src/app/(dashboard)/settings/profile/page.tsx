@@ -12,7 +12,7 @@ import { MarkdownAreaInput } from '@/components/ui/markdown-area-input';
 import { ImageInput } from '@/components/ui/image-input';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@iconify/react';
-import { cn, sameValues } from '@/lib/utils';
+import { cn, isValidUrl, sameValues } from '@/lib/utils';
 import { PresenceIcon, PRESENCE_OPTIONS } from '@/lib/presences';
 import { useCountries } from '@/lib/hooks/useCountries';
 import { useLanguages } from '@/lib/hooks/useLanguages';
@@ -33,24 +33,14 @@ const LINK_URL_MAX = 2048;
 
 /**
  * A link is accepted by the API when its label is 1–32 characters and its value
- * is an http(s) URL without embedded credentials.
+ * is an http(s) URL without embedded credentials (see `isValidUrl`).
  */
 function isLinkValid(link: ApiLink): boolean {
     const label = link.label.trim();
     if (!label || label.length > LINK_LABEL_MAX) return false;
     const value = link.value.trim();
     if (!value || value.length > LINK_URL_MAX) return false;
-    try {
-        const url = new URL(value);
-        return (
-            (url.protocol === 'http:' || url.protocol === 'https:') &&
-            !!url.host &&
-            !url.username &&
-            !url.password
-        );
-    } catch {
-        return false;
-    }
+    return isValidUrl(value);
 }
 
 function countryTag(code: string) { return `${CTY_TAG}${code.toLowerCase()}`; }
