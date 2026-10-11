@@ -4,16 +4,18 @@ import { Icon } from '@iconify/react';
 import { isValidUrl } from '@/lib/utils';
 import { SidebarCard } from '@/components/shared/SidebarCard';
 import { useUser } from './UserContext';
+import { useTranslation } from 'react-i18next';
 
 export function UserLinkBox() {
   const { user, isSame } = useUser();
+  const { t } = useTranslation();
 
   const links = user?.links ?? [];
 
   return (
-    <SidebarCard title="Links" editHref="/settings/profile#links" isSame={isSame}>
+    <SidebarCard title={t('user.links')} editHref="/settings/profile#links" isSame={isSame}>
       {links.length === 0 ? (
-        <p className="text-xs text-muted-foreground italic text-center py-2">No links.</p>
+        <p className="text-xs text-muted-foreground italic text-center py-2">{t('user.no_links')}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {links.map((link, i) =>
