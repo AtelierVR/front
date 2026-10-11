@@ -537,6 +537,18 @@
         "search": "Search languages…",
         "no_match": "No languages match your search.",
         "all_added": "All languages have been added."
+      },
+      "links": {
+        "title": "Links",
+        "description": "External links shown on your profile. Up to 20 links, each with a label and an http(s) URL.",
+        "add": "Add a link",
+        "empty": "No link yet.",
+        "label_placeholder": "Label",
+        "value_placeholder": "https://example.com",
+        "remove": "Remove this link",
+        "invalid_label": "A label is required (32 characters max).",
+        "invalid_url": "A valid http:// or https:// URL is required.",
+        "limit": "You can add up to 20 links."
       }
     }
   },

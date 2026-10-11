@@ -19,12 +19,39 @@ import { useLanguages } from '@/lib/hooks/useLanguages';
 import { addUrlQuery, removeUrlQuery } from '@/lib/url';
 import { DropdownDrawer } from '@/components/shared/DropdownDrawer';
 import { notify } from '@/components/ui/notify';
-import type { ApiUserPresence } from '@/types/api';
+import type { ApiUserPresence, ApiLink } from '@/types/api';
 
 type PresenceStatus = ApiUserPresence['status'];
 
 const CTY_TAG = 'usr:country_';
 const LNG_TAG = 'usr:lang_';
+
+/** Mirrors the API limits (`UpdateUserDto.links` / `ApiLinkDto`). */
+const LINK_MAX = 20;
+const LINK_LABEL_MAX = 32;
+const LINK_URL_MAX = 2048;
+
+/**
+ * A link is accepted by the API when its label is 1–32 characters and its value
+ * is an http(s) URL without embedded credentials.
+ */
+function isLinkValid(link: ApiLink): boolean {
+    const label = link.label.trim();
+    if (!label || label.length > LINK_LABEL_MAX) return false;
+    const value = link.value.trim();
+    if (!value || value.length > LINK_URL_MAX) return false;
+    try {
+        const url = new URL(value);
+        return (
+            (url.protocol === 'http:' || url.protocol === 'https:') &&
+            !!url.host &&
+            !url.username &&
+            !url.password
+        );
+    } catch {
+        return false;
+    }
+}
 
 function countryTag(code: string) { return `${CTY_TAG}${code.toLowerCase()}`; }
 function langTag(code: string) { return `${LNG_TAG}${code.toLowerCase()}`; }
@@ -49,6 +76,7 @@ export default function ProfilePage() {
     const [banner, setBanner] = useState<string | null | undefined>();
     const [selectedCty, setSelectedCty] = useState<string[] | undefined>();
     const [selectedLng, setSelectedLng] = useState<string[] | undefined>();
+    const [links, setLinks] = useState<ApiLink[] | undefined>();
 
     const [saving, setSaving] = useState(false);
     const [presenceOpen, setPresenceOpen] = useState(false);
@@ -65,6 +93,7 @@ export default function ProfilePage() {
         setPresenceStatus(undefined);
         setThumbnail(undefined);
         setBanner(undefined);
+        setLinks(undefined);
     }, [currentUser?.id]);
 
     const getDisplay = () => display ?? currentUser?.display ?? '';
@@ -82,6 +111,14 @@ export default function ProfilePage() {
     const sameCodes = (a: readonly string[], b: readonly string[]) =>
         sameValues(a.map(c => c.toLowerCase()), b.map(c => c.toLowerCase()));
 
+    // Links: the state holds the edited rows, `currentUser.links` the stored ones.
+    const getLinks = (): ApiLink[] => links ?? currentUser?.links ?? [];
+    const sameLinks = (a: readonly ApiLink[], b: readonly ApiLink[]) =>
+        a.length === b.length && a.every((link, i) =>
+            link.label.trim() === b[i].label.trim() && link.value.trim() === b[i].value.trim());
+    const linksDirty = links !== undefined && !sameLinks(links, currentUser?.links ?? []);
+    const linksInvalid = getLinks().some(link => !isLinkValid(link));
+
     const dirty =
         (display !== undefined && display !== (currentUser?.display ?? '')) ||
         (bio !== undefined && bio !== (currentUser?.bio ?? '')) ||
@@ -91,10 +128,11 @@ export default function ProfilePage() {
         (thumbnail !== undefined && thumbnail !== cleanImageUrl(currentUser?.thumbnail)) ||
         (banner !== undefined && banner !== cleanImageUrl(currentUser?.banner)) ||
         (selectedCty !== undefined && !sameCodes(selectedCty, currentCty)) ||
-        (selectedLng !== undefined && !sameCodes(selectedLng, currentLng));
+        (selectedLng !== undefined && !sameCodes(selectedLng, currentLng)) ||
+        linksDirty;
 
     const handleSave = async () => {
-        if (!dirty || saving) return;
+        if (!dirty || saving || linksInvalid) return;
         setSaving(true);
         try {
             // Build tags: preserve original for untouched categories, use new selection for touched ones
@@ -131,6 +169,12 @@ export default function ProfilePage() {
                 presence: presence ?? undefined,
                 presence_status: presenceStatus !== undefined ? (presenceStatus || null) : undefined,
                 tags: (selectedCty !== undefined || selectedLng !== undefined) ? allTags : undefined,
+                // An empty list clears the links (`null`), an untouched one is omitted.
+                links: linksDirty
+                    ? (getLinks().length
+                        ? getLinks().map(link => ({ label: link.label.trim(), value: link.value.trim() }))
+                        : null)
+                    : undefined,
             });
 
             setDisplay(undefined);
@@ -140,6 +184,7 @@ export default function ProfilePage() {
             setPresenceStatus(undefined);
             setThumbnail(undefined);
             setBanner(undefined);
+            setLinks(undefined);
             notify(t('settings.profile.saved'), { type: 'success' });
         } catch (e: any) {
             notify(e?.message ?? t('common.error'), { type: 'danger' });
@@ -157,7 +202,7 @@ export default function ProfilePage() {
                 children={t('settings.nav.profile')}
                 subtitle={t('settings.profile.description')}
                 after={
-                    <Button onClick={handleSave} disabled={!dirty || saving} size="sm">
+                    <Button onClick={handleSave} disabled={!dirty || saving || linksInvalid} size="sm">
                         {saving ? (
                             <>
                                 <Icon icon="material-symbols:progress-activity" className="size-4 mr-1.5 animate-spin" />
@@ -264,6 +309,89 @@ export default function ProfilePage() {
                                 />
                             </section>
                         </div>
+
+                        {/* Links — anchored so the profile page link box can jump here. */}
+                        <section id="links" className="space-y-2 scroll-mt-24">
+                            <div className="flex items-baseline justify-between gap-4">
+                                <h2 className="text-base font-semibold">{t('settings.profile.links.title')}</h2>
+                                <span className="text-xs tabular-nums text-muted-foreground">
+                                    {getLinks().length}/{LINK_MAX}
+                                </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{t('settings.profile.links.description')}</p>
+
+                            {getLinks().length === 0 && (
+                                <p className="text-sm italic text-muted-foreground">{t('settings.profile.links.empty')}</p>
+                            )}
+
+                            <div className="space-y-2">
+                                {getLinks().map((link, index) => {
+                                    const label = link.label.trim();
+                                    const labelInvalid = label.length === 0 || label.length > LINK_LABEL_MAX;
+                                    const urlInvalid = !isLinkValid({ label: 'x', value: link.value });
+                                    const update = (patch: Partial<ApiLink>) =>
+                                        setLinks(getLinks().map((l, i) => (i === index ? { ...l, ...patch } : l)));
+
+                                    return (
+                                        <div key={index} className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <InputGroup className="w-36 shrink-0">
+                                                    <InputGroupInput
+                                                        value={link.label}
+                                                        maxLength={LINK_LABEL_MAX}
+                                                        aria-invalid={labelInvalid || undefined}
+                                                        placeholder={t('settings.profile.links.label_placeholder')}
+                                                        onChange={e => update({ label: e.target.value })}
+                                                    />
+                                                </InputGroup>
+                                                <InputGroup className="flex-1">
+                                                    <InputGroupAddon>
+                                                        <Icon icon="material-symbols:link-rounded" className="size-4" />
+                                                    </InputGroupAddon>
+                                                    <InputGroupInput
+                                                        type="url"
+                                                        inputMode="url"
+                                                        value={link.value}
+                                                        aria-invalid={urlInvalid || undefined}
+                                                        placeholder={t('settings.profile.links.value_placeholder')}
+                                                        onChange={e => update({ value: e.target.value })}
+                                                    />
+                                                </InputGroup>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon-sm"
+                                                    aria-label={t('settings.profile.links.remove')}
+                                                    className="shrink-0"
+                                                    onClick={() => setLinks(getLinks().filter((_, i) => i !== index))}
+                                                >
+                                                    <Icon icon="material-symbols:close-rounded" className="size-4" />
+                                                </Button>
+                                            </div>
+                                            {(labelInvalid || urlInvalid) && (
+                                                <p className="text-xs text-destructive">
+                                                    {labelInvalid
+                                                        ? t('settings.profile.links.invalid_label')
+                                                        : t('settings.profile.links.invalid_url')}
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={getLinks().length >= LINK_MAX}
+                                title={getLinks().length >= LINK_MAX ? t('settings.profile.links.limit') : undefined}
+                                onClick={() => setLinks([...getLinks(), { label: '', value: '' }])}
+                            >
+                                <Icon icon="material-symbols:add-rounded" className="size-4 mr-1.5" />
+                                {t('settings.profile.links.add')}
+                            </Button>
+                        </section>
 
                     </div>
 

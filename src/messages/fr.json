@@ -537,6 +537,18 @@
         "search": "Rechercher une langue…",
         "no_match": "Aucune langue ne correspond.",
         "all_added": "Toutes les langues ont été ajoutées."
+      },
+      "links": {
+        "title": "Liens",
+        "description": "Liens externes affichés sur votre profil. Jusqu'à 20 liens, chacun avec un libellé et une URL http(s).",
+        "add": "Ajouter un lien",
+        "empty": "Aucun lien pour l'instant.",
+        "label_placeholder": "Libellé",
+        "value_placeholder": "https://exemple.fr",
+        "remove": "Supprimer ce lien",
+        "invalid_label": "Un libellé est requis (32 caractères maximum).",
+        "invalid_url": "Une URL http:// ou https:// valide est requise.",
+        "limit": "Vous pouvez ajouter jusqu'à 20 liens."
       }
     }
   },

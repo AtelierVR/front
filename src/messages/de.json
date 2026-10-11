@@ -513,6 +513,18 @@
         "selected": "Ausgewählt ({{count}})",
         "title": "Sprachen"
       },
+      "links": {
+        "add": "Link hinzufügen",
+        "description": "Externe Links, die in Ihrem Profil angezeigt werden. Bis zu 20 Links mit Label und http(s)-URL.",
+        "empty": "Noch kein Link.",
+        "invalid_label": "Ein Label ist erforderlich (max. 32 Zeichen).",
+        "invalid_url": "Eine gültige http://- oder https://-URL ist erforderlich.",
+        "label_placeholder": "Label",
+        "limit": "Sie können bis zu 20 Links hinzufügen.",
+        "remove": "Diesen Link entfernen",
+        "title": "Links",
+        "value_placeholder": "https://beispiel.de"
+      },
       "presence": {
         "description": "Ihr Online-Status, sichtbar für andere Benutzer.",
         "placeholder": "Was machen Sie gerade?",

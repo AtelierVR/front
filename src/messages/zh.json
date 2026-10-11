@@ -507,6 +507,18 @@
         "selected": "已选（{{count}}）",
         "title": "语言"
       },
+      "links": {
+        "add": "添加链接",
+        "description": "显示在个人资料上的外部链接。最多 20 条，每条包含一个标签和一个 http(s) 网址。",
+        "empty": "还没有链接。",
+        "invalid_label": "标签为必填项（最多 32 个字符）。",
+        "invalid_url": "需要有效的 http:// 或 https:// 网址。",
+        "label_placeholder": "标签",
+        "limit": "最多可以添加 20 条链接。",
+        "remove": "删除此链接",
+        "title": "链接",
+        "value_placeholder": "https://example.com"
+      },
       "presence": {
         "description": "其他用户可见的在线状态。",
         "placeholder": "你在做什么？",

@@ -513,6 +513,18 @@
         "selected": "Seleccionados ({{count}})",
         "title": "Idiomas"
       },
+      "links": {
+        "add": "Añadir un enlace",
+        "description": "Enlaces externos mostrados en tu perfil. Hasta 20 enlaces, cada uno con una etiqueta y una URL http(s).",
+        "empty": "Aún no hay enlaces.",
+        "invalid_label": "Se requiere una etiqueta (32 caracteres máximo).",
+        "invalid_url": "Se requiere una URL http:// o https:// válida.",
+        "label_placeholder": "Etiqueta",
+        "limit": "Puedes añadir hasta 20 enlaces.",
+        "remove": "Eliminar este enlace",
+        "title": "Enlaces",
+        "value_placeholder": "https://ejemplo.es"
+      },
       "presence": {
         "description": "Tu estado en línea visible para otros usuarios.",
         "placeholder": "¿Qué estás haciendo?",

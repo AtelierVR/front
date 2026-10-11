@@ -507,6 +507,18 @@
         "selected": "選択中（{{count}}）",
         "title": "言語"
       },
+      "links": {
+        "add": "リンクを追加",
+        "description": "プロフィールに表示する外部リンク。ラベルと http(s) URL のペアを最大20件まで。",
+        "empty": "リンクはまだありません。",
+        "invalid_label": "ラベルは必須です（最大32文字）。",
+        "invalid_url": "有効な http:// または https:// のURLが必要です。",
+        "label_placeholder": "ラベル",
+        "limit": "リンクは最大20件まで追加できます。",
+        "remove": "このリンクを削除",
+        "title": "リンク",
+        "value_placeholder": "https://example.com"
+      },
       "presence": {
         "description": "他のユーザーに表示されるオンラインステータス。",
         "placeholder": "今何してる？",
