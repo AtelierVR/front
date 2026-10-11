@@ -7,9 +7,11 @@
  *   u  — User   (id = int32 | username)
  *   w  — World  (id = int32, query: v=<ushort> for asset version)
  *   i  — Instance (id = int32 | shortname, query: w=<base64 world>, p=<base64 password>)
+ *   a  — Avatar (id = int32)
+ *   m  — Mod    (id = int32)
  */
 
-export type NoxIdentifierType = 'u' | 'w' | 'i' | 'a';
+export type NoxIdentifierType = 'u' | 'w' | 'i' | 'a' | 'm';
 
 export type NoxQuery = Record<string, string>;
 

@@ -18,6 +18,7 @@ export default function LegalLayout({ children }: { children: ReactNode }) {
         user: 'material-symbols:person-rounded',
         world: 'material-symbols:public',
         avatar: 'material-symbols:accessibility-new-rounded',
+        mod: 'material-symbols:package-2-rounded',
         instance: 'material-symbols:location-on-rounded',
         server: 'material-symbols:dns',
     };

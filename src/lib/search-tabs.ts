@@ -1,6 +1,7 @@
 import { searchUsers } from '@/lib/api/users';
 import { getWorld, searchWorlds } from '@/lib/api/worlds';
 import { searchAvatars } from '@/lib/api/avatars';
+import { searchMods } from '@/lib/api/mods';
 import { searchInstances } from '@/lib/api/instances';
 import { searchServers } from '@/lib/api/servers';
 import { getAlias } from '@/lib/api';
@@ -105,6 +106,34 @@ export const SEARCH_TABS: TabDef[] = [
                         thumbnail: a.thumbnail,
                         description: id,
                         redirect: `/a/${noxIdToSegment(id, localAddress)}`,
+                    };
+                }),
+            };
+        },
+    },
+    {
+        feature: 'mod',
+        path: '/mods',
+        title: 'search.tab_mods',
+        icon: 'material-symbols:package-2-rounded',
+        layout: 'card',
+        fetchResults: async (localAddress, query, limit, offset) => {
+            const data = await searchMods(query, limit, offset);
+            return {
+                total: data.total,
+                limit: data.limit,
+                offset: data.offset,
+                items: data.items.map((m) => {
+                    const id =
+                        getAlias(m.alias, 'nid') ??
+                        getAlias(m.alias, 'iid') ??
+                        `${m.id}@${m.server}`;
+                    return {
+                        id,
+                        name: m.title ?? m.name ?? id,
+                        thumbnail: m.images?.[0]?.url ?? null,
+                        description: id,
+                        redirect: `/m/${noxIdToSegment(id, localAddress)}`,
                     };
                 }),
             };

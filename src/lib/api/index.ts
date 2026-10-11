@@ -4,6 +4,7 @@ export * from './utils';
 export * from './users';
 export * from './worlds';
 export * from './avatars';
+export * from './mods';
 export * from './instances';
 export * from './servers';
 export * from './auth';
