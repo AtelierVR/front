@@ -189,6 +189,10 @@
       "label": "インスタンス"
     },
     "label": "機能",
+    "mod": {
+      "description": "ダウンロード可能なMODを閲覧",
+      "label": "MOD"
+    },
     "server": {
       "description": "フェデレーションサーバーを閲覧",
       "label": "サーバー"
@@ -385,8 +389,8 @@
     "busy": "取り込み中",
     "dnd": "通知オフ",
     "offline": "オフライン",
-    "oja": "オンライン（参加済み）",
-    "ojf": "オンライン（満員）",
+    "event": "イベント",
+    "public": "公開",
     "online": "オンライン",
     "stream": "配信中"
   },
@@ -410,11 +414,12 @@
     "empty_no_query": "検索キーワードを入力してください。",
     "empty_no_results": "結果が見つかりませんでした。",
     "error": "検索中にエラーが発生しました。もう一度お試しください。",
-    "placeholder": "ユーザー、ワールド、アバター、インスタンス、サーバーを検索…",
+    "placeholder": "ユーザー、ワールド、アバター、MOD、インスタンス、サーバーを検索…",
     "result_count": "{{count}} 件の結果",
     "results_for": "「{{query}}」の検索結果",
     "tab_avatars": "アバター",
     "tab_instances": "インスタンス",
+    "tab_mods": "MOD",
     "tab_servers": "サーバー",
     "tab_users": "ユーザー",
     "tab_worlds": "ワールド",

@@ -12,13 +12,13 @@ interface PresenceBadgeProps {
 }
 
 const PRESENCE_STYLES: Record<ApiUserPresence["status"], string> = {
-  oja:     'bg-cyan-500/15 text-cyan-600 border-cyan-500/30 dark:text-cyan-400',
-  ojf:     'bg-blue-500/15 text-blue-600 border-blue-500/30 dark:text-blue-400',
-  online:  'bg-green-500/15 text-green-600 border-green-500/30 dark:text-green-400',
-  busy:    'bg-orange-500/15 text-orange-700 border-orange-500/30 dark:text-orange-400',
+  offline: 'bg-muted text-muted-foreground border-border',
   dnd:     'bg-red-500/15 text-red-600 border-red-500/30 dark:text-red-400',
   stream:  'bg-violet-500/15 text-violet-600 border-violet-500/30 dark:text-violet-400',
-  offline: 'bg-muted text-muted-foreground border-border',
+  busy:    'bg-orange-500/15 text-orange-700 border-orange-500/30 dark:text-orange-400',
+  online:  'bg-green-500/15 text-green-600 border-green-500/30 dark:text-green-400',
+  event:   'bg-pink-500/15 text-pink-600 border-pink-500/30 dark:text-pink-400',
+  public:  'bg-cyan-500/15 text-cyan-600 border-cyan-500/30 dark:text-cyan-400',
 };
 
 // DOT_COLORS re-exported from @/lib/presences for backward compatibility

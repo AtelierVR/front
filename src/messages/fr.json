@@ -114,8 +114,8 @@
     "dnd": "Ne pas déranger",
     "stream": "En stream",
     "offline": "Hors ligne",
-    "oja": "En ligne (rejoint)",
-    "ojf": "En ligne (complet)"
+    "event": "Événement",
+    "public": "Public"
   },
   "user": {
     "followers": "Abonnés",
@@ -542,10 +542,11 @@
   },
   "search": {
     "title": "Rechercher",
-    "placeholder": "Rechercher des utilisateurs, mondes, avatars, instances, serveurs…",
+    "placeholder": "Rechercher des utilisateurs, mondes, avatars, mods, instances, serveurs…",
     "tab_users": "Utilisateurs",
     "tab_worlds": "Mondes",
     "tab_avatars": "Avatars",
+    "tab_mods": "Mods",
     "tab_instances": "Instances",
     "tab_servers": "Serveurs",
     "empty_no_query": "Entrez un terme pour lancer la recherche.",
@@ -720,6 +721,10 @@
     "avatar": {
       "label": "Avatars",
       "description": "Parcourir les avatars disponibles"
+    },
+    "mod": {
+      "label": "Mods",
+      "description": "Parcourir les mods téléchargeables"
     },
     "instance": {
       "label": "Instances",

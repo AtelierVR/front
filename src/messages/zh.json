@@ -189,6 +189,10 @@
       "label": "实例"
     },
     "label": "功能",
+    "mod": {
+      "description": "浏览可下载的模组",
+      "label": "模组"
+    },
     "server": {
       "description": "浏览联邦服务器",
       "label": "服务器"
@@ -385,8 +389,8 @@
     "busy": "忙碌",
     "dnd": "请勿打扰",
     "offline": "离线",
-    "oja": "在线（已加入）",
-    "ojf": "在线（已满）",
+    "event": "活动",
+    "public": "公开",
     "online": "在线",
     "stream": "直播中"
   },
@@ -410,11 +414,12 @@
     "empty_no_query": "输入搜索词开始。",
     "empty_no_results": "未找到结果。",
     "error": "搜索时出错。请重试。",
-    "placeholder": "搜索用户、世界、头像、实例、服务器…",
+    "placeholder": "搜索用户、世界、头像、模组、实例、服务器…",
     "result_count": "找到 {{count}} 个结果",
     "results_for": "“{{query}}” 的搜索结果",
     "tab_avatars": "头像",
     "tab_instances": "实例",
+    "tab_mods": "模组",
     "tab_servers": "服务器",
     "tab_users": "用户",
     "tab_worlds": "世界",

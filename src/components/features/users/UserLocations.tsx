@@ -36,8 +36,8 @@ export function UserLocations() {
         setRows(locations.map(iid => ({ iid, instance: null, loading: true })));
 
         for (const iid of locations) {
-            const [rawId] = iid.split('@');
-            getInstance(rawId).then(instance => {
+            // The iid may carry a `?private` flag — parse it to get the instance id.
+            getInstance(noxIdToSegment(iid, localAddress)).then(instance => {
                 setRows(prev =>
                     prev.map(r => r.iid === iid ? { iid, instance, loading: false } : r)
                 );

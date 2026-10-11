@@ -8,7 +8,7 @@ import React, {
     useRef,
 } from 'react';
 import { useSocket } from '@/hooks/useSocket';
-import type { WsHelloPayload } from '@/hooks/useSocket';
+import type { WsFrame, WsHelloPayload } from '@/hooks/useSocket';
 import { useApi } from '@/lib/api/context';
 import {
     dispatchCurrentUserReplace,
@@ -73,9 +73,11 @@ export function WsProvider({ children }: { children: React.ReactNode }) {
     }, [wsOn]);
 
     useEffect(() => {
-        return wsOn('event', (payload: unknown) => {
-            const { name, data } = payload as { name: string; data: unknown };
-
+        // Route every server frame to the entity cache and registered handlers.
+        // Two frame shapes are accepted:
+        //   - room events:     { type: 'event', payload: { name, data } }
+        //   - targeted frames: { type: <name>, payload: data } (e.g. notification)
+        const route = (name: string, data: unknown) => {
             if (name === 'user:update') {
                 const user = data as ApiUser;
                 entityStore.put(`user:${user.username}@${user.server}`, user);
@@ -89,6 +91,19 @@ export function WsProvider({ children }: { children: React.ReactNode }) {
             }
 
             handlersRef.current.get(name)?.forEach((h) => h(data));
+        };
+
+        return wsOn('*', (payload) => {
+            const frame = payload as WsFrame;
+            if (frame.type === 'event') {
+                const { name, data } = frame.payload as {
+                    name: string;
+                    data: unknown;
+                };
+                route(name, data);
+                return;
+            }
+            route(frame.type, frame.payload);
         });
     }, [wsOn]);
 

@@ -52,6 +52,7 @@ interface UseSocketReturn {
      * or to a synthetic lifecycle event:
      *   - `"connected"`    → fired on `hello` (payload: WsHelloPayload)
      *   - `"disconnected"` → fired on socket close
+     *   - `"*"`           → fired on every server frame (payload: the raw WsFrame)
      *
      * Returns an unsubscribe function.
      */
@@ -125,6 +126,8 @@ export function useSocket({ url, token }: UseSocketOptions): UseSocketReturn {
                 }
 
                 emit(msg.type, msg.payload);
+                // Wildcard: every server frame, untouched, for generic routers.
+                emit('*', msg);
             } catch {
                 // Ignore malformed frames
             }

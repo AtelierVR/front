@@ -195,6 +195,10 @@
       "label": "Instanzen"
     },
     "label": "Funktionen",
+    "mod": {
+      "description": "Herunterladbare Mods durchsuchen",
+      "label": "Mods"
+    },
     "server": {
       "description": "Föderierte Server durchsuchen",
       "label": "Server"
@@ -391,8 +395,8 @@
     "busy": "Beschäftigt",
     "dnd": "Nicht stören",
     "offline": "Offline",
-    "oja": "Online (beigetreten)",
-    "ojf": "Online (voll)",
+    "event": "Event",
+    "public": "Öffentlich",
     "online": "Online",
     "stream": "Streamt"
   },
@@ -416,11 +420,12 @@
     "empty_no_query": "Geben Sie einen Suchbegriff ein.",
     "empty_no_results": "Keine Ergebnisse gefunden.",
     "error": "Bei der Suche ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-    "placeholder": "Nutzer, Welten, Avatare, Instanzen, Server suchen…",
+    "placeholder": "Nutzer, Welten, Avatare, Mods, Instanzen, Server suchen…",
     "result_count": "{{count}} Ergebnis(se) gefunden",
     "results_for": "Suchergebnisse für \"{{query}}\"",
     "tab_avatars": "Avatare",
     "tab_instances": "Instanzen",
+    "tab_mods": "Mods",
     "tab_servers": "Server",
     "tab_users": "Nutzer",
     "tab_worlds": "Welten",

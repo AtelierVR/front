@@ -58,7 +58,7 @@ export interface AvatarWithPresenceProps {
  *
  * @example
  * <AvatarWithPresence presence="online" size="lg" src={user.thumbnail} alt={user.display} fallback="JD" />
- * <AvatarWithPresence presence="ojf"  size="xs" src={user.thumbnail} alt={user.display} fallback="JD" />
+ * <AvatarWithPresence presence="public"  size="xs" src={user.thumbnail} alt={user.display} fallback="JD" />
  */
 export function AvatarWithPresence({
   presence,

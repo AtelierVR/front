@@ -195,6 +195,10 @@
       "label": "Instancias"
     },
     "label": "Características",
+    "mod": {
+      "description": "Explora mods descargables",
+      "label": "Mods"
+    },
     "server": {
       "description": "Explora servidores federados",
       "label": "Servidores"
@@ -391,8 +395,8 @@
     "busy": "Ocupado",
     "dnd": "No molestar",
     "offline": "Desconectado",
-    "oja": "En línea (unido)",
-    "ojf": "En línea (lleno)",
+    "event": "Evento",
+    "public": "Público",
     "online": "En línea",
     "stream": "Transmitiendo"
   },
@@ -416,11 +420,12 @@
     "empty_no_query": "Introduce un término de búsqueda.",
     "empty_no_results": "No se encontraron resultados.",
     "error": "Ocurrió un error al buscar. Por favor, inténtalo de nuevo.",
-    "placeholder": "Buscar usuarios, mundos, avatares, instancias, servidores…",
+    "placeholder": "Buscar usuarios, mundos, avatares, mods, instancias, servidores…",
     "result_count": "{{count}} resultado(s) encontrado(s)",
     "results_for": "Resultados para \"{{query}}\"",
     "tab_avatars": "Avatares",
     "tab_instances": "Instancias",
+    "tab_mods": "Mods",
     "tab_servers": "Servidores",
     "tab_users": "Usuarios",
     "tab_worlds": "Mundos",

@@ -28,7 +28,7 @@ export interface ApiUserRelations {
 }
 
 export interface ApiUserPresence {
-    status: 'oja' | 'ojf' | 'online' | 'busy' | 'dnd' | 'stream' | 'offline';
+    status: 'offline' | ('dnd' | 'stream') | 'busy' | 'online' | ('event' | 'public');
     text: string | null;
     /**
      * List of instance iids the user is currently in (e.g. ["42@example.com"]).
@@ -190,10 +190,43 @@ export interface ApiAvatarAssetList {
     items: ApiAvatarAsset[];
 }
 
+// ── Mod ───────────────────────────────────────────────────────────────────────
+
+/** Image attached to an asset (`IApiAsset.images`). */
+export interface ApiAssetImage {
+    url: string;
+    priority: number;
+    width: number;
+    height: number;
+    alt: string | null;
+}
+
+export interface ApiMod {
+    type: string;
+    id: number;
+    name: string | null;
+    title: string | null;
+    images: ApiAssetImage[];
+    description: string | null;
+    tags: string[];
+    server: string;
+    owner: NoxIdString;
+    contributors: NoxIdString[];
+    alias: ApiAlias[];
+    release: ApiRelease;
+    created_at: number;
+    updated_at: number;
+}
+
+export interface ApiModList extends ApiSearchResult<ApiMod> {
+    query: string | null;
+}
+
 // ── Sessions ──────────────────────────────────────────────────────────────────
 
 export interface ApiSessionDevice {
-    user_agent: string;
+    /** `null` when the client sent no User-Agent (or an empty one). */
+    user_agent: string | null;
     ip: string;
     last_seen: number;
 }

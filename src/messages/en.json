@@ -137,8 +137,8 @@
     "dnd": "Do not disturb",
     "stream": "Streaming",
     "offline": "Offline",
-    "oja": "Online (joined)",
-    "ojf": "Online (full)"
+    "event": "Event",
+    "public": "Public"
   },
   "user": {
     "followers": "Followers",
@@ -562,10 +562,11 @@
   },
   "search": {
     "title": "Search",
-    "placeholder": "Search users, worlds, avatars, instances, servers…",
+    "placeholder": "Search users, worlds, avatars, mods, instances, servers…",
     "tab_users": "Users",
     "tab_worlds": "Worlds",
     "tab_avatars": "Avatars",
+    "tab_mods": "Mods",
     "tab_instances": "Instances",
     "tab_servers": "Servers",
     "empty_no_query": "Enter a search term to get started.",
@@ -720,6 +721,10 @@
     "avatar": {
       "label": "Avatars",
       "description": "Browse available avatars"
+    },
+    "mod": {
+      "label": "Mods",
+      "description": "Browse downloadable mods"
     },
     "instance": {
       "label": "Instances",
