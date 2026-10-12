@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from '@/components/NoxImage';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,8 @@ import { cn } from '@/lib/utils';
 import { getAlias, useApi } from '@/lib/api';
 import { noxIdToSegment } from '@/types/nox-identifier';
 import { localeFlagUrl } from '@/lib/languages';
+import { ImageDisplay } from '@/components/shared/ImageDisplay';
+import { imageList } from '@/types/api';
 import type { ApiInstance, ApiWorld } from '@/types/api';
 
 interface InstanceCardProps {
@@ -59,12 +60,11 @@ export function InstanceCard({ instance, world }: InstanceCardProps) {
         'block overflow-hidden relative hover:ring-3 hover:ring-primary/50 transition-all duration-200 aspect-[4/3] h-auto p-0',
       )}
     >
-      <Image
-        src={instance.thumbnail ?? world?.thumbnail ?? ''}
+      <ImageDisplay
+        source={[instance.thumbnail, ...imageList(world?.images)]}
+        ratio={4 / 3}
         alt={instanceName}
-        width={400}
-        height={300}
-        className="w-full object-cover h-full"
+        sizes="(max-width: 768px) 100vw, 400px"
       />
       <div className="absolute inset-0 bg-gradient-to-t dark:from-black/80 from-white/20 to-transparent flex flex-col justify-end p-4">
         <p className="font-bold text-lg truncate">{instanceName}</p>

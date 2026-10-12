@@ -10,7 +10,7 @@ import { resolveTagDisplay } from '@/components/tags';
 import { useDeveloperMode } from '@/lib/hooks/useDeveloperMode';
 
 export function AvatarTagBox() {
-  const { avatar, isOwner, isContributor } = useAvatar();
+  const { avatar, kind, isOwner, isContributor } = useAvatar();
   const { t } = useTranslation();
   const advanced = useDeveloperMode();
 
@@ -23,7 +23,7 @@ export function AvatarTagBox() {
   return (
     <SidebarCard
       title={t('avatar.tags')}
-      editHref={avatar ? `/a/${avatar.id}/edit#tags` : undefined}
+      editHref={avatar && kind ? `/${kind.key}/${avatar.id}/edit#tags` : undefined}
       isSame={isOwner || isContributor}
     >
       {resolved.length === 0 ? (

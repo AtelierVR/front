@@ -139,7 +139,12 @@
     "search": "Поиск",
     "submit": "Отправить",
     "unknown": "Неизвестно",
-    "yes": "Да"
+    "yes": "Да",
+    "description": "Описание",
+    "versions": "Версии",
+    "releases": "Релизы",
+    "no_description": "Описания нет.",
+    "no_versions": "Версий пока нет."
   },
   "confirmation": {
     "error_message": "Не удалось подтвердить email. Попробуйте позже.",
@@ -158,6 +163,8 @@
   "engine": {
     "custom": "Свой",
     "godot": "Godot",
+    "ue4": "Unreal Engine 4",
+    "ue5": "Unreal Engine 5",
     "unity": "Unity",
     "unreal": "Unreal Engine"
   },
@@ -741,7 +748,8 @@
     "description": "Описание",
     "favorites": "Избранное",
     "favorites_avatar_label": "Аватары n°{{index}}",
-    "favorites_empty": "Пока нет избранных миров.",
+    "favorites_empty": "Пока нет избранного.",
+    "favorites_mod_label": "Моды n°{{index}}",
     "favorites_private": "Избранное этого пользователя скрыто.",
     "favorites_world_label": "Миры n°{{index}}",
     "no_followers": "Пока нет подписчиков.",
@@ -823,5 +831,28 @@
       "discoverable_title": "Виден в поиске",
       "discoverable_desc": "Разрешите другим находить вас в поиске и рекомендациях."
     }
+  },
+  "releases": {
+    "empty": "Опубликованных версий пока нет.",
+    "recommended": "Рекомендуемая",
+    "channel": {
+      "stable": "Релиз",
+      "candidate": "Бета",
+      "nightly": "Альфа"
+    },
+    "status": {
+      "awaiting": "Ожидает загрузки",
+      "queued": "В очереди",
+      "processing": "Обработка",
+      "completed": "Завершено",
+      "failed": "Ошибка"
+    },
+    "files": "Файлы",
+    "no_changelog": "Для этой версии нет списка изменений.",
+    "show_more": "Показать больше",
+    "show_less": "Свернуть",
+    "load_more": "Загрузить ещё",
+    "load_error": "Не удалось загрузить версии.",
+    "retry": "Повторить"
   }
 }

@@ -6,13 +6,13 @@ import { useAvatar } from './AvatarContext';
 import { releaseVersion } from '@/types/api';
 
 export function AvatarInfo() {
-  const { avatar, isOwner, isContributor } = useAvatar();
+  const { avatar, kind, isOwner, isContributor } = useAvatar();
   const { t } = useTranslation();
 
   return (
     <SidebarCard
       title={t('avatar.info')}
-      editHref={avatar ? `/a/${avatar.id}/edit#release` : undefined}
+      editHref={avatar && kind ? `/${kind.key}/${avatar.id}/edit#release` : undefined}
       isSame={isOwner || isContributor}
     >
       <dl className="space-y-2 text-sm">

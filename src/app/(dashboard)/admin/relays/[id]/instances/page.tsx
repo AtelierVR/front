@@ -7,6 +7,7 @@ import { batchGetUsers } from '@/lib/api/users';
 import { getWorld } from '@/lib/api/worlds';
 import { getWellKnownAddress } from '@/lib/api/wellknown';
 import { parseNoxId, worldInfoToString } from '@/types/nox-identifier';
+import { imageList } from '@/types/api';
 import type { ApiRelayAssignedInstance, ApiUser, ApiWorld } from '@/types/api';
 import { ApiError } from '@/types/envelope';
 import { useTranslation } from 'react-i18next';
@@ -309,10 +310,11 @@ function WorldCell({ identifier, worldMap }: { identifier: string | null; worldM
     if (!identifier) return <span className="text-xs text-muted-foreground">\u2014</span>;
     const world = worldMap.get(identifier);
     if (!world) return <span className="font-mono text-xs text-muted-foreground truncate block max-w-[10rem]">{identifier}</span>;
+    const image = imageList(world.images)[0]?.url ?? null;
     return (
         <div className="flex items-center gap-2 min-w-0">
             <Avatar className="size-6 rounded-md shrink-0">
-                {world.thumbnail && <AvatarImage src={world.thumbnail} alt={world.title} className="object-cover" />}
+                {image && <AvatarImage src={image} alt={world.title} className="object-cover" />}
                 <AvatarFallback className="text-[10px] rounded-md">
                     <Icon icon="material-symbols:public-rounded" className="size-3.5" />
                 </AvatarFallback>

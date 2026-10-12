@@ -106,7 +106,12 @@
     "unknown": "Unknown",
     "optional": "optional",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "description": "Description",
+    "versions": "Versions",
+    "releases": "Releases",
+    "no_description": "No description.",
+    "no_versions": "No release yet."
   },
   "footer": {
     "name": "Nox",
@@ -629,7 +634,8 @@
     "description": "Description",
     "favorites": "Favorites",
     "favorites_private": "This user's favorites are private.",
-    "favorites_empty": "No favorite worlds yet.",
+    "favorites_empty": "No favorites yet.",
+    "favorites_mod_label": "Mods n°{{index}}",
     "favorites_world_label": "Worlds n°{{index}}",
     "favorites_avatar_label": "Avatars n°{{index}}",
     "no_followers": "No followers yet.",
@@ -646,6 +652,8 @@
   "engine": {
     "unity": "Unity",
     "unreal": "Unreal Engine",
+    "ue4": "Unreal Engine 4",
+    "ue5": "Unreal Engine 5",
     "godot": "Godot",
     "custom": "Custom"
   },
@@ -823,5 +831,28 @@
       "discoverable_title": "Discoverable",
       "discoverable_desc": "Let others find you in search and suggestions."
     }
+  },
+  "releases": {
+    "empty": "No release yet.",
+    "recommended": "Recommended",
+    "channel": {
+      "stable": "Release",
+      "candidate": "Beta",
+      "nightly": "Alpha"
+    },
+    "status": {
+      "awaiting": "Waiting for the upload",
+      "queued": "Queued",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "files": "Files",
+    "no_changelog": "No changelog for this version.",
+    "show_more": "Show more",
+    "show_less": "Show less",
+    "load_more": "Load more",
+    "load_error": "Could not load the releases.",
+    "retry": "Retry"
   }
 }

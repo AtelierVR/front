@@ -139,7 +139,12 @@
     "search": "検索",
     "submit": "送信",
     "unknown": "不明",
-    "yes": "はい"
+    "yes": "はい",
+    "description": "説明",
+    "versions": "バージョン",
+    "releases": "リリース",
+    "no_description": "説明はありません。",
+    "no_versions": "まだバージョンがありません。"
   },
   "confirmation": {
     "error_message": "メールを確認できませんでした。後でもう一度お試しください。",
@@ -158,6 +163,8 @@
   "engine": {
     "custom": "カスタム",
     "godot": "Godot",
+    "ue4": "Unreal Engine 4",
+    "ue5": "Unreal Engine 5",
     "unity": "Unity",
     "unreal": "Unreal Engine"
   },
@@ -741,7 +748,8 @@
     "description": "説明",
     "favorites": "お気に入り",
     "favorites_avatar_label": "アバター n°{{index}}",
-    "favorites_empty": "まだお気に入りのワールドはありません。",
+    "favorites_empty": "まだお気に入りはありません。",
+    "favorites_mod_label": "Mod n°{{index}}",
     "favorites_private": "このユーザーのお気に入りは非公開です。",
     "favorites_world_label": "ワールド n°{{index}}",
     "no_followers": "まだフォロワーがいません。",
@@ -823,5 +831,28 @@
       "discoverable_title": "検索に表示",
       "discoverable_desc": "検索やおすすめにあなたを表示します。"
     }
+  },
+  "releases": {
+    "empty": "公開されたバージョンはまだありません。",
+    "recommended": "推奨",
+    "channel": {
+      "stable": "リリース",
+      "candidate": "ベータ",
+      "nightly": "アルファ"
+    },
+    "status": {
+      "awaiting": "アップロード待ち",
+      "queued": "待機中",
+      "processing": "処理中",
+      "completed": "完了",
+      "failed": "失敗"
+    },
+    "files": "ファイル",
+    "no_changelog": "このバージョンの変更履歴はありません。",
+    "show_more": "もっと見る",
+    "show_less": "折りたたむ",
+    "load_more": "さらに読み込む",
+    "load_error": "バージョンを読み込めませんでした。",
+    "retry": "再試 行"
   }
 }

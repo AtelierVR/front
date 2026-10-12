@@ -1,24 +1,13 @@
 'use client';
 
-import React, { createContext, useContext } from 'react';
-import type { ApiWorld, ApiWorldAsset } from '@/types/api';
+import { useAsset } from '@/components/features/assets/AssetContext';
+import type { ApiWorld } from '@/types/api';
 
-interface WorldContextValue {
-  world: ApiWorld | null;
-  allAssets: ApiWorldAsset[] | null;
-  isOwner: boolean;
-  isContributor: boolean;
-  refresh: () => void;
-}
-
-export const WorldContext = createContext<WorldContextValue>({
-  world: null,
-  allAssets: null,
-  isOwner: false,
-  isContributor: false,
-  refresh: () => {},
-});
-
+/**
+ * The asset page context, seen as a world — the page itself is generic
+ * (`useAsset`), this is only the typed view the world widgets use.
+ */
 export function useWorld() {
-  return useContext(WorldContext);
+  const { asset, ...rest } = useAsset<ApiWorld>();
+  return { ...rest, asset, world: asset };
 }

@@ -106,7 +106,12 @@
     "unknown": "Inconnu",
     "optional": "optionnel",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "description": "Description",
+    "versions": "Versions",
+    "releases": "Releases",
+    "no_description": "Aucune description.",
+    "no_versions": "Aucune version."
   },
   "presence": {
     "online": "En ligne",
@@ -629,7 +634,8 @@
     "description": "Description",
     "favorites": "Favoris",
     "favorites_private": "Les favoris de cet utilisateur sont privés.",
-    "favorites_empty": "Aucun monde favori pour l'instant.",
+    "favorites_empty": "Aucun favori pour l'instant.",
+    "favorites_mod_label": "Mods n°{{index}}",
     "favorites_world_label": "Mondes n°{{index}}",
     "favorites_avatar_label": "Avatars n°{{index}}",
     "no_followers": "Aucun abonné pour l'instant.",
@@ -646,6 +652,8 @@
   "engine": {
     "unity": "Unity",
     "unreal": "Unreal Engine",
+    "ue4": "Unreal Engine 4",
+    "ue5": "Unreal Engine 5",
     "godot": "Godot",
     "custom": "Personnalisé"
   },
@@ -823,5 +831,28 @@
       "discoverable_title": "Visible dans les recherches",
       "discoverable_desc": "Permettez aux autres de vous trouver dans la recherche et les suggestions."
     }
+  },
+  "releases": {
+    "empty": "Aucune version publiée.",
+    "recommended": "Recommandée",
+    "channel": {
+      "stable": "Release",
+      "candidate": "Bêta",
+      "nightly": "Alpha"
+    },
+    "status": {
+      "awaiting": "En attente de l'envoi",
+      "queued": "En file d'attente",
+      "processing": "Traitement en cours",
+      "completed": "Terminée",
+      "failed": "Échouée"
+    },
+    "files": "Fichiers",
+    "no_changelog": "Aucun changelog pour cette version.",
+    "show_more": "Afficher plus",
+    "show_less": "Afficher moins",
+    "load_more": "Charger plus",
+    "load_error": "Impossible de charger les versions.",
+    "retry": "Réessayer"
   }
 }

@@ -60,7 +60,7 @@ function ContributorRow({ noxRef, isOwner }: { noxRef: string; isOwner: boolean 
 }
 
 export function AvatarContributors() {
-  const { avatar, isOwner } = useAvatar();
+  const { avatar, kind, isOwner } = useAvatar();
   const { t } = useTranslation();
 
   const all = avatar
@@ -77,7 +77,7 @@ export function AvatarContributors() {
   return (
     <SidebarCard
       title={t('avatar.contributors')}
-      editHref={avatar && isOwner ? `/a/${avatar.id}/edit#contributors` : undefined}
+      editHref={avatar && kind && isOwner ? `/${kind.key}/${avatar.id}/edit#contributors` : undefined}
       isSame={isOwner}
     >
       <div className="space-y-3">

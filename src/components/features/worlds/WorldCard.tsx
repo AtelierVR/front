@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Icon } from '@iconify/react';
 import { TagBadges } from '@/components/shared/TagBadges';
+import { ImageDisplay } from '@/components/shared/ImageDisplay';
 import type { ApiWorld } from '@/types/api';
 
 interface WorldCardProps {
@@ -16,22 +17,15 @@ export function WorldCard({ world }: WorldCardProps) {
   return (
     <Link href={href} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg">
       <Card className="overflow-hidden hover:border-primary/50 transition-colors">
-        {world.thumbnail && (
-          <div className="aspect-video w-full overflow-hidden bg-muted">
-            {/* Use next/image in production; plain img avoids domain config here */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={world.thumbnail}
-              alt={world.title}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        )}
-        {!world.thumbnail && (
-          <div className="aspect-video w-full bg-muted flex items-center justify-center">
-            <span className="text-muted-foreground text-xs">{t('common.unknown')}</span>
-          </div>
-        )}
+        <div className="aspect-video w-full overflow-hidden bg-muted">
+          <ImageDisplay
+            source={world.images}
+            ratio={16 / 9}
+            alt={world.title}
+            sizes="(max-width: 768px) 50vw, 320px"
+            fallback={<span className="text-muted-foreground text-xs">{t('common.unknown')}</span>}
+          />
+        </div>
         <CardContent className="py-3 px-4">
           <p className="font-semibold text-sm truncate">{world.title}</p>
           {world.description && (

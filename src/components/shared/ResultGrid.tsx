@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
@@ -10,9 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { resolveLocalized } from '@/lib/i18n/resolveLocalized';
 import { resolveInstanceIcon } from '@/lib/useInstanceIcon';
-import Image from '@/components/NoxImage';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ui/avatar';
 import { AvatarLetterFallback } from '@/components/ui/avatar-letter-fallback';
+import { ImageDisplay } from '@/components/shared/ImageDisplay';
+import { imageList, type ApiImageObject } from '@/types/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -20,8 +20,18 @@ export interface ResultItem {
     id: string;
     /** Plain string or locale→string map. Resolved at render time via resolveLocalized. */
     name: string | Record<string, string>;
-    /** Plain URL, theme-keyed map (e.g. { default, light }), or null. Resolved at render time via resolveInstanceIcon. */
-    thumbnail: string | Record<string, string> | null;
+    /**
+     * Candidate images of the result — the asset `images`, or the single URL the
+     * server exposes (user thumbnail, instance thumbnail). `ImageDisplay` keeps
+     * the one whose ratio fits the box.
+     */
+    images: ApiImageObject[];
+    /**
+     * Theme-keyed icon of the server it comes from (well-known
+     * `metadata.icon`), resolved with the current theme and shown before
+     * `images`.
+     */
+    icon?: string | Record<string, string> | null;
     /** Plain string, locale→string map, or null. Resolved at render time via resolveLocalized. */
     description: string | Record<string, string> | null;
     redirect: string;
@@ -121,13 +131,10 @@ export function CardItem(result: ResultItem) {
     const { i18n } = useTranslation();
     const { resolvedTheme } = useTheme();
     const name = resolveLocalized(result.name, i18n.language) || '';
-    const thumbnail = resolveInstanceIcon(result.thumbnail, resolvedTheme);
     const desc = resolveLocalized(result.description, i18n.language) || null;
-    // The failure belongs to a URL: as soon as the thumbnail changes, the
-    // previous error no longer applies (same behaviour as `InstanceLogo`, but
-    // without a reset effect).
-    const [failedUrl, setFailedUrl] = useState<string | null>(null);
-    const failed = failedUrl !== null && failedUrl === thumbnail;
+    // The well-known icon (server mark) comes first, the assets' own images next.
+    const icon = resolveInstanceIcon(result.icon, resolvedTheme);
+    const source = icon ? imageList([icon, ...result.images]) : result.images;
 
     return (
         <Link
@@ -137,16 +144,12 @@ export function CardItem(result: ResultItem) {
                 'block overflow-hidden relative hover:ring-3 hover:ring-primary/50 transition-all duration-200 aspect-[4/3] h-auto p-0',
             )}
         >
-            {thumbnail && !failed && (
-                <Image
-                    src={thumbnail}
-                    alt={name}
-                    width={400}
-                    height={300}
-                    className="w-full object-cover h-full"
-                    onError={() => setFailedUrl(thumbnail)}
-                />
-            )}
+            <ImageDisplay
+                source={source}
+                ratio={4 / 3}
+                alt={name}
+                sizes="(max-width: 768px) 100vw, 400px"
+            />
             <div className="absolute inset-0 bg-gradient-to-t dark:from-black/80 from-white/20 to-transparent flex flex-col justify-end p-4">
                 <p className="font-bold text-lg">{name}</p>
                 {desc && (
@@ -163,8 +166,9 @@ export function ListItem(result: ResultItem) {
     const { i18n } = useTranslation();
     const { resolvedTheme } = useTheme();
     const name = resolveLocalized(result.name, i18n.language) || '';
-    const thumbnail = resolveInstanceIcon(result.thumbnail, resolvedTheme);
     const desc = resolveLocalized(result.description, i18n.language) || null;
+    const icon = resolveInstanceIcon(result.icon, resolvedTheme);
+    const source = icon ? imageList([icon, ...result.images]) : result.images;
 
     return (
         <Link
@@ -174,8 +178,12 @@ export function ListItem(result: ResultItem) {
                 'w-full justify-start h-auto py-3 px-6 flex items-center gap-4',
             )}>
             <Avatar className="h-12 w-12 shrink-0">
-                {thumbnail && <AvatarImage src={thumbnail} alt={name} />}
-                <AvatarLetterFallback name={name} letterClassName="text-lg" />
+                <ImageDisplay
+                    source={source}
+                    alt={name}
+                    sizes="48px"
+                    fallback={<AvatarLetterFallback name={name} letterClassName="text-lg" />}
+                />
             </Avatar>
             <div>
                 <p className="font-bold text-lg">{name}</p>

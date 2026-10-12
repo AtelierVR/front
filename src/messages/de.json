@@ -145,7 +145,12 @@
     "search": "Suchen",
     "submit": "Absenden",
     "unknown": "Unbekannt",
-    "yes": "Ja"
+    "yes": "Ja",
+    "description": "Beschreibung",
+    "versions": "Versionen",
+    "releases": "Releases",
+    "no_description": "Keine Beschreibung.",
+    "no_versions": "Noch keine Version."
   },
   "confirmation": {
     "error_message": "E-Mail konnte nicht verifiziert werden. Bitte versuchen Sie es später erneut.",
@@ -164,6 +169,8 @@
   "engine": {
     "custom": "Eigenentwicklung",
     "godot": "Godot",
+    "ue4": "Unreal Engine 4",
+    "ue5": "Unreal Engine 5",
     "unity": "Unity",
     "unreal": "Unreal Engine"
   },
@@ -747,7 +754,8 @@
     "description": "Beschreibung",
     "favorites": "Favoriten",
     "favorites_avatar_label": "Avatare n°{{index}}",
-    "favorites_empty": "Noch keine Lieblingswelten.",
+    "favorites_empty": "Noch keine Favoriten.",
+    "favorites_mod_label": "Mods n°{{index}}",
     "favorites_private": "Die Favoriten dieses Nutzers sind privat.",
     "favorites_world_label": "Welten n°{{index}}",
     "no_followers": "Noch keine Follower.",
@@ -829,5 +837,28 @@
       "discoverable_title": "Auffindbar",
       "discoverable_desc": "Andere können dich in Suche und Vorschlägen finden."
     }
+  },
+  "releases": {
+    "empty": "Noch keine Version veröffentlicht.",
+    "recommended": "Empfohlen",
+    "channel": {
+      "stable": "Release",
+      "candidate": "Beta",
+      "nightly": "Alpha"
+    },
+    "status": {
+      "awaiting": "Wartet auf den Upload",
+      "queued": "In der Warteschlange",
+      "processing": "Wird verarbeitet",
+      "completed": "Abgeschlossen",
+      "failed": "Fehlgeschlagen"
+    },
+    "files": "Dateien",
+    "no_changelog": "Kein Changelog für diese Version.",
+    "show_more": "Mehr anzeigen",
+    "show_less": "Weniger anzeigen",
+    "load_more": "Mehr laden",
+    "load_error": "Versionen konnten nicht geladen werden.",
+    "retry": "Erneut versuchen"
   }
 }

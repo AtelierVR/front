@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
@@ -21,7 +21,7 @@ import {
     CardItem,
     ListItem,
 } from '@/components/shared/ResultGrid';
-import { DEFAULT_TAB, SEARCH_TABS, type TabDef } from '@/lib/search-tabs';
+import { DEFAULT_TAB, searchTabs, type TabDef } from '@/lib/search-tabs';
 
 const LIMIT = 20;
 
@@ -35,7 +35,7 @@ interface SearchPageClientProps {
 
 export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
     const { t } = useTranslation();
-    const { wellKnown } = useApi();
+    const { wellKnown, config } = useApi();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -43,9 +43,11 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
     // ── Derive state from URL (single source of truth) ───────────────────────
 
     const localAddress = wellKnown?.address ?? '::';
+    // One tab per asset kind the instance serves, plus the non-asset kinds.
+    const tabs = useMemo(() => searchTabs(config), [config]);
     const availableTabs = wellKnown
-        ? SEARCH_TABS.filter((tab) => wellKnown.features.includes(tab.feature))
-        : SEARCH_TABS;
+        ? tabs.filter((tab) => wellKnown.features.includes(tab.feature))
+        : tabs;
 
     const urlQuery = searchParams.get('q') ?? initialQuery;
     const urlTab = searchParams.get('type') ?? availableTabs[0]?.feature ?? DEFAULT_TAB;
@@ -86,7 +88,7 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
     useEffect(() => {
         if (!wellKnown) return;
 
-        const tabDef = SEARCH_TABS.find(t => t.feature === activeTab);
+        const tabDef = tabs.find(t => t.feature === activeTab);
         if (!tabDef) return;
 
         abortRef.current?.abort();
@@ -111,7 +113,7 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
             });
 
         return () => controller.abort();
-    }, [debouncedQuery, activeTab, page, wellKnown]);
+    }, [debouncedQuery, activeTab, page, wellKnown, tabs, localAddress]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
@@ -163,7 +165,7 @@ export function SearchPageClient({ initialQuery = '' }: SearchPageClientProps) {
                         <TabsList className="w-full flex flex-col items-stretch" aria-label={t('search.tabs')}>
                             {availableTabs.map((tab) => (
                                 <TabsTrigger key={tab.feature} value={tab.feature} className="flex-1 w-full justify-between px-4 py-2">
-                                    <span>{t(tab.title!)}</span>
+                                    <span>{t(tab.title ?? tab.feature, { defaultValue: tab.feature })}</span>
                                     {tab.icon && <Icon icon={tab.icon} className="h-4 w-4 ml-2" />}
                                 </TabsTrigger>
                             ))}
@@ -201,9 +203,10 @@ function ResultTabContent({
 }) {
     const { t } = useTranslation();
 
-    if (loading || !data) {
-        return tab.layout === 'card' ? <SkeletonGrid /> : <SkeletonList />;
-    }
+    if (loading || !data)
+        return tab.layout === 'card' 
+            ? <SkeletonGrid /> 
+            : <SkeletonList />;
 
     if (data instanceof Error)
         return <EmptyState label={t('search.error')} details={data.message} />;

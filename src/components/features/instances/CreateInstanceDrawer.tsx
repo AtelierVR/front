@@ -9,6 +9,7 @@ import { useApi } from '@/lib/api/context';
 import { createInstance } from '@/lib/api/instances';
 import { searchWorlds, getWorldAssets } from '@/lib/api/worlds';
 import { listServers } from '@/lib/api/servers';
+import { imageList } from '@/types/api';
 import type { ApiServer, ApiWorld } from '@/types/api';
 import { NoxIdentifier } from '@/types/nox-identifier';
 
@@ -47,6 +48,11 @@ interface CreateInstanceDrawerProps {
     onCreated?: () => void;
 }
 
+/** Default thumbnail of a new instance: the world's first image, if any. */
+function defaultThumbnail(world?: ApiWorld | null): string | null {
+    return imageList(world?.images)[0]?.url ?? null;
+}
+
 export function CreateInstanceDrawer({
     defaultWorld,
     open,
@@ -78,7 +84,7 @@ export function CreateInstanceDrawer({
     const [description, setDescription] = useState(defaultWorld?.description ?? '');
     const [capacity, setCapacity] = useState(defaultWorld?.capacity ?? 0);
     const [tags, setTags] = useState<string[]>([]);
-    const [thumbnail, setThumbnail] = useState<string | null>(defaultWorld?.thumbnail ?? null);
+    const [thumbnail, setThumbnail] = useState<string | null>(defaultThumbnail(defaultWorld));
     const [region, setRegion] = useState<string>(config?.regions?.[0] ?? '');
     const [worldVersion, setWorldVersion] = useState<number | null>(null);
     const [worldVersionRaw, setWorldVersionRaw] = useState('-1');
@@ -125,7 +131,7 @@ export function CreateInstanceDrawer({
         setDescription(selectedWorld.description ?? '');
         setCapacity(selectedWorld.capacity);
         setTags([]);
-        setThumbnail(selectedWorld.thumbnail ?? null);
+        setThumbnail(defaultThumbnail(selectedWorld));
         setWorldVersion(null);
         setWorldVersionRaw('-1');
         setVersionValid(true);
@@ -166,7 +172,7 @@ export function CreateInstanceDrawer({
         setDescription(defaultWorld?.description ?? '');
         setCapacity(defaultWorld?.capacity ?? 0);
         setTags([]);
-        setThumbnail(defaultWorld?.thumbnail ?? null);
+        setThumbnail(defaultThumbnail(defaultWorld));
         setError(null);
         setMode('simple');
         setRegion(config?.regions?.[0] ?? '');

@@ -1,15 +1,14 @@
 'use client';
 
-import Image from '@/components/NoxImage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useInstance } from './InstanceContext';
-import { addUrlQuery } from '@/lib/url';
+import { ImageDisplay } from '@/components/shared/ImageDisplay';
+import { imageList } from '@/types/api';
 import { localeFlagUrl } from '@/lib/languages';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function InstanceBanner() {
   const { instance, world } = useInstance();
-  const [error, setError] = useState(false);
   const [flagUrl, setFlagUrl] = useState<string | null>(null);
 
   const region = instance?.connection?.region ?? null;
@@ -22,25 +21,20 @@ export function InstanceBanner() {
     }
   }, [region]);
 
-  console.log(instance?.thumbnail,  world?.thumbnail);
-
-  const banner = instance?.thumbnail ?? world?.thumbnail;
+  const banner = useMemo(
+    () => [instance?.thumbnail, ...imageList(world?.images)],
+    [instance?.thumbnail, world?.images],
+  );
 
   return (
     <div className="relative flex items-start bg-muted/50 border-b rounded-b-xl overflow-hidden">
-      {error || !banner ? (
-        <div className="w-full h-48 bg-gradient-to-br from-primary/20 to-primary/5" />
-      ) : (
-        <Image
-          className="object-cover w-full"
-          style={{ aspectRatio: '128 / 45' }}
-          src={addUrlQuery(banner, 'size', '1024')}
-          alt={instance?.title ?? ""}
-          width={1024}
-          height={360}
-          onError={() => setError(true)}
-        />
-      )}
+      <ImageDisplay
+        source={banner}
+        ratio={128 / 45}
+        alt={instance?.title ?? world?.title}
+        sizes="100vw"
+        fallbackClassName="bg-gradient-to-br from-primary/20 to-primary/5"
+      />
 
       {/* Region flag — top-left */}
       {flagUrl && (

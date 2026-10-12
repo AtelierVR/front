@@ -6,13 +6,13 @@ import { useWorld } from './WorldContext';
 import { releaseVersion } from '@/types/api';
 
 export function WorldInfo() {
-  const { world, isOwner, isContributor } = useWorld();
+  const { world, kind, isOwner, isContributor } = useWorld();
   const { t } = useTranslation();
 
   return (
     <SidebarCard
       title={t('world.info')}
-      editHref={world ? `/w/${world.id}/edit#capacity` : undefined}
+      editHref={world && kind ? `/${kind.key}/${world.id}/edit#capacity` : undefined}
       isSame={isOwner || isContributor}
     >
       <dl className="space-y-2 text-sm">

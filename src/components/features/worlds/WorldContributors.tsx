@@ -60,7 +60,7 @@ function ContributorRow({ noxRef, isOwner }: { noxRef: string; isOwner: boolean 
 }
 
 export function WorldContributors() {
-  const { world, isOwner } = useWorld();
+  const { world, kind, isOwner } = useWorld();
   const { t } = useTranslation();
 
   const all = world
@@ -77,7 +77,7 @@ export function WorldContributors() {
   return (
     <SidebarCard
       title={t('world.contributors')}
-      editHref={world ? `/w/${world.id}/edit#contributors` : undefined}
+      editHref={world && kind && isOwner ? `/${kind.key}/${world.id}/edit#contributors` : undefined}
       isSame={isOwner}
     >
       {!all ? (

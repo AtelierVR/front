@@ -10,7 +10,7 @@ import { resolveTagDisplay } from '@/components/tags';
 import { useDeveloperMode } from '@/lib/hooks/useDeveloperMode';
 
 export function WorldTagBox() {
-  const { world, isOwner, isContributor } = useWorld();
+  const { world, kind, isOwner, isContributor } = useWorld();
   const { t } = useTranslation();
   const advanced = useDeveloperMode();
 
@@ -23,7 +23,7 @@ export function WorldTagBox() {
   return (
     <SidebarCard
       title={t('world.tags')}
-      editHref={world ? `/w/${world.id}/edit#tags` : undefined}
+      editHref={world && kind ? `/${kind.key}/${world.id}/edit#tags` : undefined}
       isSame={isOwner || isContributor}
     >
       {resolved.length === 0 ? (

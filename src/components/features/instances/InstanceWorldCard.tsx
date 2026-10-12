@@ -8,7 +8,7 @@ import { useApi } from '@/lib/api/context';
 import { noxIdToSegment } from '@/types/nox-identifier';
 import { getAlias } from '@/lib/api';
 import { SidebarCard } from '@/components/shared/SidebarCard';
-import Image from '@/components/NoxImage';
+import { ImageDisplay } from '@/components/shared/ImageDisplay';
 
 export function InstanceWorldCard() {
     const { instance, world } = useInstance();
@@ -27,15 +27,11 @@ export function InstanceWorldCard() {
             <Link href={href} className="flex items-center gap-3 rounded-md px-2 py-1.5 hover:bg-muted transition-colors group">
                 {/* Thumbnail */}
                 <div className="size-9 shrink-0 rounded-sm overflow-hidden bg-muted flex items-center justify-center">
-                    {world.thumbnail
-                        ? <Image
-                            src={world.thumbnail}
-                            alt={world.title ?? world.name ?? ''}
-                            className="size-full object-cover"
-                            width={36}
-                            height={36}
-                        />
-                        : <Icon icon="material-symbols:public" className="size-5 text-muted-foreground" />}
+                    <ImageDisplay
+                        source={world.images}
+                        alt={world.title ?? world.name ?? ''}
+                        fallback={<Icon icon="material-symbols:public" className="size-5 text-muted-foreground" />}
+                    />
                 </div>
 
                 {/* Labels */}

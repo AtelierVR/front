@@ -1,24 +1,13 @@
 'use client';
 
-import React, { createContext, useContext } from 'react';
-import type { ApiAvatar, ApiAvatarAsset } from '@/types/api';
+import { useAsset } from '@/components/features/assets/AssetContext';
+import type { ApiAvatar } from '@/types/api';
 
-interface AvatarContextValue {
-  avatar: ApiAvatar | null;
-  allAssets: ApiAvatarAsset[] | null;
-  isOwner: boolean;
-  isContributor: boolean;
-  refresh: () => void;
-}
-
-export const AvatarContext = createContext<AvatarContextValue>({
-  avatar: null,
-  allAssets: null,
-  isOwner: false,
-  isContributor: false,
-  refresh: () => {},
-});
-
+/**
+ * The asset page context, seen as an avatar — the page itself is generic
+ * (`useAsset`), this is only the typed view the avatar widgets use.
+ */
 export function useAvatar() {
-  return useContext(AvatarContext);
+  const { asset, ...rest } = useAsset<ApiAvatar>();
+  return { ...rest, asset, avatar: asset };
 }
