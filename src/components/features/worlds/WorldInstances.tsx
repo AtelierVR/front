@@ -12,7 +12,7 @@ import { Icon } from '@iconify/react';
 import { ResultGrid, SkeletonGrid } from '@/components/shared/ResultGrid';
 import type { ApiInstance } from '@/types/api';
 
-export default function WorldInstancesPage() {
+export function WorldInstances() {
   const { world } = useWorld();
   const { t } = useTranslation();
   const { currentUser } = useApi();
