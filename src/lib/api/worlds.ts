@@ -8,7 +8,7 @@ export function getWorld(id: number | string): Promise<ApiWorld> {
 
 export function searchWorlds(query: string, limit: number, offset: number): Promise<ApiWorldList> {
     const params = new URLSearchParams();
-    if (query.trim()) params.set('q', query);
+    if (query.trim()) params.set('query', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
     return apiFetch<ApiWorldList>(`/worlds?${params.toString()}`);

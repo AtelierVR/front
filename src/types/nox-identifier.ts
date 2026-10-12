@@ -18,6 +18,18 @@ export type NoxQuery = Record<string, string>;
 export class NoxIdentifier {
   public static readonly LOCALSERVER = '::';
 
+  /** Maximum length of a serialized identifier (mirrors the node validator). */
+  public static readonly MAX_LENGTH = 256;
+
+  /** Charset for the id part: numeric id, username or asset shortname. */
+  private static readonly ID_RE = /^[a-zA-Z0-9_.-]+$/;
+  /** Charset for the `@server` part (hostname or the `::` local marker). */
+  private static readonly SERVER_RE = /^[a-zA-Z0-9.:-]+$/;
+  /** Charset for query keys. */
+  private static readonly QUERY_KEY_RE = /^[a-zA-Z0-9_-]+$/;
+  /** Charset for query values (base64 payloads use `+`, `/` and `=`). */
+  private static readonly QUERY_VALUE_RE = /^[a-zA-Z0-9_.+/=-]+$/;
+
   readonly type: NoxIdentifierType | null;
   /** Raw string id: may be numeric string or alphanumeric name */
   readonly id: string;
@@ -39,6 +51,44 @@ export class NoxIdentifier {
     this.id = id;
     this.server = server;
     this.query = query ?? {};
+  }
+
+  /**
+   * True when this identifier is well-formed: non-empty id, hostname-like server
+   * (when present) and URL-safe query keys/values, within the length limit. A
+   * numeric id must be in the uint32 range, and never 0.
+   *
+   * {@link NoxIdentifier.parse} is tolerant (an unknown type prefix is kept in the
+   * id), so raw input must be checked with this before being stored or linked.
+   */
+  isValid(): boolean {
+    if (!this.id || this.id.length > NoxIdentifier.MAX_LENGTH) return false;
+    if (!NoxIdentifier.ID_RE.test(this.id)) return false;
+    // Numeric ids are uint32: `0` is the "invalid" sentinel and anything beyond
+    // the range cannot exist.
+    if (/^\d+$/.test(this.id)) {
+      const value = Number(this.id);
+      if (value < 1 || value > 0xffffffff) return false;
+    }
+    if (this.server !== undefined && !NoxIdentifier.SERVER_RE.test(this.server))
+      return false;
+    for (const [key, value] of Object.entries(this.query)) {
+      if (!NoxIdentifier.QUERY_KEY_RE.test(key)) return false;
+      if (value !== '' && !NoxIdentifier.QUERY_VALUE_RE.test(value)) return false;
+    }
+    return this.toString().length <= NoxIdentifier.MAX_LENGTH;
+  }
+
+  /**
+   * True when this identifier may be used as the given kind: it carries no type
+   * at all (a bare id is usable by every kind), or exactly that one.
+   *
+   * The parser deliberately keeps any single-letter prefix — it has no hardcoded
+   * list of kinds — so a caller that expects one (the key of an asset kind from
+   * the instance config, the `u` of a profile route…) checks it with this.
+   */
+  compatible(type: string | null): boolean {
+    return this.type === null || type === null || this.type === type;
   }
 
   /**
@@ -70,7 +120,9 @@ export class NoxIdentifier {
       }
     }
 
-    // 3. Extract type prefix (single char + colon)
+    // 3. Extract type prefix (single letter + colon). Any prefix is kept: the
+    //    parser has no list of kinds, callers assert the one they expect with
+    //    `compatible()`.
     let type: NoxIdentifierType | null = null;
     const colonIdx = raw.indexOf(':');
     if (colonIdx === 1) {

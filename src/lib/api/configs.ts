@@ -1,4 +1,5 @@
 import { fetchWellKnown } from './wellknown';
+import type { ApiConfigAsset } from '@/types/api';
 
 export interface InstanceConfig {
   allow_user_registration: boolean;
@@ -11,6 +12,8 @@ export interface InstanceConfig {
   regions: string[];
   allowed_image_widths: number[];
   support_passkey: boolean;
+  /** Asset kinds served by the instance, with the upload rules enforced on their files. */
+  assets: ApiConfigAsset[];
 }
 
 export async function fetchConfigs(): Promise<InstanceConfig | null> {

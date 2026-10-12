@@ -8,7 +8,7 @@ export function getAvatar(id: number | string): Promise<ApiAvatar> {
 
 export function searchAvatars(query: string, limit: number, offset: number): Promise<ApiAvatarList> {
     const params = new URLSearchParams();
-    if (query.trim()) params.set('q', query);
+    if (query.trim()) params.set('query', query);
     params.set('limit', limit.toString());
     params.set('offset', offset.toString());
     return apiFetch<ApiAvatarList>(`/avatars?${params.toString()}`);

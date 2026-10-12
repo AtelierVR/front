@@ -43,6 +43,65 @@ export interface ApiAlias {
     value: string;
 }
 
+/**
+ * Descriptor of one image attached to an entity (`IApiAsset.images`).
+ *
+ * `width`/`height` are the image's own dimensions, and stay `0` when the server
+ * did not measure them — the image then ranks by `priority` only.
+ */
+export interface ApiImageObject {
+    url: string;
+    /** 0 = primary image; lower is better. */
+    priority: number;
+    width: number;
+    height: number;
+    alt: string | null;
+}
+
+/** One image an entity may expose: a bare URL, or a descriptor. */
+export type ApiImage = ApiImageObject['url'] | ApiImageObject;
+
+/**
+ * Everything an entity may expose as its image: one image, a list of them (or a
+ * mix, nullish entries included), or nothing at all. Server and provider
+ * implementations differ, so consumers never assume an array — use
+ * {@link imageList} to normalise it.
+ */
+export type ApiImageList =
+    | ApiImage
+    | ApiImageObject['url'][]
+    | ApiImageObject[]
+    | readonly (ApiImage | null | undefined)[]
+    | null
+    | undefined;
+
+/**
+ * Normalises an {@link ApiImageList} into a flat list of image descriptors, dropping
+ * empty entries and flattening nested lists. A bare URL becomes a descriptor
+ * without dimensions or `alt`.
+ */
+export function imageList(images: ApiImageList): ApiImageObject[] {
+    const out: ApiImageObject[] = [];
+
+    const add = (entry: ApiImageList) => {
+        if (!entry) return;
+        if (typeof entry === 'string') {
+            out.push({ url: entry, priority: 0, width: 0, height: 0, alt: null });
+            return;
+        }
+        // `Array.isArray` does not narrow a `readonly` array, hence the casts.
+        if (Array.isArray(entry)) {
+            for (const nested of entry as readonly ApiImageList[]) add(nested);
+            return;
+        }
+        const image = entry as ApiImageObject;
+        if (image.url) out.push(image);
+    };
+
+    add(images);
+    return out;
+}
+
 export interface ApiSearchResult<T> {
     total: number;
     items: T[];
@@ -103,21 +162,40 @@ export interface ApiSession {
     user: ApiCurrentUser;
 }
 
-// ── World ─────────────────────────────────────────────────────────────────────
+// ── Asset (world, avatar, mod) ────────────────────────────────────────────────
 
-export interface ApiWorld {
+/**
+ * Fields shared by every asset exposed by the asset endpoints (`mods`, `worlds`,
+ * `avatars`): what a listing, a favourite or a card needs, whatever the kind.
+ */
+export interface ApiAsset {
+    /** Kind of the asset, matching its endpoint (`world`, `avatar`, `mod`). */
+    type: string;
     id: number;
     name: string | null;
-    title: string;
+    title: string | null;
     description: string | null;
-    thumbnail: string | null;
+    /**
+     * Images attached to the asset, in the order the server ranks them. An asset
+     * has no `thumbnail` field: use {@link imageList} to normalise these.
+     */
+    images: ApiImageList;
     tags: string[];
-    capacity: number;
-    release: ApiRelease;
     server: string;
     owner: NoxIdString;
     contributors: NoxIdString[];
     alias: ApiAlias[];
+    release: ApiRelease;
+    created_at: number;
+    updated_at: number;
+}
+
+// ── World ─────────────────────────────────────────────────────────────────────
+
+export interface ApiWorld extends ApiAsset {
+    /** Always set on a world. */
+    title: string;
+    capacity: number;
 }
 
 export interface ApiWorldList extends ApiSearchResult<ApiWorld> {
@@ -149,18 +227,9 @@ export interface ApiWorldAssetList {
 
 // ── Avatar ────────────────────────────────────────────────────────────────────
 
-export interface ApiAvatar {
-    id: number;
-    name: string | null;
+export interface ApiAvatar extends ApiAsset {
+    /** Always set on an avatar. */
     title: string;
-    description: string | null;
-    thumbnail: string | null;
-    tags: string[];
-    release: ApiRelease;
-    server: string;
-    owner: NoxIdString;
-    contributors: NoxIdString[];
-    alias: ApiAlias[];
 }
 
 export interface ApiAvatarList extends ApiSearchResult<ApiAvatar> {
@@ -192,31 +261,8 @@ export interface ApiAvatarAssetList {
 
 // ── Mod ───────────────────────────────────────────────────────────────────────
 
-/** Image attached to an asset (`IApiAsset.images`). */
-export interface ApiAssetImage {
-    url: string;
-    priority: number;
-    width: number;
-    height: number;
-    alt: string | null;
-}
-
-export interface ApiMod {
-    type: string;
-    id: number;
-    name: string | null;
-    title: string | null;
-    images: ApiAssetImage[];
-    description: string | null;
-    tags: string[];
-    server: string;
-    owner: NoxIdString;
-    contributors: NoxIdString[];
-    alias: ApiAlias[];
-    release: ApiRelease;
-    created_at: number;
-    updated_at: number;
-}
+/** Mods expose the plain {@link ApiAsset} shape. */
+export type ApiMod = ApiAsset;
 
 export interface ApiModList extends ApiSearchResult<ApiMod> {
     query: string | null;
@@ -550,3 +596,99 @@ export interface ApiActivityList {
 
 
 
+
+// ── Releases (asset API) ──────────────────────────────────────────────────────
+
+export type ApiReleaseChannel = 'stable' | 'candidate' | 'nightly';
+
+/** Steps of a running process (upload, analysis…). */
+export interface ApiProcessProgress {
+    current: number;
+    total: number;
+}
+
+/** Detailed process status, returned for resources that are not complete yet. */
+export interface ApiProcessStatus {
+    status: string;
+    progress: ApiProcessProgress | null;
+    message: string | null;
+}
+
+/** Shorthand status string (`"completed"`), or the detailed object. */
+export type ApiProcessState = string | ApiProcessStatus;
+
+/**
+ * Upload rules enforced server-side on the files of an asset kind, published by
+ * `GET /configs` (`assets[].rules`): attribute keys every file must declare, and
+ * attribute key groups that must stay unique across a release.
+ */
+export interface ApiUploadRules {
+    /** Attribute keys every file of the release must declare. */
+    required?: string[];
+    /** Attribute key groups whose combination must stay unique across the release. */
+    unique?: string[][];
+}
+
+/** One asset kind published by `GET /configs` (`assets`). */
+export interface ApiConfigAsset {
+    /** Asset type, as used by the asset payloads (`avatar`, `world`, `mod`). */
+    type: string;
+    /** Nox identifier type letter (`a`, `w`, `m`). */
+    key: string;
+    /** Route segment of the asset endpoints (`avatars`, `worlds`, `mods`). */
+    endpoint: string;
+    /** Rules enforced on the files of this kind; `{}` when it accepts anything. */
+    rules: ApiUploadRules;
+}
+
+/** One published release of an asset (`GET /{endpoint}/{id}/releases`). */
+export interface ApiReleaseItem {
+    id: number;
+    /** Version slug, unique within the asset (e.g. `v1.0.2`). */
+    name: string;
+    title: string | null;
+    /** Markdown changelog. */
+    changelog: string | null;
+    channel: ApiReleaseChannel;
+    alias: ApiAlias[];
+    status: ApiProcessState;
+    /** Epoch ms; missing on servers older than the changelog support. */
+    created_at?: number;
+    expires_at?: number;
+    refetch_at?: number;
+}
+
+export interface ApiReleaseList {
+    query: string | null;
+    limit: number;
+    offset: number;
+    total: number;
+    items: ApiReleaseItem[];
+}
+
+/** One file of a release (`GET …/releases/{releaseRef}/files`). */
+export interface ApiReleaseFile {
+    id: number;
+    name: string | null;
+    url: string | { proxified: string; original: string };
+    size: number;
+    mime: string;
+    hashs: string[];
+    uploader: string | number;
+    status: ApiProcessState;
+    attributes: ApiAlias[];
+    analysis: Record<string, unknown> | null;
+    created_at: number;
+    updated_at: number;
+    signature: string | null;
+    expires_at?: number;
+    refetch_at?: number;
+}
+
+export interface ApiReleaseFileList {
+    query: string | null;
+    limit: number;
+    offset: number;
+    total: number;
+    items: ApiReleaseFile[];
+}
